@@ -1,0 +1,16 @@
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer.exe.config
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.csprojResolveAssemblyReference.cache
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.MainForm.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.Properties.Resources.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.Utils.Modifiers.TgcMeshBrowser.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.Utils.Modifiers.TgcTextureBrowser.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.Utils.Networking.TgcNetworkingModifierClientsDialog.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.Utils.Networking.TgcNetworkingModifierControl.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.Utils.Networking.TgcNetworkingModifierServersDialog.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.Utils.Ui.AboutWindow.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.Utils.Ui.FullScreenPanel.resources
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.csproj.GenerateResource.Cache
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.exe
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer\obj\Debug\TgcViewer.pdb
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer.exe
+F:\Mis Documentos\UTN\TGC\TgcViewer\TgcViewer.pdb
