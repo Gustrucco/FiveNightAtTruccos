@@ -47,5 +47,18 @@ Temporary Items
 .dll
 .suo
 
+
+# Microsoft Fakes
+FakesAssemblies/
+*.exe
+*.pdb
+*.dll
+*.Cache
+*.exe
+*.pdb
+*.txt
+*.suo
+*.pdb
+
 # TGC
 Examples
