@@ -7,6 +7,12 @@ using Microsoft.DirectX.Direct3D;
 using System.Drawing;
 using Microsoft.DirectX;
 using TgcViewer.Utils.Modifiers;
+using TgcViewer.Utils.TgcSceneLoader;
+using TgcViewer.Utils.TgcGeometry;
+using TgcViewer.Utils.Input;
+using Microsoft.DirectX.DirectInput;
+using TgcViewer.Utils.TgcSkeletalAnimation;
+using AlumnoEjemplos.NeneMalloc;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -15,6 +21,10 @@ namespace AlumnoEjemplos.MiGrupo
     /// </summary>
     public class EjemploAlumno : TgcExample
     {
+        TgcBox piso;
+        List<TgcBox> obstaculos;
+        TgcSkeletalMesh personaje;
+        Avatar avatar;
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
         /// Influye en donde se va a haber en el árbol de la derecha de la pantalla.
@@ -50,79 +60,58 @@ namespace AlumnoEjemplos.MiGrupo
             //GuiController.Instance: acceso principal a todas las herramientas del Framework
 
             //Device de DirectX para crear primitivas
-            Device d3dDevice = GuiController.Instance.D3dDevice;
+            Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
-            //Carpeta de archivos Media del alumno
-            string alumnoMediaFolder = GuiController.Instance.AlumnoEjemplosMediaDir;
-
-
-            ///////////////USER VARS//////////////////
-
-            //Crear una UserVar
-            GuiController.Instance.UserVars.addVar("variablePrueba");
-
-            //Cargar valor en UserVar
-            GuiController.Instance.UserVars.setValue("variablePrueba", 5451);
+            //Crear piso
+            TgcTexture pisoTexture = TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\tierra.jpg");
+            piso = TgcBox.fromSize(new Vector3(0, -60, 0), new Vector3(1000, 5, 1000), pisoTexture);
 
 
-
-            ///////////////MODIFIERS//////////////////
-
-            //Crear un modifier para un valor FLOAT
-            GuiController.Instance.Modifiers.addFloat("valorFloat", -50f, 200f, 0f);
-
-            //Crear un modifier para un ComboBox con opciones
-            string[] opciones = new string[]{"opcion1", "opcion2", "opcion3"};
-            GuiController.Instance.Modifiers.addInterval("valorIntervalo", opciones, 0);
-
-            //Crear un modifier para modificar un vértice
-            GuiController.Instance.Modifiers.addVertex3f("valorVertice", new Vector3(-100, -100, -100), new Vector3(50, 50, 50), new Vector3(0, 0, 0));
+            //Cargar obstaculos y posicionarlos. Los obstáculos se crean con TgcBox en lugar de cargar un modelo.
+            obstaculos = new List<TgcBox>();
+            TgcBox obstaculo;
 
 
+            //Obstaculo 1
+            obstaculo = TgcBox.fromSize(
+                new Vector3(-100, 0, 0),
+                new Vector3(80, 150, 80),
+                TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\baldosaFacultad.jpg"));
+            obstaculos.Add(obstaculo);
 
-            ///////////////CONFIGURAR CAMARA ROTACIONAL//////////////////
-            //Es la camara que viene por default, asi que no hace falta hacerlo siempre
-            GuiController.Instance.RotCamera.Enable = true;
-            //Configurar centro al que se mira y distancia desde la que se mira
-            GuiController.Instance.RotCamera.setCamera(new Vector3(0, 0, 0), 100);
+            //Obstaculo 2
+            obstaculo = TgcBox.fromSize(
+                new Vector3(50, 0, 200),
+                new Vector3(80, 300, 80),
+                TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\madera.jpg"));
+            obstaculos.Add(obstaculo);
+
+            //Obstaculo 3
+            obstaculo = TgcBox.fromSize(
+                new Vector3(300, 0, 100),
+                new Vector3(80, 100, 150),
+                TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\granito.jpg"));
+            obstaculos.Add(obstaculo);
 
 
-            /*
-            ///////////////CONFIGURAR CAMARA PRIMERA PERSONA//////////////////
-            //Camara en primera persona, tipo videojuego FPS
-            //Solo puede haber una camara habilitada a la vez. Al habilitar la camara FPS se deshabilita la camara rotacional
-            //Por default la camara FPS viene desactivada
-            GuiController.Instance.FpsCamera.Enable = true;
-            //Configurar posicion y hacia donde se mira
-            GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
-            */
+           //Cargar personaje
+            avatar = new Avatar();
+            avatar.init();
+            avatar.obstaculos = obstaculos;
+         
+           //Camara en primera persona, tipo videojuego FPS
+           //GuiController.Instance.FpsCamera.Enable = true;
+           //Configurar posicion y hacia donde se mira
+           //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
+       
 
 
+            //Modifier para ver BoundingBox
+            GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
 
-            ///////////////LISTAS EN C#//////////////////
-            //crear
-            List<string> lista = new List<string>();
-
-            //agregar elementos
-            lista.Add("elemento1");
-            lista.Add("elemento2");
-
-            //obtener elementos
-            string elemento1 = lista[0];
-
-            //bucle foreach
-            foreach (string elemento in lista)
-            {
-                //Loggear por consola del Framework
-                GuiController.Instance.Logger.log(elemento);
-            }
-
-            //bucle for
-            for (int i = 0; i < lista.Count; i++)
-            {
-                string element = lista[i];
-            }
-
+            //Modifiers para desplazamiento del personaje
+            GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
+            GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
 
         }
 
@@ -135,34 +124,35 @@ namespace AlumnoEjemplos.MiGrupo
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
-            //Device de DirectX para renderizar
-            Device d3dDevice = GuiController.Instance.D3dDevice;
+            Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
+            
+            //Obtener boolean para saber si hay que mostrar Bounding Box
+            bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
+
+            
+        
 
 
-            //Obtener valor de UserVar (hay que castear)
-            int valor = (int)GuiController.Instance.UserVars.getValue("variablePrueba");
+           
+            //Render piso
+            piso.render();
 
 
-            //Obtener valores de Modifiers
-            float valorFloat = (float)GuiController.Instance.Modifiers["valorFloat"];
-            string opcionElegida = (string)GuiController.Instance.Modifiers["valorIntervalo"];
-            Vector3 valorVertice = (Vector3)GuiController.Instance.Modifiers["valorVertice"];
-
-
-            ///////////////INPUT//////////////////
-            //conviene deshabilitar ambas camaras para que no haya interferencia
-
-            //Capturar Input teclado 
-            if (GuiController.Instance.D3dInput.keyPressed(Microsoft.DirectX.DirectInput.Key.F))
+            //Render obstaculos
+            foreach (TgcBox obstaculo in obstaculos)
             {
-                //Tecla F apretada
+                obstaculo.render();
+                if (showBB)
+                {
+                    obstaculo.BoundingBox.render();
+                }
+                
             }
+            
+            //Render personaje
+            avatar.render(elapsedTime);
 
-            //Capturar Input Mouse
-            if (GuiController.Instance.D3dInput.buttonPressed(TgcViewer.Utils.Input.TgcD3dInput.MouseButtons.BUTTON_LEFT))
-            {
-                //Boton izq apretado
-            }
+        
 
         }
 
@@ -172,7 +162,12 @@ namespace AlumnoEjemplos.MiGrupo
         /// </summary>
         public override void close()
         {
-
+            piso.dispose();
+            foreach (TgcBox obstaculo in obstaculos)
+            {
+                obstaculo.dispose();
+            }
+            personaje.dispose();
         }
 
     }
