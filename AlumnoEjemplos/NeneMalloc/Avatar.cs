@@ -14,15 +14,17 @@ using Microsoft.DirectX.DirectInput;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 namespace AlumnoEjemplos.NeneMalloc
 {
-    class Avatar 
+    class Avatar : Character
     {
         public TgcSkeletalMesh meshPersonaje;
         public List<TgcBox> obstaculos { get; set; }
+        public Vector3 posicion { get; set; }
+
 
         public void init()
         {
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
-            
+           
             TgcSkeletalLoader skeletalLoader = new TgcSkeletalLoader();
             meshPersonaje = skeletalLoader.loadMeshAndAnimationsFromFile(
                 GuiController.Instance.ExamplesMediaDir + "SkeletalAnimations\\Robot\\" + "Robot-TgcSkeletalMesh.xml",
@@ -32,17 +34,17 @@ namespace AlumnoEjemplos.NeneMalloc
                     GuiController.Instance.ExamplesMediaDir + "SkeletalAnimations\\Robot\\" + "Parado-TgcSkeletalAnim.xml",
                 });
 
-            //Le cambiamos la textura para diferenciarlo un poco
+           // Le cambiamos la textura para diferenciarlo un poco
             meshPersonaje.changeDiffuseMaps(new TgcTexture[] { TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "SkeletalAnimations\\Robot\\Textures\\" + "uvwGreen.jpg") });
 
-            //Configurar animacion inicial
+            ////Configurar animacion inicial
             meshPersonaje.playAnimation("Parado", true);
-            //Escalarlo porque es muy grande
+            ////Escalarlo porque es muy grande
             meshPersonaje.Position = new Vector3(0, -45, 0);
             meshPersonaje.Scale = new Vector3(0.75f, 0.75f, 0.75f);
-            //Rotarlo 180° porque esta mirando para el otro lado
+            ////Rotarlo 180° porque esta mirando para el otro lado
             meshPersonaje.rotateY(Geometry.DegreeToRadian(180f));
-
+            this.rotateY(180f);
             //Seteamos la camara
             GuiController.Instance.ThirdPersonCamera.Enable = true;
             GuiController.Instance.ThirdPersonCamera.setCamera(meshPersonaje.Position, 200, -300);
@@ -51,6 +53,7 @@ namespace AlumnoEjemplos.NeneMalloc
         public void render(float elapsedTime)
         {
             float moveForward = 0f;
+            float moveAside = 0f;
             float rotate = 0;
             bool moving = false;
             bool rotating = false;
@@ -76,12 +79,23 @@ namespace AlumnoEjemplos.NeneMalloc
             //Derecha
             if (d3dInput.keyDown(Key.D))
             {
-                rotate = velocidadRotacion;
-                rotating = true;
+                moveAside = velocidadCaminar;
+                moving = true;
             }
         
             //Izquierda
             if (d3dInput.keyDown(Key.A))
+            {
+                moveAside = -velocidadCaminar;
+                moving = true;
+            }
+
+            if (d3dInput.keyDown(Key.RightArrow))
+            {
+                rotate = +velocidadRotacion;
+                rotating = true;
+            }
+            if (d3dInput.keyDown(Key.LeftArrow))
             {
                 rotate = -velocidadRotacion;
                 rotating = true;
@@ -93,6 +107,7 @@ namespace AlumnoEjemplos.NeneMalloc
                 //Rotar personaje y la camara, hay que multiplicarlo por el tiempo transcurrido para no atarse a la velocidad el hardware
                 float rotAngle = Geometry.DegreeToRadian(rotate * elapsedTime);
                 meshPersonaje.rotateY(rotAngle);
+                this.rotateY(rotate * elapsedTime);
                 GuiController.Instance.ThirdPersonCamera.rotateY(rotAngle);
             }
 
@@ -107,7 +122,11 @@ namespace AlumnoEjemplos.NeneMalloc
 
                 //La velocidad de movimiento tiene que multiplicarse por el elapsedTime para hacerse independiente de la velocida de CPU
                 //Ver Unidad 2: Ciclo acoplado vs ciclo desacoplado
-                meshPersonaje.moveOrientedY(moveForward * elapsedTime); 
+                this.moveForward(moveForward * elapsedTime);
+                
+                this.moveAside(moveAside * elapsedTime);
+                
+               
                 
                 //Detectar colisiones
                 bool collide = false;
@@ -147,6 +166,12 @@ namespace AlumnoEjemplos.NeneMalloc
                 meshPersonaje.BoundingBox.render();
             }
             
+        }
+
+
+        public override void move(Vector3 pos)
+        {
+            meshPersonaje.move(pos);
         }
 
 
