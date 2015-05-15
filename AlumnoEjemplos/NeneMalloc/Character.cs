@@ -27,7 +27,6 @@ namespace AlumnoEjemplos.NeneMalloc
            
             move(new Vector3(x, 0, z));
         }
-
         public void moveForward(float movement)
         {
             float z = (float)Math.Cos((float)rotation.Y) * movement;

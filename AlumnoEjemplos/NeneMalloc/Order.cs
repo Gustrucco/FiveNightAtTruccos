@@ -38,6 +38,10 @@ namespace AlumnoEjemplos.NeneMalloc
         {
             return moveForward != 0 || moveAside != 0;
         }
+        public Boolean running()
+        {
+            return Math.Abs(moveForward) >= 2;
+        }
 
         public Boolean rotating()
         {

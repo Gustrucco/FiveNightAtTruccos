@@ -91,9 +91,11 @@ namespace AlumnoEjemplos.NeneMalloc
                 //La velocidad de movimiento tiene que multiplicarse por el elapsedTime para hacerse independiente de la velocida de CPU
                 //Ver Unidad 2: Ciclo acoplado vs ciclo desacoplado
                 this.moveForward(lastOrders.moveForward * velocidadCaminar * elapsedTime);
-                
-                this.moveAside(lastOrders.moveAside* velocidadCaminar * elapsedTime);
-                
+
+                if (!lastOrders.running()) 
+                {
+                    this.moveAside(lastOrders.moveAside * velocidadCaminar * elapsedTime);
+                }                  
                
                 
                 //CollitionManager es un Util que sirve para la logica de colisiones todo lo que sea respecto eso, desarrollarlo en esa clase

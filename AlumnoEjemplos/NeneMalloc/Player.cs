@@ -18,13 +18,13 @@ namespace AlumnoEjemplos.NeneMalloc
             //Adelante
             if (d3dInput.keyDown(Key.W))
             {
-                order.moveForward = -1;
+                order.moveForward = d3dInput.keyDown(Key.LeftShift) ? -2 : -1;
             }
 
             //Atras
             if (d3dInput.keyDown(Key.S))
             {
-                order.moveForward = 1;
+                order.moveForward = d3dInput.keyDown(Key.LeftShift) ? 2 : 1; ;
             }
 
             //Derecha
