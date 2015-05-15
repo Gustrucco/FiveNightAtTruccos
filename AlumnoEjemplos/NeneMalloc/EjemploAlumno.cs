@@ -13,6 +13,7 @@ using TgcViewer.Utils.Input;
 using Microsoft.DirectX.DirectInput;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc;
+using AlumnoEjemplos.NeneMalloc.Utils;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -93,11 +94,13 @@ namespace AlumnoEjemplos.MiGrupo
                 TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\granito.jpg"));
             obstaculos.Add(obstaculo);
 
+            //CargarCollitionManager
+            CollitionManager.obstaculos = obstaculos;
 
            //Cargar personaje
             avatar = new Avatar();
             avatar.init();
-            avatar.obstaculos = obstaculos;
+            
          
            //Camara en primera persona, tipo videojuego FPS
            //GuiController.Instance.FpsCamera.Enable = true;

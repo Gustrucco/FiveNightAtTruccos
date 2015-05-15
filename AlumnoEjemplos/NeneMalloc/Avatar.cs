@@ -12,19 +12,24 @@ using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.Input;
 using Microsoft.DirectX.DirectInput;
 using TgcViewer.Utils.TgcSkeletalAnimation;
+using AlumnoEjemplos.NeneMalloc.Utils;
 namespace AlumnoEjemplos.NeneMalloc
 {
     class Avatar : Character
     {
         public TgcSkeletalMesh meshPersonaje;
-        public List<TgcBox> obstaculos { get; set; }
         public Vector3 posicion { get; set; }
 
 
         public void init()
         {
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
-           
+            //Carga del controller
+            this.controller = new Player();
+
+            this.controller.character = this;
+
+            //Carga del personaje (no es necesario debido a la modalidad FPS camera)
             TgcSkeletalLoader skeletalLoader = new TgcSkeletalLoader();
             meshPersonaje = skeletalLoader.loadMeshAndAnimationsFromFile(
                 GuiController.Instance.ExamplesMediaDir + "SkeletalAnimations\\Robot\\" + "Robot-TgcSkeletalMesh.xml",
@@ -45,6 +50,7 @@ namespace AlumnoEjemplos.NeneMalloc
             ////Rotarlo 180° porque esta mirando para el otro lado
             meshPersonaje.rotateY(Geometry.DegreeToRadian(180f));
             this.rotateY(180f);
+
             //Seteamos la camara
             GuiController.Instance.ThirdPersonCamera.Enable = true;
             GuiController.Instance.ThirdPersonCamera.setCamera(meshPersonaje.Position, 200, -300);
@@ -52,67 +58,29 @@ namespace AlumnoEjemplos.NeneMalloc
         }
         public void render(float elapsedTime)
         {
-            float moveForward = 0f;
-            float moveAside = 0f;
-            float rotate = 0;
-            bool moving = false;
-            bool rotating = false;
+            base.render();
+
             //obtener velocidades de Modifiers
             float velocidadCaminar = (float)GuiController.Instance.Modifiers.getValue("VelocidadCaminar");
             float velocidadRotacion = (float)GuiController.Instance.Modifiers.getValue("VelocidadRotacion");
 
-            TgcD3dInput d3dInput = GuiController.Instance.D3dInput;
-            //Adelante
-            if (d3dInput.keyDown(Key.W))
-            {
-                moveForward = -velocidadCaminar;
-                moving = true;
-            }
-
-            //Atras
-            if (d3dInput.keyDown(Key.S))
-            {
-                moveForward = velocidadCaminar;
-                moving = true;
-            }
-
-            //Derecha
-            if (d3dInput.keyDown(Key.D))
-            {
-                moveAside = velocidadCaminar;
-                moving = true;
-            }
-        
-            //Izquierda
-            if (d3dInput.keyDown(Key.A))
-            {
-                moveAside = -velocidadCaminar;
-                moving = true;
-            }
-
-            if (d3dInput.keyDown(Key.RightArrow))
-            {
-                rotate = +velocidadRotacion;
-                rotating = true;
-            }
-            if (d3dInput.keyDown(Key.LeftArrow))
-            {
-                rotate = -velocidadRotacion;
-                rotating = true;
-            }
+            Order lastOrders = this.controller.order;
 
             //Si hubo rotacion
-            if (rotating)
+            if (lastOrders.rotating())
             {
                 //Rotar personaje y la camara, hay que multiplicarlo por el tiempo transcurrido para no atarse a la velocidad el hardware
-                float rotAngle = Geometry.DegreeToRadian(rotate * elapsedTime);
+                float rotAngle = Geometry.DegreeToRadian(lastOrders.rotateY * velocidadRotacion * elapsedTime);
+                //
                 meshPersonaje.rotateY(rotAngle);
-                this.rotateY(rotate * elapsedTime);
+                meshPersonaje.rotateX(Geometry.DegreeToRadian(lastOrders.rotateX * velocidadRotacion * elapsedTime));
+                this.rotateY(lastOrders.rotateY * velocidadRotacion * elapsedTime);
+                this.rotateX(lastOrders.rotateX * velocidadRotacion * elapsedTime);
                 GuiController.Instance.ThirdPersonCamera.rotateY(rotAngle);
             }
 
             //Si hubo desplazamiento
-            if (moving)
+            if (lastOrders.moving())
             {
                 //Activar animacion de caminando
                 meshPersonaje.playAnimation("Caminando", true);
@@ -122,26 +90,14 @@ namespace AlumnoEjemplos.NeneMalloc
 
                 //La velocidad de movimiento tiene que multiplicarse por el elapsedTime para hacerse independiente de la velocida de CPU
                 //Ver Unidad 2: Ciclo acoplado vs ciclo desacoplado
-                this.moveForward(moveForward * elapsedTime);
+                this.moveForward(lastOrders.moveForward * velocidadCaminar * elapsedTime);
                 
-                this.moveAside(moveAside * elapsedTime);
+                this.moveAside(lastOrders.moveAside* velocidadCaminar * elapsedTime);
                 
                
                 
-                //Detectar colisiones
-                bool collide = false;
-                foreach (TgcBox obstaculo in obstaculos)
-                {
-                    TgcCollisionUtils.BoxBoxResult result = TgcCollisionUtils.classifyBoxBox(meshPersonaje.BoundingBox, obstaculo.BoundingBox);
-                    if (result == TgcCollisionUtils.BoxBoxResult.Adentro || result == TgcCollisionUtils.BoxBoxResult.Atravesando)
-                    {
-                        collide = true;
-                        break;
-                    }
-                }
-
-                //Si hubo colision, restaurar la posicion anterior
-                if (collide)
+                //CollitionManager es un Util que sirve para la logica de colisiones todo lo que sea respecto eso, desarrollarlo en esa clase
+                if (CollitionManager.detectColision(this.meshPersonaje.BoundingBox))
                 {
                     meshPersonaje.Position = lastPos;
                 }

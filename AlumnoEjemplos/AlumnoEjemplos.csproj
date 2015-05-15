@@ -91,9 +91,9 @@
     <Compile Include="NeneMalloc\Character.cs" />
     <Compile Include="NeneMalloc\Controller.cs" />
     <Compile Include="NeneMalloc\EjemploAlumno.cs" />
-    <Compile Include="NeneMalloc\Orders.cs" />
+    <Compile Include="NeneMalloc\Order.cs" />
     <Compile Include="NeneMalloc\Player.cs" />
-    <Compile Include="NeneMalloc\TgcSkelealMeshFNAT.cs" />
+    <Compile Include="NeneMalloc\Utils\CollitionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,12 @@ using System.Text;
 
 namespace AlumnoEjemplos.NeneMalloc
 {
-    class Controller
+    public abstract class Controller
     {
+        public Order order { get; set; }
+
+        public Character character { get; set; }
+
+        public abstract void render();
     }
 }

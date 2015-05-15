@@ -11,6 +11,14 @@ namespace AlumnoEjemplos.NeneMalloc
     {
         public Vector3 rotation ;
 
+        public Vector3 position {get;set;}
+
+        public Controller controller { get; set; }
+
+        public void render()
+        {
+            this.controller.render();
+        }
         public void moveAside(float movement)
         {
             
@@ -32,6 +40,11 @@ namespace AlumnoEjemplos.NeneMalloc
         {
             this.rotation.Y += Geometry.DegreeToRadian(angle);
         }
+
+         public void rotateX(float angle)
+         {
+             this.rotation.X += Geometry.DegreeToRadian(angle);
+         }
 
         public abstract void move(Vector3 pos);
     }
