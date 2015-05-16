@@ -19,6 +19,8 @@ namespace AlumnoEjemplos.MiGrupo
         List<TgcBox> obstaculos;
         TgcSkeletalMesh personaje;
         Avatar avatar;
+        Lantern lantern;
+
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
         /// Influye en donde se va a haber en el árbol de la derecha de la pantalla.
@@ -93,6 +95,10 @@ namespace AlumnoEjemplos.MiGrupo
            //Cargar personaje
             avatar = new Avatar();
             avatar.init();
+
+            //Cargar linterna
+            lantern = new Lantern();
+            lantern.init();
             
          
            //Camara en primera persona, tipo videojuego FPS
