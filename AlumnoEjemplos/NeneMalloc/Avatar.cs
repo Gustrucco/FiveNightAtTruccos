@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TgcViewer.Example;
-using TgcViewer;
+﻿using TgcViewer;
 using Microsoft.DirectX.Direct3D;
-using System.Drawing;
 using Microsoft.DirectX;
-using TgcViewer.Utils.Modifiers;
 using TgcViewer.Utils.TgcSceneLoader;
-using TgcViewer.Utils.TgcGeometry;
-using TgcViewer.Utils.Input;
-using Microsoft.DirectX.DirectInput;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc.Utils;
 namespace AlumnoEjemplos.NeneMalloc
@@ -18,12 +9,10 @@ namespace AlumnoEjemplos.NeneMalloc
     class Avatar : Character
     {
         public TgcSkeletalMesh meshPersonaje;
-        public Vector3 posicion { get; set; }
-
-
+        
         public void init()
         {
-            Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
+            Device d3dDevice = GuiController.Instance.D3dDevice;
             //Carga del controller
             this.controller = new Player();
 
@@ -53,9 +42,9 @@ namespace AlumnoEjemplos.NeneMalloc
 
             //Seteamos la camara
             GuiController.Instance.ThirdPersonCamera.Enable = true;
-            GuiController.Instance.ThirdPersonCamera.setCamera(meshPersonaje.Position, 200, -300);
-
+            GuiController.Instance.ThirdPersonCamera.setCamera(meshPersonaje.Position, 200, -300);  
         }
+
         public void render(float elapsedTime)
         {
             base.render();
@@ -71,9 +60,9 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 //Rotar personaje y la camara, hay que multiplicarlo por el tiempo transcurrido para no atarse a la velocidad el hardware
                 float rotAngle = Geometry.DegreeToRadian(lastOrders.rotateY * velocidadRotacion * elapsedTime);
-                //
+
                 meshPersonaje.rotateY(rotAngle);
-                meshPersonaje.rotateX(Geometry.DegreeToRadian(lastOrders.rotateX * velocidadRotacion * elapsedTime));
+                //meshPersonaje.rotateX(Geometry.DegreeToRadian(lastOrders.rotateX * velocidadRotacion * elapsedTime));
                 this.rotateY(lastOrders.rotateY * velocidadRotacion * elapsedTime);
                 this.rotateX(lastOrders.rotateX * velocidadRotacion * elapsedTime);
                 GuiController.Instance.ThirdPersonCamera.rotateY(rotAngle);
@@ -97,15 +86,10 @@ namespace AlumnoEjemplos.NeneMalloc
                     this.moveAside(lastOrders.moveAside * velocidadCaminar * elapsedTime);
                 }                  
                
-                
                 //CollitionManager es un Util que sirve para la logica de colisiones todo lo que sea respecto eso, desarrollarlo en esa clase
                 if (CollitionManager.detectColision(this.meshPersonaje.BoundingBox))
                 {
                     meshPersonaje.Position = lastPos;
-                }
-                else
-                {
-                    
                 }
             }
 
@@ -123,15 +107,11 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 meshPersonaje.BoundingBox.render();
             }
-            
         }
-
-
+        
         public override void move(Vector3 pos)
         {
             meshPersonaje.move(pos);
         }
-
-
     }
 }

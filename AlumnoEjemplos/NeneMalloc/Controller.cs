@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.DirectX;
 
 namespace AlumnoEjemplos.NeneMalloc
 {
@@ -10,6 +7,8 @@ namespace AlumnoEjemplos.NeneMalloc
         public Order order { get; set; }
 
         public Character character { get; set; }
+
+        public Vector3 GenericUp { get { return new Vector3(0.0f, 1.0f, 0.0f); } }
 
         public abstract void render();
     }

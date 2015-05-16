@@ -1,9 +1,4 @@
-﻿using Microsoft.DirectX;
-using Microsoft.DirectX.DirectInput;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.DirectX.DirectInput;
 using TgcViewer;
 using TgcViewer.Utils.Input;
 
@@ -43,6 +38,7 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 order.rotateX = +1;
             }
+
             if (d3dInput.keyDown(Key.DownArrow))
             {
                 order.rotateX = -1;
