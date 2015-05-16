@@ -104,7 +104,9 @@ namespace AlumnoEjemplos.MiGrupo
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
-
+            GuiController.Instance.UserVars.addVar("isColliding");
+            GuiController.Instance.UserVars.addVar("Pos");
+            GuiController.Instance.UserVars.addVar("LastPos");
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
@@ -124,12 +126,7 @@ namespace AlumnoEjemplos.MiGrupo
             
             //Obtener boolean para saber si hay que mostrar Bounding Box
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
-
             
-        
-
-
-           
             //Render piso
             piso.render();
 

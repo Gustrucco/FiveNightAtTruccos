@@ -1,6 +1,8 @@
-﻿using TgcViewer;
+﻿using System;
+using TgcViewer;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX;
+using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc.Utils;
@@ -9,6 +11,7 @@ namespace AlumnoEjemplos.NeneMalloc
     class Avatar : Character
     {
         public TgcSkeletalMesh meshPersonaje;
+        public TgcBoundingBox BoundingBox { get; set; }
         
         public void init()
         {
@@ -17,7 +20,8 @@ namespace AlumnoEjemplos.NeneMalloc
             this.controller = new Player();
 
             this.controller.character = this;
-
+            this.BoundingBox = new TgcBoundingBox();
+            this.BoundingBox.setExtremes(this.position - new Vector3(37.5f, 50f, 37.5f), this.position + new Vector3(37.5f, 100f, 37.5f));
             //Carga del personaje (no es necesario debido a la modalidad FPS camera)
             TgcSkeletalLoader skeletalLoader = new TgcSkeletalLoader();
             meshPersonaje = skeletalLoader.loadMeshAndAnimationsFromFile(
@@ -35,14 +39,15 @@ namespace AlumnoEjemplos.NeneMalloc
             meshPersonaje.playAnimation("Parado", true);
             ////Escalarlo porque es muy grande
             meshPersonaje.Position = new Vector3(0, -45, 0);
+
             meshPersonaje.Scale = new Vector3(0.75f, 0.75f, 0.75f);
             ////Rotarlo 180° porque esta mirando para el otro lado
             meshPersonaje.rotateY(Geometry.DegreeToRadian(180f));
-            this.rotateY(180f);
+            
 
             //Seteamos la camara
             GuiController.Instance.ThirdPersonCamera.Enable = true;
-            GuiController.Instance.ThirdPersonCamera.setCamera(meshPersonaje.Position, 200, -300);  
+            GuiController.Instance.ThirdPersonCamera.setCamera(meshPersonaje.Position, 200, -300);
         }
 
         public void render(float elapsedTime)
@@ -60,11 +65,16 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 //Rotar personaje y la camara, hay que multiplicarlo por el tiempo transcurrido para no atarse a la velocidad el hardware
                 float rotAngle = Geometry.DegreeToRadian(lastOrders.rotateY * velocidadRotacion * elapsedTime);
-
+                
+                
                 meshPersonaje.rotateY(rotAngle);
-                //meshPersonaje.rotateX(Geometry.DegreeToRadian(lastOrders.rotateX * velocidadRotacion * elapsedTime));
+                meshPersonaje.rotateX(Geometry.DegreeToRadian(lastOrders.rotateX * velocidadRotacion * elapsedTime));
+
                 this.rotateY(lastOrders.rotateY * velocidadRotacion * elapsedTime);
                 this.rotateX(lastOrders.rotateX * velocidadRotacion * elapsedTime);
+                //this.BoundingBox.transform(Matrix.RotationY(this.rotation.Y)* Matrix.Translation(this.position));
+                
+                
                 GuiController.Instance.ThirdPersonCamera.rotateY(rotAngle);
             }
 
@@ -75,22 +85,37 @@ namespace AlumnoEjemplos.NeneMalloc
                 meshPersonaje.playAnimation("Caminando", true);
 
                 //Aplicar movimiento hacia adelante o atras segun la orientacion actual del Mesh
-                Vector3 lastPos = meshPersonaje.Position;
+                Vector3 lastPos = this.position;
 
                 //La velocidad de movimiento tiene que multiplicarse por el elapsedTime para hacerse independiente de la velocida de CPU
                 //Ver Unidad 2: Ciclo acoplado vs ciclo desacoplado
                 this.moveForward(lastOrders.moveForward * velocidadCaminar * elapsedTime);
+                
 
                 if (!lastOrders.running()) 
                 {
                     this.moveAside(lastOrders.moveAside * velocidadCaminar * elapsedTime);
-                }                  
-               
-                //CollitionManager es un Util que sirve para la logica de colisiones todo lo que sea respecto eso, desarrollarlo en esa clase
-                if (CollitionManager.detectColision(this.meshPersonaje.BoundingBox))
-                {
-                    meshPersonaje.Position = lastPos;
+                    //this.BoundingBox.transform(Matrix.RotationY((float)rotation.Y - Geometry.DegreeToRadian(90f)) * Matrix.Translation(this.calculateNewPosition(lastOrders.moveForward * velocidadCaminar * elapsedTime, this.rotation)) * Matrix.RotationY((float)rotation.Y + Geometry.DegreeToRadian(90f)));
+                  
                 }
+                this.BoundingBox.transform(Matrix.Translation(this.position));
+    
+                //GuiController.Instance.UserVars.setValue("LastPos", lastPos);
+                //GuiController.Instance.UserVars.setValue("Pos", this.position);
+                
+               //CollitionManager es un Util que sirve para la logica de colisiones todo lo que sea respecto eso, desarrollarlo en esa clase
+                if (CollitionManager.detectColision(this.BoundingBox))
+                {
+                    this.position = lastPos;
+                    this.meshPersonaje.Position = lastPos + new Vector3(0, -45, 0);
+                    this.BoundingBox.transform(Matrix.Translation(lastPos));
+                    GuiController.Instance.UserVars.setValue("isColliding", true);
+                }
+                else
+                {
+                    GuiController.Instance.UserVars.setValue("isColliding", false);
+                }
+
             }
 
             //Si no se esta moviendo, activar animacion de Parado
@@ -98,20 +123,22 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 meshPersonaje.playAnimation("Parado", true);
             }
+
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
             //Hacer que la camara siga al personaje en su nueva posicion
-            GuiController.Instance.ThirdPersonCamera.Target = meshPersonaje.Position;
+            GuiController.Instance.ThirdPersonCamera.Target = this.BoundingBox.Position;
 
             meshPersonaje.animateAndRender();
             if (showBB)
             {
-                meshPersonaje.BoundingBox.render();
+                this.BoundingBox.render();
             }
         }
         
         public override void move(Vector3 pos)
         {
             meshPersonaje.move(pos);
+            this.position += pos;
         }
     }
 }
