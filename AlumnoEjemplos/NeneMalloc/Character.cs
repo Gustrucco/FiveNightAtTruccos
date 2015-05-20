@@ -22,7 +22,7 @@ namespace AlumnoEjemplos.NeneMalloc
             float z = (float)Math.Cos((float)rotation.Y - Geometry.DegreeToRadian(-90f)) * movement;
             float x = (float)Math.Sin((float)rotation.Y - Geometry.DegreeToRadian(-90f)) * movement;
            
-            move(new Vector3(x, 0, z));
+            move(new Vector3(x, 0 , z));
         }
         public void moveForward(float movement)
         {
@@ -44,7 +44,7 @@ namespace AlumnoEjemplos.NeneMalloc
              float Yz = (float)Math.Cos((float)aRotation.Y);
              float Yx = (float)Math.Sin((float)aRotation.Y);
 
-             Vector3 normalY = new Vector3(Yx, 0, Yz);
+             Vector3 normalY = new Vector3(Yx, 0 , Yz);
              normalY.Normalize();
              return normalY * movement;
          }

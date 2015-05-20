@@ -16,7 +16,8 @@ namespace AlumnoEjemplos.MiGrupo
     public class EjemploAlumno : TgcExample
     {
         TgcBox piso;
-        List<TgcBox> obstaculos;
+        TgcScene tgcScene;
+        List<TgcBoundingBox> obstaculos;
         TgcSkeletalMesh personaje;
         Avatar avatar;
         Lantern lantern;
@@ -57,40 +58,13 @@ namespace AlumnoEjemplos.MiGrupo
 
             //Device de DirectX para crear primitivas
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
-
-            //Crear piso
-            TgcTexture pisoTexture = TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\tierra.jpg");
-            piso = TgcBox.fromSize(new Vector3(0, -60, 0), new Vector3(1000, 5, 1000), pisoTexture);
-
-
-            //Cargar obstaculos y posicionarlos. Los obstáculos se crean con TgcBox en lugar de cargar un modelo.
-            obstaculos = new List<TgcBox>();
-            TgcBox obstaculo;
+            string path = GuiController.Instance.AlumnoEjemplosDir;
+            TgcSceneLoader loader = new TgcSceneLoader();
+            tgcScene = loader.loadSceneFromFile(
+               path + "AlumnoMedia\\pisoCompleto2-TgcScene.xml",
+               path + "AlumnoMedia\\");
 
 
-            //Obstaculo 1
-            obstaculo = TgcBox.fromSize(
-                new Vector3(-100, 0, 0),
-                new Vector3(80, 150, 80),
-                TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\baldosaFacultad.jpg"));
-            obstaculos.Add(obstaculo);
-
-            //Obstaculo 2
-            obstaculo = TgcBox.fromSize(
-                new Vector3(50, 0, 200),
-                new Vector3(80, 300, 80),
-                TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\madera.jpg"));
-            obstaculos.Add(obstaculo);
-
-            //Obstaculo 3
-            obstaculo = TgcBox.fromSize(
-                new Vector3(300, 0, 100),
-                new Vector3(80, 100, 150),
-                TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\granito.jpg"));
-            obstaculos.Add(obstaculo);
-
-            //CargarCollitionManager
-            CollitionManager.obstaculos = obstaculos;
 
            //Cargar personaje
             avatar = new Avatar();
@@ -100,7 +74,14 @@ namespace AlumnoEjemplos.MiGrupo
             lantern = new Lantern();
             lantern.init();
             
-         
+            obstaculos = new List<TgcBoundingBox>();
+            foreach (TgcMesh mesh in tgcScene.Meshes)
+            {
+
+                obstaculos.Add(mesh.BoundingBox);
+            }
+            
+            CollitionManager.obstaculos = obstaculos;
            //Camara en primera persona, tipo videojuego FPS
            //GuiController.Instance.FpsCamera.Enable = true;
            //Configurar posicion y hacia donde se mira
@@ -113,6 +94,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.addVar("isColliding");
             GuiController.Instance.UserVars.addVar("Pos");
             GuiController.Instance.UserVars.addVar("LastPos");
+            GuiController.Instance.UserVars.addVar("Mesh renderizados");
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
@@ -128,30 +110,16 @@ namespace AlumnoEjemplos.MiGrupo
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
-            Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
+            //Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
             
             //Obtener boolean para saber si hay que mostrar Bounding Box
-            bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
-            
-            //Render piso
-            piso.render();
+           // bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
 
-
-            //Render obstaculos
-            foreach (TgcBox obstaculo in obstaculos)
-            {
-                obstaculo.render();
-                if (showBB)
-                {
-                    obstaculo.BoundingBox.render();
-                }
-                
-            }
-            
+            int count = 0;
+            this.tgcScene.renderAll();
+            GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             //Render personaje
             avatar.render(elapsedTime);
-
-        
 
         }
 
@@ -161,12 +129,8 @@ namespace AlumnoEjemplos.MiGrupo
         /// </summary>
         public override void close()
         {
-            piso.dispose();
-            foreach (TgcBox obstaculo in obstaculos)
-            {
-                obstaculo.dispose();
-            }
-            personaje.dispose();
+            tgcScene.disposeAll();
+            //avatar.dispose();
         }
 
     }

@@ -6,19 +6,20 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
 {
     class CollitionManager
     {
-        public static List<TgcBox> obstaculos { get; set; }
+        public static List<TgcBoundingBox> obstaculos { get; set; }
        
         public static Boolean detectColision(TgcBoundingBox boundingBox){
             Boolean collide = false;
-             foreach (TgcBox obstaculo in CollitionManager.obstaculos)
+            foreach (TgcBoundingBox obstaculo in CollitionManager.obstaculos)
+            {
+                
+                TgcCollisionUtils.BoxBoxResult result = TgcCollisionUtils.classifyBoxBox(boundingBox, obstaculo);
+                if (result == TgcCollisionUtils.BoxBoxResult.Adentro || result == TgcCollisionUtils.BoxBoxResult.Atravesando)
                 {
-                    TgcCollisionUtils.BoxBoxResult result = TgcCollisionUtils.classifyBoxBox(boundingBox, obstaculo.BoundingBox);
-                    if (result == TgcCollisionUtils.BoxBoxResult.Adentro || result == TgcCollisionUtils.BoxBoxResult.Atravesando)
-                    {
-                        collide = true;
-                        break;
-                    }
+                    collide = true;
+                    break;
                 }
+            }
              return collide;
         }
     }

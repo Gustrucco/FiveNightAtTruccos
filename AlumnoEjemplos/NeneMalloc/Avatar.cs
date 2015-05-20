@@ -18,10 +18,11 @@ namespace AlumnoEjemplos.NeneMalloc
             Device d3dDevice = GuiController.Instance.D3dDevice;
             //Carga del controller
             this.controller = new Player();
-
+            this.position = new Vector3(160f, -88.5f, -340f);
             this.controller.character = this;
             this.BoundingBox = new TgcBoundingBox();
-            this.BoundingBox.setExtremes(this.position - new Vector3(37.5f, 50f, 37.5f), this.position + new Vector3(37.5f, 100f, 37.5f));
+            this.BoundingBox.setExtremes( - new Vector3(10f,45f, 10f), new Vector3(10f, 20f, 10f));
+            this.BoundingBox.transform(Matrix.Translation(this.position));
             //Carga del personaje (no es necesario debido a la modalidad FPS camera)
             TgcSkeletalLoader skeletalLoader = new TgcSkeletalLoader();
             meshPersonaje = skeletalLoader.loadMeshAndAnimationsFromFile(
@@ -38,16 +39,17 @@ namespace AlumnoEjemplos.NeneMalloc
             ////Configurar animacion inicial
             meshPersonaje.playAnimation("Parado", true);
             ////Escalarlo porque es muy grande
-            meshPersonaje.Position = new Vector3(0, -45, 0);
+            meshPersonaje.Position = this.position + new Vector3(0f, -45f, 0f);
+            
 
-            meshPersonaje.Scale = new Vector3(0.75f, 0.75f, 0.75f);
+            meshPersonaje.Scale = new Vector3(0.50f, 0.50f, 0.50f);
             ////Rotarlo 180° porque esta mirando para el otro lado
             meshPersonaje.rotateY(Geometry.DegreeToRadian(180f));
             
 
             //Seteamos la camara
             GuiController.Instance.ThirdPersonCamera.Enable = true;
-            GuiController.Instance.ThirdPersonCamera.setCamera(meshPersonaje.Position, 200, -300);
+            GuiController.Instance.ThirdPersonCamera.setCamera(this.position, 40, -100);
         }
 
         public void render(float elapsedTime)
@@ -57,7 +59,7 @@ namespace AlumnoEjemplos.NeneMalloc
             //obtener velocidades de Modifiers
             float velocidadCaminar = (float)GuiController.Instance.Modifiers.getValue("VelocidadCaminar");
             float velocidadRotacion = (float)GuiController.Instance.Modifiers.getValue("VelocidadRotacion");
-
+            GuiController.Instance.UserVars.setValue("Pos", GuiController.Instance.ThirdPersonCamera.Position);
             Order lastOrders = this.controller.order;
 
             //Si hubo rotacion
@@ -100,7 +102,7 @@ namespace AlumnoEjemplos.NeneMalloc
                 }
                 this.BoundingBox.transform(Matrix.Translation(this.position));
     
-                //GuiController.Instance.UserVars.setValue("LastPos", lastPos);
+                GuiController.Instance.UserVars.setValue("LastPos", lastPos);
                 //GuiController.Instance.UserVars.setValue("Pos", this.position);
                 
                //CollitionManager es un Util que sirve para la logica de colisiones todo lo que sea respecto eso, desarrollarlo en esa clase
@@ -126,7 +128,7 @@ namespace AlumnoEjemplos.NeneMalloc
 
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
             //Hacer que la camara siga al personaje en su nueva posicion
-            GuiController.Instance.ThirdPersonCamera.Target = this.BoundingBox.Position;
+            GuiController.Instance.ThirdPersonCamera.Target = this.position;
 
             meshPersonaje.animateAndRender();
             if (showBB)
@@ -137,7 +139,7 @@ namespace AlumnoEjemplos.NeneMalloc
         
         public override void move(Vector3 pos)
         {
-            meshPersonaje.move(pos);
+            this.meshPersonaje.move(pos);
             this.position += pos;
         }
     }
