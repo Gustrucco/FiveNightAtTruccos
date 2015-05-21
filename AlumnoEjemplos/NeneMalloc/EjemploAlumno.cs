@@ -61,7 +61,7 @@ namespace AlumnoEjemplos.MiGrupo
             string path = GuiController.Instance.AlumnoEjemplosDir;
             TgcSceneLoader loader = new TgcSceneLoader();
             tgcScene = loader.loadSceneFromFile(
-               path + "AlumnoMedia\\pisoCompleto2-TgcScene.xml",
+               path + "AlumnoMedia\\pisoCompleto-TgcScene.xml",
                path + "AlumnoMedia\\");
 
 
