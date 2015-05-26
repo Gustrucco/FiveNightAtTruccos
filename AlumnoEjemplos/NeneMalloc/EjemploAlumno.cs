@@ -20,7 +20,7 @@ namespace AlumnoEjemplos.MiGrupo
         TgcScene tgcScene;
         List<TgcBoundingBox> obstaculos;
         TgcSkeletalMesh personaje;
-        List<Tgc3dSound> sonidos;
+        List<Tgc3dSound> sounds;
 
         Tgc3dSound sound;
         Avatar avatar;
@@ -69,33 +69,43 @@ namespace AlumnoEjemplos.MiGrupo
                path + "AlumnoMedia\\");
 
             var musicPath = path + "AlumnoMedia\\NeneMalloc\\SonidosYMusica\\Eyes Wide Shut.mp3";
-            
+
             //Cargar sonidos
-            sonidos = new List<Tgc3dSound>();
-            
-           //Cargar personaje
+            sounds = new List<Tgc3dSound>();
+
+            //Cargar personaje
             avatar = new Avatar();
             avatar.init();
-
+            
             //Cargar linterna
             lantern = new Lantern();
             lantern.init();
-            
+
             obstaculos = new List<TgcBoundingBox>();
             foreach (TgcMesh mesh in tgcScene.Meshes)
             {
-
                 obstaculos.Add(mesh.BoundingBox);
             }
-            
+
+            /////////
+            //var obstaculo = TgcBox.fromSize(
+            //     new Vector3(160f, -88.5f, -100f),
+            //     new Vector3(80, 80, 80),
+            //     TgcTexture.createTexture(d3dDevice, GuiController.Instance.ExamplesMediaDir + "Texturas\\baldosaFacultad.jpg"));
+            // obstaculos.Add(obstaculo.BoundingBox);
+
+            // sound = new Tgc3dSound(path + "AlumnoMedia\\NeneMalloc\\SonidosYMusica\\risa de loco.wav", obstaculo.Position);
+            // sound.MinDistance = 25f;
+            //sounds.Add(sound);
+            ///////////////
+
             CollitionManager.obstaculos = obstaculos;
+
            //Camara en primera persona, tipo videojuego FPS
            //GuiController.Instance.FpsCamera.Enable = true;
            //Configurar posicion y hacia donde se mira
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
        
-
-
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
             GuiController.Instance.UserVars.addVar("isColliding");
@@ -106,16 +116,19 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
 
-            ////Ejecutar en loop los sonidos
-            //foreach (Tgc3dSound s in sonidos)
-            //{
-            //    s.play(true);
-            //}
+            //Hacer que el Listener del sonido 3D siga al personaje
+            GuiController.Instance.DirectSound.ListenerTracking = personaje;
 
             //Cargar musica
             GuiController.Instance.Mp3Player.FileName = musicPath;
             TgcMp3Player player = GuiController.Instance.Mp3Player;
             player.play(true);
+
+            ////Ejecutar en loop los sonidos
+            foreach (Tgc3dSound s in sounds)
+            {
+                s.play(true);
+            }
         }
 
 
@@ -147,6 +160,10 @@ namespace AlumnoEjemplos.MiGrupo
         {
             tgcScene.disposeAll();
             //avatar.dispose();
+            foreach (Tgc3dSound sound in sounds)
+            {
+                sound.dispose();
+            }
         }
 
     }
