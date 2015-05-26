@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TgcViewer.Example;
 using TgcViewer;
 using Microsoft.DirectX;
+using TgcViewer.Utils.Sound;
 using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSkeletalAnimation;
@@ -19,6 +20,9 @@ namespace AlumnoEjemplos.MiGrupo
         TgcScene tgcScene;
         List<TgcBoundingBox> obstaculos;
         TgcSkeletalMesh personaje;
+        List<Tgc3dSound> sonidos;
+
+        Tgc3dSound sound;
         Avatar avatar;
         Lantern lantern;
 
@@ -64,8 +68,11 @@ namespace AlumnoEjemplos.MiGrupo
                path + "AlumnoMedia\\pisoCompleto-TgcScene.xml",
                path + "AlumnoMedia\\");
 
-
-
+            var musicPath = path + "AlumnoMedia\\NeneMalloc\\SonidosYMusica\\Eyes Wide Shut.mp3";
+            
+            //Cargar sonidos
+            sonidos = new List<Tgc3dSound>();
+            
            //Cargar personaje
             avatar = new Avatar();
             avatar.init();
@@ -99,6 +106,16 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
 
+            ////Ejecutar en loop los sonidos
+            //foreach (Tgc3dSound s in sonidos)
+            //{
+            //    s.play(true);
+            //}
+
+            //Cargar musica
+            GuiController.Instance.Mp3Player.FileName = musicPath;
+            TgcMp3Player player = GuiController.Instance.Mp3Player;
+            player.play(true);
         }
 
 
@@ -120,7 +137,6 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             //Render personaje
             avatar.render(elapsedTime);
-
         }
 
         /// <summary>
