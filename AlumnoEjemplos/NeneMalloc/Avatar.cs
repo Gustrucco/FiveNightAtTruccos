@@ -108,10 +108,52 @@ namespace AlumnoEjemplos.NeneMalloc
                //CollitionManager es un Util que sirve para la logica de colisiones todo lo que sea respecto eso, desarrollarlo en esa clase
                 if (CollitionManager.detectColision(this.BoundingBox))
                 {
+                    Vector3 collidedPosition = this.position;
+                    Vector3 normal = new Vector3(0,0,0);
                     this.position = lastPos;
                     this.meshPersonaje.Position = lastPos + new Vector3(0, -45, 0);
                     this.BoundingBox.transform(Matrix.Translation(lastPos));
                     GuiController.Instance.UserVars.setValue("isColliding", true);
+
+                    this.BoundingBox.transform(Matrix.Translation(lastPos+ new Vector3(1,0,0)));
+                    GuiController.Instance.UserVars.setValue("Normal", "CalculandoNormal");
+                    if (CollitionManager.detectColision(this.BoundingBox))
+                    {
+                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                        normal = new Vector3(1, 0, 0)*-1;
+                    }
+
+                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(-1, 0, 0)));
+                    if (CollitionManager.detectColision(this.BoundingBox))
+                    {
+                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                        normal = new Vector3(-1, 0, 0) * -1;
+                    }
+
+                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, 1)));
+                    if (CollitionManager.detectColision(this.BoundingBox))
+                    {
+                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                        normal = new Vector3(0, 0, 1) * -1;
+                    }
+
+                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, -1)));
+                    if (CollitionManager.detectColision(this.BoundingBox))
+                    {
+                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                        normal = new Vector3(0, 0, -1) * -1;
+                    }
+                    if(!normal.Equals(new Vector3(0,0,0)))
+                    {
+                        GuiController.Instance.UserVars.setValue("Normal", "Calculando movimiento" + (Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)));
+
+                        this.BoundingBox.transform(Matrix.Translation(this.position + Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)));
+                        if (!CollitionManager.detectColision(this.BoundingBox))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "SeteandoNormal");
+                            this.move(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal));
+                        }
+                    }
                 }
                 else
                 {

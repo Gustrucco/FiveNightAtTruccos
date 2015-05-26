@@ -93,6 +93,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
             GuiController.Instance.UserVars.addVar("isColliding");
             GuiController.Instance.UserVars.addVar("Pos");
+            GuiController.Instance.UserVars.addVar("Normal");
             GuiController.Instance.UserVars.addVar("LastPos");
             GuiController.Instance.UserVars.addVar("Mesh renderizados");
             //Modifiers para desplazamiento del personaje
