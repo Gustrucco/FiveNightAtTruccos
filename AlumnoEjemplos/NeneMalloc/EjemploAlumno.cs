@@ -61,7 +61,6 @@ namespace AlumnoEjemplos.MiGrupo
             //GuiController.Instance: acceso principal a todas las herramientas del Framework
 
             //Device de DirectX para crear primitivas
-            Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
             TgcSceneLoader loader = new TgcSceneLoader();
             tgcScene = loader.loadSceneFromFile(
@@ -90,7 +89,7 @@ namespace AlumnoEjemplos.MiGrupo
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
 
             //Mesh para la luz
-            lightMesh = TgcBox.fromSize(new Vector3(1, 1, 1), Color.Transparent);
+            lightMesh = TgcBox.fromSize(new Vector3(0, 0, 0), Color.Transparent);
             
             //Setear posición de la luz
             Vector3 lightPos = avatar.position;
@@ -122,7 +121,7 @@ namespace AlumnoEjemplos.MiGrupo
             //Obtener boolean para saber si hay que mostrar Bounding Box
            // bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
 
-            bool lightEnable = (bool)GuiController.Instance.Modifiers["lightEnable"];
+            bool lightEnable;
 
             var random = new Random().Next(100);
 
