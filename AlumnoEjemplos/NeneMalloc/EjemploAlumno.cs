@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using Microsoft.DirectX.Direct3D;
 using TgcViewer.Example;
 using TgcViewer;
 using Microsoft.DirectX;
@@ -21,6 +24,7 @@ namespace AlumnoEjemplos.MiGrupo
         TgcSkeletalMesh personaje;
         Avatar avatar;
         Lantern lantern;
+        TgcBox lightMesh;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -64,8 +68,6 @@ namespace AlumnoEjemplos.MiGrupo
                path + "NeneMalloc\\pisoCompleto-TgcScene.xml",
                path + "NeneMalloc\\");
 
-
-
            //Cargar personaje
             avatar = new Avatar();
             avatar.init();
@@ -86,8 +88,13 @@ namespace AlumnoEjemplos.MiGrupo
            //GuiController.Instance.FpsCamera.Enable = true;
            //Configurar posicion y hacia donde se mira
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
-       
 
+            //Mesh para la luz
+            lightMesh = TgcBox.fromSize(new Vector3(1, 1, 1), Color.Transparent);
+            
+            //Setear posición de la luz
+            Vector3 lightPos = avatar.position;
+            lightMesh.Position = lightPos;
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
@@ -99,7 +106,6 @@ namespace AlumnoEjemplos.MiGrupo
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
-
         }
 
 
@@ -116,12 +122,43 @@ namespace AlumnoEjemplos.MiGrupo
             //Obtener boolean para saber si hay que mostrar Bounding Box
            // bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
 
+            bool lightEnable = (bool)GuiController.Instance.Modifiers["lightEnable"];
+
+            var random = new Random().Next(100);
+
+            if (random < 20)
+                lightEnable =  true;
+            else
+                lightEnable = false;
+           
+            Effect currentShader;
+            if (lightEnable)
+            {
+                //Con luz: Cambiar el shader actual por el shader default que trae el framework para iluminacion dinamica con PointLight
+                currentShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
+            }
+            else
+            {
+                //Sin luz: Restaurar shader default
+                currentShader = GuiController.Instance.Shaders.TgcMeshShader;
+            }
+            
             int count = 0;
+
             this.tgcScene.renderAll();
+
+            foreach (TgcMesh mesh in tgcScene.Meshes)
+            {
+                mesh.Effect = currentShader;
+                //El Technique depende del tipo RenderType del mesh
+                mesh.Technique = GuiController.Instance.Shaders.getTgcMeshTechnique(mesh.RenderType);
+            }
+
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
+            
             //Render personaje
             avatar.render(elapsedTime);
-
+            lightMesh.render();
         }
 
         /// <summary>
@@ -131,6 +168,7 @@ namespace AlumnoEjemplos.MiGrupo
         public override void close()
         {
             tgcScene.disposeAll();
+            lightMesh.dispose();
             //avatar.dispose();
         }
 
