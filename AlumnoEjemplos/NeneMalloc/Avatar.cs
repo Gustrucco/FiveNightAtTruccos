@@ -6,6 +6,7 @@ using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc.Utils;
+using TgcViewer.Utils.Input;
 namespace AlumnoEjemplos.NeneMalloc
 {
     class Avatar : Character
@@ -115,50 +116,61 @@ namespace AlumnoEjemplos.NeneMalloc
                     this.BoundingBox.transform(Matrix.Translation(lastPos));
                     GuiController.Instance.UserVars.setValue("isColliding", true);
 
-                    this.BoundingBox.transform(Matrix.Translation(lastPos+ new Vector3(1,0,0)));
-                    GuiController.Instance.UserVars.setValue("Normal", "CalculandoNormal");
-                    if (CollitionManager.detectColision(this.BoundingBox))
+                   //detecto colision contra escaleras primero
+                    this.BoundingBox.transform(Matrix.Translation(collidedPosition + new Vector3(0, 15, 0)));
+                    if (!CollitionManager.detectColision(this.BoundingBox))
                     {
-                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
-                        normal = new Vector3(1, 0, 0)*-1;
+                        this.move(new Vector3(0, 15, 0));
                     }
-
-                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(-1, 0, 0)));
-                    if (CollitionManager.detectColision(this.BoundingBox))
+                    else
                     {
-                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
-                        normal = new Vector3(-1, 0, 0) * -1;
-                    }
-
-                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, 1)));
-                    if (CollitionManager.detectColision(this.BoundingBox))
-                    {
-                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
-                        normal = new Vector3(0, 0, 1) * -1;
-                    }
-
-                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, -1)));
-                    if (CollitionManager.detectColision(this.BoundingBox))
-                    {
-                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
-                        normal = new Vector3(0, 0, -1) * -1;
-                    }
-                    if(!normal.Equals(new Vector3(0,0,0)))
-                    {
-                        GuiController.Instance.UserVars.setValue("Normal", "Calculando movimiento" + (Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)));
-
-                        this.BoundingBox.transform(Matrix.Translation(this.position + Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)));
-                        if (!CollitionManager.detectColision(this.BoundingBox))
+                        this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(1, 0, 0)));
+                        GuiController.Instance.UserVars.setValue("Normal", "CalculandoNormal");
+                        if (CollitionManager.detectColision(this.BoundingBox))
                         {
-                            GuiController.Instance.UserVars.setValue("Normal", "SeteandoNormal");
-                            this.move(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal));
+                            GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                            normal = new Vector3(1, 0, 0) * -1;
                         }
-                    }
+
+                        this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(-1, 0, 0)));
+                        if (CollitionManager.detectColision(this.BoundingBox))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                            normal = new Vector3(-1, 0, 0) * -1;
+                        }
+
+                        this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, 1)));
+                        if (CollitionManager.detectColision(this.BoundingBox))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                            normal = new Vector3(0, 0, 1) * -1;
+                        }
+
+                        this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, -1)));
+                        if (CollitionManager.detectColision(this.BoundingBox))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                            normal = new Vector3(0, 0, -1) * -1;
+                        }
+                        if (!normal.Equals(new Vector3(0, 0, 0)))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "Calculando movimiento" + (Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)));
+
+                            this.BoundingBox.transform(Matrix.Translation(this.position + Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)));
+                            if (!CollitionManager.detectColision(this.BoundingBox))
+                            {
+                                GuiController.Instance.UserVars.setValue("Normal", "SeteandoNormal");
+                                this.move(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal));
+                            }
+                        }
+                    }    
                 }
                 else
                 {
                     GuiController.Instance.UserVars.setValue("isColliding", false);
                 }
+                TgcD3dInput d3dInput = GuiController.Instance.D3dInput;
+               
 
             }
 
@@ -183,6 +195,7 @@ namespace AlumnoEjemplos.NeneMalloc
         {
             this.meshPersonaje.move(pos);
             this.position += pos;
+            
         }
     }
 }
