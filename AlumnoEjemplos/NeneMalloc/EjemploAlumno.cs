@@ -137,8 +137,6 @@ namespace AlumnoEjemplos.MiGrupo
                 currentShader = GuiController.Instance.Shaders.TgcMeshShader;
             }
             
-            int count = 0;
-
             this.tgcScene.renderAll();
 
             foreach (TgcMesh mesh in tgcScene.Meshes)
@@ -147,8 +145,6 @@ namespace AlumnoEjemplos.MiGrupo
                 //El Technique depende del tipo RenderType del mesh
                 mesh.Technique = GuiController.Instance.Shaders.getTgcMeshTechnique(mesh.RenderType);
             }
-
-            GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             
             //Render personaje
             avatar.render(elapsedTime);
