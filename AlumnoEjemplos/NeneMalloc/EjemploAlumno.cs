@@ -58,11 +58,11 @@ namespace AlumnoEjemplos.MiGrupo
 
             //Device de DirectX para crear primitivas
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
-            string path = GuiController.Instance.AlumnoEjemplosDir;
+            string path = GuiController.Instance.AlumnoEjemplosMediaDir;
             TgcSceneLoader loader = new TgcSceneLoader();
             tgcScene = loader.loadSceneFromFile(
-               path + "AlumnoMedia\\pisoCompleto-TgcScene.xml",
-               path + "AlumnoMedia\\");
+               path + "NeneMalloc\\pisoCompleto-TgcScene.xml",
+               path + "NeneMalloc\\");
 
 
 
