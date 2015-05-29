@@ -3,7 +3,6 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TgcViewer;
 using TgcViewer.Utils.Shaders;
-using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSceneLoader;
 
 namespace AlumnoEjemplos.NeneMalloc
@@ -18,7 +17,7 @@ namespace AlumnoEjemplos.NeneMalloc
         public string Technique { get; set; }
         CustomVertex.PositionColoredTextured[] vertices;
 
-        VertexBuffer vertexBuffer;
+        readonly VertexBuffer vertexBuffer;
 
         public Lamp()
         {
@@ -38,12 +37,12 @@ namespace AlumnoEjemplos.NeneMalloc
 
         public static Lamp fromSize(Vector3 size, Color color)
         {
-            return Lamp.fromSize(new Vector3(0, 0, 0), size, color);
+            return fromSize(new Vector3(0, 0, 0), size, color);
         }
 
         public static Lamp fromSize(Vector3 center, Vector3 size, Color color)
         {
-            Lamp lamp = new Lamp();
+            var lamp = new Lamp();
             lamp.setPositionSize(center, size);
             lamp.Color = color;
             return lamp;

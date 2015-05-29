@@ -102,6 +102,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.addVar("Normal");
             GuiController.Instance.UserVars.addVar("LastPos");
             GuiController.Instance.UserVars.addVar("Mesh renderizados");
+            
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
@@ -126,15 +127,19 @@ namespace AlumnoEjemplos.MiGrupo
                 lightEnable = false;
            
             Effect currentShader;
+            Effect currentAvatarShader;
+
             if (lightEnable)
             {
                 //Con luz: Cambiar el shader actual por el shader default que trae el framework para iluminacion dinamica con PointLight
                 currentShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
+                currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
             }
             else
             {
                 //Sin luz: Restaurar shader default
                 currentShader = GuiController.Instance.Shaders.TgcMeshShader;
+                currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshShader;
             }
             
             this.tgcScene.renderAll();
@@ -147,6 +152,9 @@ namespace AlumnoEjemplos.MiGrupo
             }
             
             //Render personaje
+            avatar.meshPersonaje.Effect = currentAvatarShader;
+            avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
+
             avatar.render(elapsedTime);
             lamp.render();
         }
