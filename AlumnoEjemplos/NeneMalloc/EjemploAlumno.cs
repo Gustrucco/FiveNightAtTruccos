@@ -24,7 +24,7 @@ namespace AlumnoEjemplos.MiGrupo
         TgcSkeletalMesh personaje;
         Avatar avatar;
         Lantern lantern;
-        TgcBox lightMesh;
+        Lamp lamp;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -89,11 +89,11 @@ namespace AlumnoEjemplos.MiGrupo
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
 
             //Mesh para la luz
-            lightMesh = TgcBox.fromSize(new Vector3(0, 0, 0), Color.Transparent);
+            lamp = Lamp.fromSize(new Vector3(0, 0, 0), Color.Transparent);
             
             //Setear posición de la luz
             Vector3 lightPos = avatar.position;
-            lightMesh.Position = lightPos;
+            lamp.Position = lightPos;
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
@@ -116,16 +116,11 @@ namespace AlumnoEjemplos.MiGrupo
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
-            //Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
-            
-            //Obtener boolean para saber si hay que mostrar Bounding Box
-           // bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
-
             bool lightEnable;
 
             var random = new Random().Next(100);
 
-            if (random < 20)
+            if (random < 40)
                 lightEnable =  true;
             else
                 lightEnable = false;
@@ -157,7 +152,7 @@ namespace AlumnoEjemplos.MiGrupo
             
             //Render personaje
             avatar.render(elapsedTime);
-            lightMesh.render();
+            lamp.render();
         }
 
         /// <summary>
@@ -167,7 +162,7 @@ namespace AlumnoEjemplos.MiGrupo
         public override void close()
         {
             tgcScene.disposeAll();
-            lightMesh.dispose();
+            lamp.dispose();
             //avatar.dispose();
         }
 
