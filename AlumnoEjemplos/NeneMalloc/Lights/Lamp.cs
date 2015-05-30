@@ -1,11 +1,12 @@
 ﻿using System.Drawing;
+using AlumnoEjemplos.NeneMalloc.Lights.States;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TgcViewer;
 using TgcViewer.Utils.Shaders;
 using TgcViewer.Utils.TgcSceneLoader;
 
-namespace AlumnoEjemplos.NeneMalloc
+namespace AlumnoEjemplos.NeneMalloc.Lights
 {
     public class Lamp
     {
@@ -15,6 +16,8 @@ namespace AlumnoEjemplos.NeneMalloc
         public Effect Effect { get; set; }
         public TgcTexture Texture { get; set; }
         public string Technique { get; set; }
+        public LightState State { get; set; }
+
         CustomVertex.PositionColoredTextured[] vertices;
 
         readonly VertexBuffer vertexBuffer;
@@ -28,16 +31,12 @@ namespace AlumnoEjemplos.NeneMalloc
                 Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionColoredTextured.Format, Pool.Default);
 
             this.Position = new Vector3(0,0,0);
-            this.Color = Color.White;
-
+            this.Color = Color.Transparent;
+            this.setPositionSize(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            
             //Shader
             this.Effect = GuiController.Instance.Shaders.VariosShader;
             this.Technique = TgcShaders.T_POSITION_COLORED;
-        }
-
-        public static Lamp fromSize(Vector3 size, Color color)
-        {
-            return fromSize(new Vector3(0, 0, 0), size, color);
         }
 
         public static Lamp fromSize(Vector3 center, Vector3 size, Color color)
@@ -101,6 +100,23 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 vertexBuffer.Dispose();
             }
+        }
+
+        public Lamp WithState(LightState state)
+        {
+            this.State = state;
+            return this;
+        }
+
+        public float getIntensity(float random)
+        {
+            return this.State.getIntensity(random);
+        }
+
+        public Lamp WithPosition(Vector3 position)
+        {
+            this.Position = position;
+            return this;
         }
     }
 }

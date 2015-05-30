@@ -1,7 +1,7 @@
 ﻿using Microsoft.DirectX.Direct3D;
 using TgcViewer;
 
-namespace AlumnoEjemplos.NeneMalloc
+namespace AlumnoEjemplos.NeneMalloc.Lights
 {
     public class Lantern : Lamp
     {

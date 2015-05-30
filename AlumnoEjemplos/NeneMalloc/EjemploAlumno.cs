@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using AlumnoEjemplos.NeneMalloc.Lights;
+using AlumnoEjemplos.NeneMalloc.Lights.States;
 using Microsoft.DirectX.Direct3D;
 using TgcViewer.Example;
 using TgcViewer;
@@ -81,7 +83,6 @@ namespace AlumnoEjemplos.MiGrupo
             obstaculos = new List<TgcBoundingBox>();
             foreach (TgcMesh mesh in tgcScene.Meshes)
             {
-
                 obstaculos.Add(mesh.BoundingBox);
             }
             
@@ -92,18 +93,15 @@ namespace AlumnoEjemplos.MiGrupo
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
 
             //Mesh para la luz
-            var lamp = Lamp.fromSize(new Vector3(0,0,0), Color.Transparent);
-            var intermitentLamp = Lamp.fromSize(new Vector3(0, 0, 0), Color.Transparent);
-            
-            //Setear posición de la luz
-            Vector3 lightPos = new Vector3(405, -36, -831);
-            lamp.Position = lightPos;
+            var onLamp = new Lamp().WithState(new OnLight()).WithPosition(new Vector3(405, -36, -831));
 
-            lightPos = new Vector3(160f,-48.5f,241.8f);
-            intermitentLamp.Position = lightPos;
+            var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(160f,-48.5f,241.8f));
 
-            lights.Add(lamp);
+            var offLamp = new Lamp().WithState(new OffLight()).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
+
+            lights.Add(onLamp);
             lights.Add(intermitentLamp);
+            lights.Add(offLamp);
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
@@ -117,8 +115,6 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
 
-            //Modifiers de la luz
-            GuiController.Instance.Modifiers.addBoolean("lightEnable", "lightEnable", true);
             GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-200, -100, -200), new Vector3(200, 200, 300), new Vector3(60, 35, 250));
             GuiController.Instance.Modifiers.addColor("lightColor", Color.White);
             GuiController.Instance.Modifiers.addFloat("lightIntensity", 0, 150, 20);
@@ -139,64 +135,44 @@ namespace AlumnoEjemplos.MiGrupo
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
-            bool lightEnable = true;
-
-            var random = new Random().Next(60);
-
-            //if (random < 20)
-            //    lightEnable = true;
-            //else
-            //    lightEnable = false;
-           
             Effect currentShader;
             Effect currentAvatarShader;
 
-            if (lightEnable)
-            {
-                //Con luz: Cambiar el shader actual por el shader default que trae el framework para iluminacion dinamica con PointLight
-                currentShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
-                currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
-            }
-            else
-            {
-
-                //Sin luz: Restaurar shader default
-                currentShader = GuiController.Instance.Shaders.TgcMeshShader;
-                currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshShader;
-            }
+            currentShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
+            currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
             
-            this.tgcScene.renderAll();
-
             foreach (TgcMesh mesh in tgcScene.Meshes)
             {
                 mesh.Effect = currentShader;
                 //El Technique depende del tipo RenderType del mesh
                 mesh.Technique = GuiController.Instance.Shaders.getTgcMeshTechnique(mesh.RenderType);
             }
+
+            //Calcular random por si la luz es intermitente
+            float random = new Random().Next(30);
+
             //Renderizar meshes
             foreach (TgcMesh mesh in tgcScene.Meshes)
             {
-                if (lightEnable)
-                {
-                    Lamp lamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
+                Lamp lamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
 
-                    //Cargar variables shader de la luz
-                    mesh.Effect.SetValue("lightColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["lightColor"]));
-                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
-                    mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
-                    mesh.Effect.SetValue("lightIntensity", (float)random);
-                    mesh.Effect.SetValue("lightAttenuation", (float)GuiController.Instance.Modifiers["lightAttenuation"]);
+                //Cargar variables shader de la luz
+                mesh.Effect.SetValue("lightColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["lightColor"]));
+                mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
+                mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
+                mesh.Effect.SetValue("lightIntensity", lamp.getIntensity(random));
+                mesh.Effect.SetValue("lightAttenuation", (float)GuiController.Instance.Modifiers["lightAttenuation"]);
 
-                    //Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
-                    mesh.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mEmissive"]));
-                    mesh.Effect.SetValue("materialAmbientColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mAmbient"]));
-                    mesh.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mDiffuse"]));
-                    mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mSpecular"]));
-                    mesh.Effect.SetValue("materialSpecularExp", (float)GuiController.Instance.Modifiers["specularEx"]);
-
-                }
+                //Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
+                mesh.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mEmissive"]));
+                mesh.Effect.SetValue("materialAmbientColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mAmbient"]));
+                mesh.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mDiffuse"]));
+                mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mSpecular"]));
+                mesh.Effect.SetValue("materialSpecularExp", (float)GuiController.Instance.Modifiers["specularEx"]);
+                
                 //Renderizar modelo
                 mesh.render();
+                lamp.render();
             }
             
             //Render personaje
@@ -204,11 +180,6 @@ namespace AlumnoEjemplos.MiGrupo
             avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
 
             avatar.render(elapsedTime);
-
-            foreach (var light in lights)
-            {
-                light.render();
-            }
         }
 
         /// <summary>

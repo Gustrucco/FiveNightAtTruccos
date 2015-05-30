@@ -91,8 +91,12 @@
     <Compile Include="NeneMalloc\Character.cs" />
     <Compile Include="NeneMalloc\Controller.cs" />
     <Compile Include="NeneMalloc\EjemploAlumno.cs" />
-    <Compile Include="NeneMalloc\Lamp.cs" />
-    <Compile Include="NeneMalloc\Lantern.cs" />
+    <Compile Include="NeneMalloc\Lights\Lamp.cs" />
+    <Compile Include="NeneMalloc\Lights\Lantern.cs" />
+    <Compile Include="NeneMalloc\Lights\States\IntermittentLight.cs" />
+    <Compile Include="NeneMalloc\Lights\States\LightState.cs" />
+    <Compile Include="NeneMalloc\Lights\States\OffLight.cs" />
+    <Compile Include="NeneMalloc\Lights\States\OnLight.cs" />
     <Compile Include="NeneMalloc\Order.cs" />
     <Compile Include="NeneMalloc\Player.cs" />
     <Compile Include="NeneMalloc\Utils\CollitionManager.cs" />
