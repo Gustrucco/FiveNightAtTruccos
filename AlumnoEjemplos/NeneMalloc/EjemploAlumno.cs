@@ -91,9 +91,11 @@ namespace AlumnoEjemplos.MiGrupo
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
+            GuiController.Instance.Modifiers.addBoolean("showSceneBoundingBox", "SceneBouding Box", false);
             GuiController.Instance.UserVars.addVar("isColliding");
             GuiController.Instance.UserVars.addVar("Pos");
             GuiController.Instance.UserVars.addVar("Normal");
+            GuiController.Instance.UserVars.addVar("Y");
             GuiController.Instance.UserVars.addVar("LastPos");
             GuiController.Instance.UserVars.addVar("Mesh renderizados");
             //Modifiers para desplazamiento del personaje
@@ -118,6 +120,14 @@ namespace AlumnoEjemplos.MiGrupo
 
             int count = 0;
             this.tgcScene.renderAll();
+            bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showSceneBoundingBox");
+            if (showBB)
+            {    
+                foreach (TgcMesh mesh in this.tgcScene.Meshes)
+	            {
+                    mesh.BoundingBox.render();
+	            }
+            }
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             //Render personaje
             avatar.render(elapsedTime);
