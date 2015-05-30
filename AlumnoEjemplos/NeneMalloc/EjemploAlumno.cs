@@ -135,15 +135,13 @@ namespace AlumnoEjemplos.MiGrupo
 
         /// <summary>
         /// Método que se llama cada vez que hay que refrescar la pantalla.
-        /// Escribir aquí todo el código referido al renderizado.
-        /// Borrar todo lo que no haga falta
         /// </summary>
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
             bool lightEnable = true;
 
-            var random = new Random().Next(100);
+            var random = new Random().Next(60);
 
             //if (random < 20)
             //    lightEnable = true;
@@ -186,7 +184,7 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["lightColor"]));
                     mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
                     mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
-                    mesh.Effect.SetValue("lightIntensity", (float)GuiController.Instance.Modifiers["lightIntensity"]);
+                    mesh.Effect.SetValue("lightIntensity", (float)random);
                     mesh.Effect.SetValue("lightAttenuation", (float)GuiController.Instance.Modifiers["lightAttenuation"]);
 
                     //Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
