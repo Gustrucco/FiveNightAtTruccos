@@ -24,8 +24,8 @@ namespace AlumnoEjemplos.MiGrupo
         TgcSkeletalMesh personaje;
         Avatar avatar;
         Lantern lantern;
-        Lamp lamp;
-        Lamp lamp2;
+        private List<Lamp> lights;
+
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
         /// Influye en donde se va a haber en el árbol de la derecha de la pantalla.
@@ -63,9 +63,12 @@ namespace AlumnoEjemplos.MiGrupo
             //Device de DirectX para crear primitivas
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
             TgcSceneLoader loader = new TgcSceneLoader();
+            
             tgcScene = loader.loadSceneFromFile(
                path + "NeneMalloc\\pisoCompleto-TgcScene.xml",
                path + "NeneMalloc\\");
+
+            lights = new List<Lamp>();
 
            //Cargar personaje
             avatar = new Avatar();
@@ -89,11 +92,19 @@ namespace AlumnoEjemplos.MiGrupo
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
 
             //Mesh para la luz
-            lamp = Lamp.fromSize(new Vector3(0,0,0), Color.Transparent);
-            lamp2 = Lamp.fromSize(new Vector3(0, 0, 0), Color.Transparent);
+            var lamp = Lamp.fromSize(new Vector3(0,0,0), Color.Transparent);
+            var intermitentLamp = Lamp.fromSize(new Vector3(0, 0, 0), Color.Transparent);
+            
             //Setear posición de la luz
-            Vector3 lightPos = avatar.position;
+            Vector3 lightPos = new Vector3(405, -36, -831);
             lamp.Position = lightPos;
+
+            lightPos = new Vector3(160f,-48.5f,241.8f);
+            intermitentLamp.Position = lightPos;
+
+            lights.Add(lamp);
+            lights.Add(intermitentLamp);
+
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
             GuiController.Instance.UserVars.addVar("isColliding");
@@ -130,7 +141,7 @@ namespace AlumnoEjemplos.MiGrupo
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
-            bool lightEnable=true;
+            bool lightEnable = true;
 
             var random = new Random().Next(100);
 
@@ -167,12 +178,13 @@ namespace AlumnoEjemplos.MiGrupo
             //Renderizar meshes
             foreach (TgcMesh mesh in tgcScene.Meshes)
             {
-
                 if (lightEnable)
                 {
+                    Lamp lamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
+
                     //Cargar variables shader de la luz
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["lightColor"]));
-                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(new Vector3(405,-36,-831)));
+                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
                     mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
                     mesh.Effect.SetValue("lightIntensity", (float)GuiController.Instance.Modifiers["lightIntensity"]);
                     mesh.Effect.SetValue("lightAttenuation", (float)GuiController.Instance.Modifiers["lightAttenuation"]);
@@ -185,7 +197,6 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("materialSpecularExp", (float)GuiController.Instance.Modifiers["specularEx"]);
 
                 }
-
                 //Renderizar modelo
                 mesh.render();
             }
@@ -195,7 +206,32 @@ namespace AlumnoEjemplos.MiGrupo
             avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
 
             avatar.render(elapsedTime);
-            lamp.render();
+
+            foreach (var light in lights)
+            {
+                light.render();
+            }
+        }
+
+        /// <summary>
+        /// Devuelve la luz mas cercana a la posicion especificada
+        /// </summary>
+        private Lamp getClosestLight(Vector3 pos)
+        {
+            float minDist = float.MaxValue;
+            Lamp minLight = null;
+
+            foreach (Lamp light in lights)
+            {
+                float distSq = Vector3.LengthSq(pos - light.Position);
+                if (distSq < minDist)
+                {
+                    minDist = distSq;
+                    minLight = light;
+                }
+            }
+
+            return minLight;
         }
 
         /// <summary>
@@ -205,7 +241,10 @@ namespace AlumnoEjemplos.MiGrupo
         public override void close()
         {
             tgcScene.disposeAll();
-            lamp.dispose();
+            foreach (var light in lights)
+            {
+                light.dispose();
+            }
             //avatar.dispose();
         }
 
