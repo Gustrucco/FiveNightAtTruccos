@@ -93,11 +93,11 @@ namespace AlumnoEjemplos.MiGrupo
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
 
             //Mesh para la luz
-            var onLamp = new Lamp().WithState(new OnLight()).WithPosition(new Vector3(405, -36, -831));
+            var onLamp = new Lamp().WithState(new FixedLight(30)).WithPosition(new Vector3(405, -36, -831));
 
             var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(160f,-48.5f,241.8f));
 
-            var offLamp = new Lamp().WithState(new OffLight()).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
+            var offLamp = new Lamp().WithState(new FixedLight(0)).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
 
             lights.Add(onLamp);
             lights.Add(intermitentLamp);

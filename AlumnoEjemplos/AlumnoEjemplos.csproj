@@ -95,8 +95,7 @@
     <Compile Include="NeneMalloc\Lights\Lantern.cs" />
     <Compile Include="NeneMalloc\Lights\States\IntermittentLight.cs" />
     <Compile Include="NeneMalloc\Lights\States\LightState.cs" />
-    <Compile Include="NeneMalloc\Lights\States\OffLight.cs" />
-    <Compile Include="NeneMalloc\Lights\States\OnLight.cs" />
+    <Compile Include="NeneMalloc\Lights\States\FixedLight.cs" />
     <Compile Include="NeneMalloc\Order.cs" />
     <Compile Include="NeneMalloc\Player.cs" />
     <Compile Include="NeneMalloc\Utils\CollitionManager.cs" />

@@ -1,4 +1,5 @@
-﻿namespace AlumnoEjemplos.NeneMalloc.Lights.States
+﻿
+namespace AlumnoEjemplos.NeneMalloc.Lights.States
 {
     public class IntermittentLight : LightState
     {
