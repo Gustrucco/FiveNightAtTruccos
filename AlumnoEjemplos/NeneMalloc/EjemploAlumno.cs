@@ -97,7 +97,7 @@ namespace AlumnoEjemplos.MiGrupo
 
             var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(160f,-48.5f,241.8f));
 
-            var offLamp = new Lamp().WithState(new FixedLight(0)).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
+            var offLamp = new Lamp().WithState(new FixedLight(3)).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
 
             lights.Add(onLamp);
             lights.Add(intermitentLamp);
@@ -115,10 +115,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
 
-            GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-200, -100, -200), new Vector3(200, 200, 300), new Vector3(60, 35, 250));
             GuiController.Instance.Modifiers.addColor("lightColor", Color.White);
-            GuiController.Instance.Modifiers.addFloat("lightIntensity", 0, 150, 20);
-            GuiController.Instance.Modifiers.addFloat("lightAttenuation", 0.1f, 2, 0.3f);
             GuiController.Instance.Modifiers.addFloat("specularEx", 0, 20, 9f);
 
             //Modifiers de material
@@ -127,7 +124,6 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.Modifiers.addColor("mDiffuse", Color.White);
             GuiController.Instance.Modifiers.addColor("mSpecular", Color.White);
         }
-
 
         /// <summary>
         /// Método que se llama cada vez que hay que refrescar la pantalla.
@@ -140,28 +136,25 @@ namespace AlumnoEjemplos.MiGrupo
 
             currentShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
             currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
-            
+
+            //Calcular random por si la luz es intermitente
+            float random = new Random().Next(5, 30);
+
+            //Renderizar meshes
             foreach (TgcMesh mesh in tgcScene.Meshes)
             {
                 mesh.Effect = currentShader;
                 //El Technique depende del tipo RenderType del mesh
                 mesh.Technique = GuiController.Instance.Shaders.getTgcMeshTechnique(mesh.RenderType);
-            }
 
-            //Calcular random por si la luz es intermitente
-            float random = new Random().Next(30);
-
-            //Renderizar meshes
-            foreach (TgcMesh mesh in tgcScene.Meshes)
-            {
                 Lamp lamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
 
                 //Cargar variables shader de la luz
                 mesh.Effect.SetValue("lightColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["lightColor"]));
                 mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
-                mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
+                mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
                 mesh.Effect.SetValue("lightIntensity", lamp.getIntensity(random));
-                mesh.Effect.SetValue("lightAttenuation", (float)GuiController.Instance.Modifiers["lightAttenuation"]);
+                mesh.Effect.SetValue("lightAttenuation", 0.3f);
 
                 //Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
                 mesh.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mEmissive"]));
