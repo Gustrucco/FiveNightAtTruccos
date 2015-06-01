@@ -83,31 +83,12 @@ namespace AlumnoEjemplos.NeneMalloc
             }
 
 
-            if (!this.touchingSomething(new Vector3(0, -0.1f, 0)))
-            {
-                GuiController.Instance.UserVars.setValue("isColliding", "flotando");
-                if (this.touchingSomething(new Vector3(0, -15f, 0)))
-                {
-
-                    GuiController.Instance.UserVars.setValue("isColliding", "escaleraBajada");
-                    float min = this.BoundingBox.PMin.Y;
-                    this.BoundingBox.transform(Matrix.Translation(this.BoundingBox.Position + new Vector3(0, -15f, 0)));
-                    List<TgcBoundingBox> boundingBoxes2 = CollitionManager.getColisions(this.BoundingBox);
-
-                    //GuiController.Instance.UserVars.setValue("Y", boundingBoxes2.Count);
-                    this.move(new Vector3(0, 0.05f - Math.Abs(min - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y), 0));
-                    //GuiController.Instance.UserVars.setValue("Y", "bajo" + Math.Abs(this.BoundingBox.PMin.Y - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y)*-1);
-                }
-                else
-                {
-                    GuiController.Instance.UserVars.setValue("isColliding", "gravedad");
-                    this.move(new Vector3(0, 15, 0) * elapsedTime);
-                }
-            }
+            
 
             //Si hubo desplazamiento
             if (lastOrders.moving())
             {
+
                 //Activar animacion de caminando
                 meshPersonaje.playAnimation("Caminando", true);
 
@@ -136,64 +117,115 @@ namespace AlumnoEjemplos.NeneMalloc
                     this.move(lastPos - this.position);
                    
                     GuiController.Instance.UserVars.setValue("isColliding", true);
-
+                    Boolean checkedStairs = false;
+                    float max = -2000f;
                    //detecto colision contra escaleras primero
-                    float min = this.BoundingBox.PMin.Y;
-                    this.BoundingBox.transform(Matrix.Translation(collidedPosition + new Vector3(0, 15, 0)));
-                    if (boundingBoxes.Exists(b => !CollitionManager.isColliding(this.BoundingBox, b)))
+                    while (!checkedStairs)
                     {
-                        GuiController.Instance.UserVars.setValue("isColliding", "Escalera");
-                        Vector3 upwards = new Vector3(0, Math.Abs(min - boundingBoxes.Find(b => !CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y) + 0.05f, 0);
-                        this.move(upwards);
-                        collidedPosition += upwards;
-                        lastPos += upwards;
-                    }
-
-                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(velocidadCaminar * elapsedTime, 0, 0)));
-                    GuiController.Instance.UserVars.setValue("Normal", "CalculandoNormal");
-                    if (CollitionManager.detectColision(this.BoundingBox))
-                    {
-                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
-                        normal += new Vector3(1, 0, 0) * -1;
-                    }
-
-                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(-velocidadCaminar * elapsedTime, 0, 0)));
-                    if (CollitionManager.detectColision(this.BoundingBox))
-                    {
-                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
-                        normal += new Vector3(-1, 0, 0) * -1;
-                    }
-
-                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, velocidadCaminar * elapsedTime)));
-                    if (CollitionManager.detectColision(this.BoundingBox))
-                    {
-                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
-                        normal += new Vector3(0, 0, -1) * -1;
-                    }
-
-                    this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, -velocidadCaminar * elapsedTime)));
-                    if (CollitionManager.detectColision(this.BoundingBox))
-                    {
-                        GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
-                        normal += new Vector3(0, 0, -1) * -1;
-                    }
-                    if (!normal.Equals(new Vector3(0, 0, 0)))
-                    {
-                        normal.Normalize();
-                        GuiController.Instance.UserVars.setValue("Normal", "Calculando movimiento" + (Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)));
-
-                        if (!touchingSomething( Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)))
+                        float min = this.BoundingBox.PMin.Y;
+                        this.BoundingBox.transform(Matrix.Translation(collidedPosition + new Vector3(0, 15, 0)));
+                        
+                        if (boundingBoxes.Exists(b => !CollitionManager.isColliding(this.BoundingBox, b)))
                         {
-                            GuiController.Instance.UserVars.setValue("Normal", "SeteandoNormal");
-                            this.move(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal));
-                        }
+                            GuiController.Instance.UserVars.setValue("isColliding", "Escalera");
+                            TgcBoundingBox boundingColliding = boundingBoxes.Find(b => !CollitionManager.isColliding(this.BoundingBox, b));
+                            if (max < boundingColliding.PMax.Y)
+                            {
+                                Vector3 upwards = new Vector3(0, Math.Abs(min - boundingColliding.PMax.Y) + 0.05f, 0);
+                                this.move(upwards);
+                                collidedPosition += upwards;
+                                lastPos += upwards;
+                                max = boundingColliding.PMax.Y;
+                            }
                             
+                            boundingBoxes.Remove(boundingColliding);
+                        }
+                        if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)) || boundingBoxes.Count == 0)
+                        {
+                            GuiController.Instance.UserVars.setValue("isColliding", "Escalera chequeada");
+                            checkedStairs = true;
+                        }
+                    }
+
+                    if (boundingBoxes.Count == 0)
+                    {
+                        this.moveForward(lastOrders.moveForward * velocidadCaminar * elapsedTime);
+
+                        if (!lastOrders.running())
+                        {
+                            this.moveAside(lastOrders.moveAside * velocidadCaminar * elapsedTime);
+                        }
+                    }
+                    else
+                    {
+                        this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(velocidadCaminar * elapsedTime, 0, 0)));
+                        GuiController.Instance.UserVars.setValue("Normal", "CalculandoNormal");
+                        if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                            normal += new Vector3(1, 0, 0) * -1;
+                        }
+
+                        this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(-velocidadCaminar * elapsedTime, 0, 0)));
+                        if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                            normal += new Vector3(-1, 0, 0) * -1;
+                        }
+
+                        this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, velocidadCaminar * elapsedTime)));
+                        if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                            normal += new Vector3(0, 0, -1) * -1;
+                        }
+
+                        this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, -velocidadCaminar * elapsedTime)));
+                        if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
+                        {
+                            GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
+                            normal += new Vector3(0, 0, -1) * -1;
+                        }
+                        if (!normal.Equals(new Vector3(0, 0, 0)))
+                        {
+                            normal.Normalize();
+                            GuiController.Instance.UserVars.setValue("Normal", "Calculando movimiento" + (Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)));
+
+                            if (!touchingSomething(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal)))
+                            {
+                                GuiController.Instance.UserVars.setValue("Normal", "SeteandoNormal");
+                                this.move(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.position)), normal));
+                            }
+
+                        }
                     }
                     
                 }
                 else
                 {
                     GuiController.Instance.UserVars.setValue("isColliding", false);
+                }
+
+                if (!this.touchingSomething(new Vector3(0, -0.1f, 0)))
+                {
+                    GuiController.Instance.UserVars.setValue("isColliding", "flotando");
+                    if (this.touchingSomething(new Vector3(0, -15f, 0)))
+                    {
+
+                        GuiController.Instance.UserVars.setValue("isColliding", "escaleraBajada");
+                        float min = this.BoundingBox.PMin.Y;
+                        this.BoundingBox.transform(Matrix.Translation(this.BoundingBox.Position + new Vector3(0, -15f, 0)));
+                        List<TgcBoundingBox> boundingBoxes2 = CollitionManager.getColisions(this.BoundingBox);
+
+                        //GuiController.Instance.UserVars.setValue("Y", boundingBoxes2.Count);
+                        this.move(new Vector3(0, 0.05f - Math.Abs(min - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y), 0));
+                        //GuiController.Instance.UserVars.setValue("Y", "bajo" + Math.Abs(this.BoundingBox.PMin.Y - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y)*-1);
+                    }
+                    else
+                    {
+                        GuiController.Instance.UserVars.setValue("isColliding", "gravedad");
+                        this.move(new Vector3(0, 15, 0) * elapsedTime);
+                    }
                 }
 
             
