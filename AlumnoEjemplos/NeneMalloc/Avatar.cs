@@ -204,31 +204,7 @@ namespace AlumnoEjemplos.NeneMalloc
                 else
                 {
                     GuiController.Instance.UserVars.setValue("isColliding", false);
-                }
-
-                if (!this.touchingSomething(new Vector3(0, -0.1f, 0)))
-                {
-                    GuiController.Instance.UserVars.setValue("isColliding", "flotando");
-                    if (this.touchingSomething(new Vector3(0, -15f, 0)))
-                    {
-
-                        GuiController.Instance.UserVars.setValue("isColliding", "escaleraBajada");
-                        float min = this.BoundingBox.PMin.Y;
-                        this.BoundingBox.transform(Matrix.Translation(this.BoundingBox.Position + new Vector3(0, -15f, 0)));
-                        List<TgcBoundingBox> boundingBoxes2 = CollitionManager.getColisions(this.BoundingBox);
-
-                        //GuiController.Instance.UserVars.setValue("Y", boundingBoxes2.Count);
-                        this.move(new Vector3(0, 0.05f - Math.Abs(min - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y), 0));
-                        //GuiController.Instance.UserVars.setValue("Y", "bajo" + Math.Abs(this.BoundingBox.PMin.Y - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y)*-1);
-                    }
-                    else
-                    {
-                        GuiController.Instance.UserVars.setValue("isColliding", "gravedad");
-                        this.move(new Vector3(0, 15, 0) * elapsedTime);
-                    }
-                }
-
-            
+                }         
 
             }
 
@@ -237,7 +213,27 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 meshPersonaje.playAnimation("Parado", true);
             }
+            if (!this.touchingSomething(new Vector3(0, -0.1f, 0)))
+            {
+                GuiController.Instance.UserVars.setValue("isColliding", "flotando");
+                if (this.touchingSomething(new Vector3(0, -15f, 0)))
+                {
 
+                    GuiController.Instance.UserVars.setValue("isColliding", "escaleraBajada");
+                    float min = this.BoundingBox.PMin.Y;
+                    this.BoundingBox.transform(Matrix.Translation(this.BoundingBox.Position + new Vector3(0, -15f, 0)));
+                    List<TgcBoundingBox> boundingBoxes2 = CollitionManager.getColisions(this.BoundingBox);
+
+                    //GuiController.Instance.UserVars.setValue("Y", boundingBoxes2.Count);
+                    this.move(new Vector3(0, 0.05f - Math.Abs(min - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y), 0));
+                    //GuiController.Instance.UserVars.setValue("Y", "bajo" + Math.Abs(this.BoundingBox.PMin.Y - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y)*-1);
+                }
+                else
+                {
+                    GuiController.Instance.UserVars.setValue("isColliding", "gravedad");
+                    this.move(new Vector3(0, 15, 0) * elapsedTime);
+                }
+            }
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
             //Hacer que la camara siga al personaje en su nueva posicion
             GuiController.Instance.ThirdPersonCamera.Target = this.position;
