@@ -9,9 +9,9 @@
             this.Intensity = intensity;
         }
 
-        public float getIntensity(float random)
+        public void setRandom(float random)
         {
-            return this.Intensity;
+            
         }
     }
 }

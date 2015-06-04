@@ -65,7 +65,7 @@ namespace AlumnoEjemplos.MiGrupo
             //Device de DirectX para crear primitivas
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
             TgcSceneLoader loader = new TgcSceneLoader();
-            
+
             tgcScene = loader.loadSceneFromFile(
                path + "NeneMalloc\\pisoCompleto-TgcScene.xml",
                path + "NeneMalloc\\");
@@ -102,6 +102,8 @@ namespace AlumnoEjemplos.MiGrupo
             lights.Add(onLamp);
             lights.Add(intermitentLamp);
             lights.Add(offLamp);
+            //Modifier frustum Culling
+            GuiController.Instance.Modifiers.addBoolean("culling", "Frustum culling", false);
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
@@ -109,7 +111,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.addVar("Pos");
             GuiController.Instance.UserVars.addVar("Normal");
             GuiController.Instance.UserVars.addVar("LastPos");
-            GuiController.Instance.UserVars.addVar("Mesh renderizados");
+            GuiController.Instance.UserVars.addVar("Meshes renderizadas");
             
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
@@ -136,12 +138,27 @@ namespace AlumnoEjemplos.MiGrupo
 
             currentShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
             currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
+            List<TgcMesh> meshes = tgcScene.Meshes;
+            bool frustumCullingEnabled = (bool)GuiController.Instance.Modifiers["culling"];
+            if (frustumCullingEnabled)
+            {
+                TgcFrustum frustum = GuiController.Instance.Frustum;
+                meshes =
+                    meshes.FindAll(
+                        m =>
+                            TgcCollisionUtils.classifyFrustumAABB(frustum, m.BoundingBox) !=
+                            TgcCollisionUtils.FrustumResult.OUTSIDE);
+                
+                
+            }
+            //Actualizar cantidad de meshes dibujadas
+            GuiController.Instance.UserVars.setValue("Meshes renderizadas", meshes.Count);
 
             //Calcular random por si la luz es intermitente
-            float random = new Random().Next(5, 30);
-
+            this.setRandomToLamps();
+            
             //Renderizar meshes
-            foreach (TgcMesh mesh in tgcScene.Meshes)
+            foreach (TgcMesh mesh in meshes)
             {
                 mesh.Effect = currentShader;
                 //El Technique depende del tipo RenderType del mesh
@@ -153,7 +170,7 @@ namespace AlumnoEjemplos.MiGrupo
                 mesh.Effect.SetValue("lightColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["lightColor"]));
                 mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
                 mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
-                mesh.Effect.SetValue("lightIntensity", lamp.getIntensity(random));
+                mesh.Effect.SetValue("lightIntensity", lamp.getIntensity());
                 mesh.Effect.SetValue("lightAttenuation", 0.3f);
 
                 //Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
@@ -163,7 +180,7 @@ namespace AlumnoEjemplos.MiGrupo
                 mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor((Color)GuiController.Instance.Modifiers["mSpecular"]));
                 mesh.Effect.SetValue("materialSpecularExp", (float)GuiController.Instance.Modifiers["specularEx"]);
                 
-                //Renderizar modelo
+                //Renderizar modelo (lamp.render() no hace nada por ahora)
                 mesh.render();
                 lamp.render();
             }
@@ -173,6 +190,15 @@ namespace AlumnoEjemplos.MiGrupo
             avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
 
             avatar.render(elapsedTime);
+        }
+
+        private void setRandomToLamps()
+        {
+            float random = new Random().Next(5, 40);
+            foreach (Lamp light in lights)
+            {
+                light.setRandom(random);
+            }
         }
 
         /// <summary>

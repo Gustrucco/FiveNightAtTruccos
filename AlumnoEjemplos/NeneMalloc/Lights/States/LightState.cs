@@ -2,6 +2,7 @@ namespace AlumnoEjemplos.NeneMalloc.Lights.States
 {
     public interface LightState
     {
-        float getIntensity(float random);
+        float Intensity { get; set; }
+        void setRandom(float random);
     }
 }

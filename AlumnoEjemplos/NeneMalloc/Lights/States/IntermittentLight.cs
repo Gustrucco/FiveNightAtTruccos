@@ -3,9 +3,11 @@ namespace AlumnoEjemplos.NeneMalloc.Lights.States
 {
     public class IntermittentLight : LightState
     {
-        public float getIntensity(float random)
+        public float Intensity { get; set; }
+
+        public void setRandom(float random)
         {
-            return random;
+            this.Intensity = random;
         }
     }
 }

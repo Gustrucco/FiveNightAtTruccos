@@ -108,15 +108,20 @@ namespace AlumnoEjemplos.NeneMalloc.Lights
             return this;
         }
 
-        public float getIntensity(float random)
+        public float getIntensity()
         {
-            return this.State.getIntensity(random);
+            return this.State.Intensity;
         }
 
         public Lamp WithPosition(Vector3 position)
         {
             this.Position = position;
             return this;
+        }
+
+        public void setRandom(float random)
+        {
+            this.State.setRandom(random);
         }
     }
 }

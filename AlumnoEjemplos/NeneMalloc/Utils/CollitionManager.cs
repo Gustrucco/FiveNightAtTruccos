@@ -7,12 +7,13 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
     class CollitionManager
     {
         public static List<TgcBoundingBox> obstaculos { get; set; }
-       
-        public static Boolean detectColision(TgcBoundingBox boundingBox){
+
+        public static Boolean detectColision(TgcBoundingBox boundingBox)
+        {
             Boolean collide = false;
             foreach (TgcBoundingBox obstaculo in CollitionManager.obstaculos)
             {
-                
+
                 TgcCollisionUtils.BoxBoxResult result = TgcCollisionUtils.classifyBoxBox(boundingBox, obstaculo);
                 if (result == TgcCollisionUtils.BoxBoxResult.Adentro || result == TgcCollisionUtils.BoxBoxResult.Atravesando)
                 {
@@ -20,7 +21,27 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
                     break;
                 }
             }
-             return collide;
+            return collide;
+        }
+        public static List<TgcBoundingBox> getColisions(TgcBoundingBox boundingBox)
+        {
+            List<TgcBoundingBox> boundingBoxes = new List<TgcBoundingBox>();
+            foreach (TgcBoundingBox obstaculo in CollitionManager.obstaculos)
+            {
+
+                TgcCollisionUtils.BoxBoxResult result = TgcCollisionUtils.classifyBoxBox(boundingBox, obstaculo);
+                if (result == TgcCollisionUtils.BoxBoxResult.Adentro || result == TgcCollisionUtils.BoxBoxResult.Atravesando)
+                {
+                    boundingBoxes.Add(obstaculo);
+                }
+            }
+            return boundingBoxes;
+        }
+
+        public static Boolean isColliding(TgcBoundingBox boundingBox, TgcBoundingBox obstaculo)
+        {
+            TgcCollisionUtils.BoxBoxResult result = TgcCollisionUtils.classifyBoxBox(boundingBox, obstaculo);
+            return result == TgcCollisionUtils.BoxBoxResult.Adentro || result == TgcCollisionUtils.BoxBoxResult.Atravesando;
         }
     }
 }
