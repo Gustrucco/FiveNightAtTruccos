@@ -92,18 +92,10 @@ namespace AlumnoEjemplos.MiGrupo
            //Configurar posicion y hacia donde se mira
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
 
-            //Mesh para la luz
-            var onLamp = new Lamp().WithState(new FixedLight(30)).WithPosition(new Vector3(405, -36, -831));
+            this.CreateLamps();
 
-            var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(160f,-48.5f,241.8f));
-
-            var offLamp = new Lamp().WithState(new FixedLight(3)).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
-
-            lights.Add(onLamp);
-            lights.Add(intermitentLamp);
-            lights.Add(offLamp);
             //Modifier frustum Culling
-            GuiController.Instance.Modifiers.addBoolean("culling", "Frustum culling", false);
+            GuiController.Instance.Modifiers.addBoolean("culling", "Frustum culling", true);
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
@@ -192,11 +184,45 @@ namespace AlumnoEjemplos.MiGrupo
             avatar.render(elapsedTime);
         }
 
+        private void CreateLamps()
+        {
+            //Luces intermitentes
+            var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(405, -36, -831));
+            var intermitentLamp2 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(160f, -48.5f, 241.8f));
+            var intermitentLamp3 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(349.2f, -61.5f, -327.8f));
+
+            //Luces prendidas
+            var onLamp = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(-102.5f, -61.5f, -331.25f));
+            var onLamp2 = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(276f, -61.5f, -129.6f));
+            var onLamp3 = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(864.4f, -61.5f, -475.8f));
+
+            //Luces apagadas
+            var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
+            var offLamp2 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(322.1f, -61.5f, -151.2f));
+            var offLamp3 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(711.8f, -61.5f, -174.5f));
+            var offLamp4 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(713.3f, -61.5f, -293.2f));
+
+            //Se agregan las luces a la coleccion
+            lights.Add(intermitentLamp);
+            lights.Add(intermitentLamp2);
+            lights.Add(intermitentLamp3);
+
+            lights.Add(onLamp);
+            lights.Add(onLamp2);
+            lights.Add(onLamp3);
+
+            lights.Add(offLamp);
+            lights.Add(offLamp2);
+            lights.Add(offLamp3);
+            lights.Add(offLamp4);
+
+        }
+
         private void setRandomToLamps()
         {
-            float random = new Random().Next(5, 40);
             foreach (Lamp light in lights)
             {
+                float random = new Random().Next(5, 40);
                 light.setRandom(random);
             }
         }
