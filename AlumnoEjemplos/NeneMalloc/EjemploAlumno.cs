@@ -186,6 +186,44 @@ namespace AlumnoEjemplos.MiGrupo
 
         private void CreateLamps()
         {
+            this.CreateGroundFloorLamps();
+            this.CreateFirstFloorLamps();
+        }
+
+        private void CreateFirstFloorLamps()
+        {
+            //Luces intermitentes
+
+            var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-26.5f, 75f, 6.3f));
+            var intermitentLamp2 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-27.75f, 75f, -325.15f));
+            var intermitentLamp3 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(229.5f, 75f, 97.1f));
+
+            //Luces prendidas
+            var onLamp = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(-271.75f, 75f, 112.3f));
+            var onLamp2 = new Lamp().WithState(new FixedLight(20)).WithPosition(new Vector3(-126.6f, 75f, 37f));
+
+            //Luces apagadas
+            var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(199f, 75f, 535.45f));
+            var offLamp2 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(271.75f, 75f, 12.3f));
+            var offLamp3 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(307.25f, 75f, -224.9f));
+            var offLamp4 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(290.7f, 75f, -485.9f));
+
+            //Se agregan las luces a la colección
+            lights.Add(intermitentLamp);
+            lights.Add(intermitentLamp2);
+            lights.Add(intermitentLamp3);
+
+            lights.Add(onLamp);
+            lights.Add(onLamp2);
+
+            lights.Add(offLamp);
+            lights.Add(offLamp2);
+            lights.Add(offLamp3);
+            lights.Add(offLamp4);
+        }
+
+        private void CreateGroundFloorLamps()
+        {
             //Luces intermitentes
             var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(405, -36, -831));
             var intermitentLamp2 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(160f, -48.5f, 241.8f));
@@ -195,12 +233,15 @@ namespace AlumnoEjemplos.MiGrupo
             var onLamp = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(-102.5f, -61.5f, -331.25f));
             var onLamp2 = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(276f, -61.5f, -129.6f));
             var onLamp3 = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(864.4f, -61.5f, -475.8f));
+            var onLamp4 = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(101.9f, -61.5f, -469.3f));
 
             //Luces apagadas
             var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
             var offLamp2 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(322.1f, -61.5f, -151.2f));
             var offLamp3 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(711.8f, -61.5f, -174.5f));
             var offLamp4 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(713.3f, -61.5f, -293.2f));
+            var offLamp5 = new Lamp().WithState(new FixedLight(8)).WithPosition(new Vector3(350.5f, 9f, 316.9f));
+
 
             //Se agregan las luces a la coleccion
             lights.Add(intermitentLamp);
@@ -210,12 +251,13 @@ namespace AlumnoEjemplos.MiGrupo
             lights.Add(onLamp);
             lights.Add(onLamp2);
             lights.Add(onLamp3);
+            lights.Add(onLamp4);
 
             lights.Add(offLamp);
             lights.Add(offLamp2);
             lights.Add(offLamp3);
             lights.Add(offLamp4);
-
+            lights.Add(offLamp5);
         }
 
         private void setRandomToLamps()
