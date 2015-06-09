@@ -91,6 +91,7 @@
     <Compile Include="NeneMalloc\Character.cs" />
     <Compile Include="NeneMalloc\Controller.cs" />
     <Compile Include="NeneMalloc\EjemploAlumno.cs" />
+    <Compile Include="NeneMalloc\Lights\IluminationEntity.cs" />
     <Compile Include="NeneMalloc\Lights\Lamp.cs" />
     <Compile Include="NeneMalloc\Lights\Lantern.cs" />
     <Compile Include="NeneMalloc\Lights\States\IntermittentLight.cs" />
