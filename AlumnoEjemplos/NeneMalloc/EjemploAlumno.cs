@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 using TgcViewer.Example;
 using TgcViewer;
 using Microsoft.DirectX;
@@ -7,6 +10,7 @@ using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc;
 using AlumnoEjemplos.NeneMalloc.Utils;
+using TgcViewer.Utils._2D;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -21,6 +25,7 @@ namespace AlumnoEjemplos.MiGrupo
         TgcSkeletalMesh personaje;
         Avatar avatar;
         Lantern lantern;
+        private TgcText2d Clock;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -63,9 +68,7 @@ namespace AlumnoEjemplos.MiGrupo
             tgcScene = loader.loadSceneFromFile(
                path + "NeneMalloc\\pisoCompleto-TgcScene.xml",
                path + "NeneMalloc\\");
-
-
-
+            
            //Cargar personaje
             avatar = new Avatar();
             avatar.init();
@@ -87,8 +90,6 @@ namespace AlumnoEjemplos.MiGrupo
            //Configurar posicion y hacia donde se mira
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
        
-
-
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
             GuiController.Instance.Modifiers.addBoolean("showSceneBoundingBox", "SceneBouding Box", false);
@@ -101,6 +102,15 @@ namespace AlumnoEjemplos.MiGrupo
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
+
+            //Crear texto 3, especificando color, alineación, posición y tamaño.
+            Clock = new TgcText2d();
+            Clock.Text = DateTime.Now.ToString("hh:mm:ss");
+            Clock.Align = TgcText2d.TextAlign.RIGHT;
+            Clock.Position = new Point(600, 400);
+            Clock.Size = new Size(300, 100);
+            Clock.Color = Color.DarkRed;
+            Clock.changeFont(new Font("Arial", 30, FontStyle.Bold));
 
         }
 
@@ -131,7 +141,9 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             //Render personaje
             avatar.render(elapsedTime);
+            Clock.Text = DateTime.Now.ToString("hh:mm:ss");
 
+            Clock.render();
         }
 
         /// <summary>
