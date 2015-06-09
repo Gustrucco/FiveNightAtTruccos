@@ -32,13 +32,13 @@ namespace AlumnoEjemplos.NeneMalloc
          public void rotateY(float angle)
         {
             this.rotation.Y += Geometry.DegreeToRadian(angle);
-            this.rotation.Y = this.rotation.Y % 2f;
+            this.rotation.Y = this.rotation.Y % Geometry.DegreeToRadian(360);
         }
 
          public void rotateX(float angle)
          {
              this.rotation.X += Geometry.DegreeToRadian(angle);
-             this.rotation.X = this.betWeenPosAndNeg(this.rotation.X, 1f);
+             this.rotation.X = this.betWeenPosAndNeg(this.rotation.X, Geometry.DegreeToRadian(90f));
          }
 
          public Vector3 calculateNewPosition(float movement, Vector3 aRotation)
