@@ -130,7 +130,7 @@ namespace AlumnoEjemplos.MiGrupo
         {
             List<TgcMesh> meshes = tgcScene.Meshes;
 
-            if (d3dInput.keyDown(Key.L))
+            if (d3dInput.keyPressed(Key.L))
             {
                 lantern.ChangeLightOnOff();
             }
@@ -161,11 +161,6 @@ namespace AlumnoEjemplos.MiGrupo
 
             if (lantern.On)
             {
-                if (d3dInput.keyDown(Key.L))
-                {
-                    lantern.ChangeLightOnOff();
-                }
-
                 foreach (TgcMesh mesh in meshes)
                 {
                     mesh.Effect = currentLanternShader;
