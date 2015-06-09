@@ -32,11 +32,13 @@ namespace AlumnoEjemplos.NeneMalloc
          public void rotateY(float angle)
         {
             this.rotation.Y += Geometry.DegreeToRadian(angle);
+            this.rotation.Y = this.rotation.Y % 360;
         }
 
          public void rotateX(float angle)
          {
              this.rotation.X += Geometry.DegreeToRadian(angle);
+             this.rotation.X = this.betWeenPosAndNeg(this.rotation.X, 90f);
          }
 
          public Vector3 calculateNewPosition(float movement, Vector3 aRotation)
@@ -49,6 +51,11 @@ namespace AlumnoEjemplos.NeneMalloc
              return normalY * movement;
          }
 
+         private float betWeenPosAndNeg(float value, float range)
+         {
+             int sign = value >= 0 ? 1 : -1;
+             return sign * Math.Min(Math.Abs(value), range);
+         }
         public abstract void move(Vector3 pos);
     }
 }
