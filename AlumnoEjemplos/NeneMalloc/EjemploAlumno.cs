@@ -9,6 +9,7 @@ using TgcViewer.Example;
 using TgcViewer;
 using Microsoft.DirectX;
 using TgcViewer.Utils.Input;
+using TgcViewer.Utils.Shaders;
 using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSkeletalAnimation;
@@ -73,8 +74,9 @@ namespace AlumnoEjemplos.MiGrupo
 
             //Device de DirectX para crear primitivas
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
-            TgcSceneLoader loader = new TgcSceneLoader();
 
+            TgcSceneLoader loader = new TgcSceneLoader();
+            
             tgcScene = loader.loadSceneFromFile(
                path + "NeneMalloc\\pisoCompleto-TgcScene.xml",
                path + "NeneMalloc\\");
@@ -117,7 +119,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
 
-            currentLanternShader = GuiController.Instance.Shaders.TgcMeshSpotLightShader;
+            currentLanternShader = TgcShaders.loadEffect(path + "NeneMalloc\\Shaders\\TgcMeshPointAndSpotLightShader.fx");
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
             currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
         }
@@ -165,6 +167,7 @@ namespace AlumnoEjemplos.MiGrupo
                 {
                     mesh.Effect = currentLanternShader;
 
+                    Lamp lamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
                     //El Technique depende del tipo RenderType del mesh
                     mesh.Technique = GuiController.Instance.Shaders.getTgcMeshTechnique(mesh.RenderType);
 
@@ -172,7 +175,8 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
                     mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
-                    mesh.Effect.SetValue("lightIntensity", 30);
+                    mesh.Effect.SetValue("lampIntensity", lamp.getIntensity());
+                    mesh.Effect.SetValue("lanternIntensity", lantern.Intensity);
                     mesh.Effect.SetValue("lightAttenuation", 0.3f);
 
                     //Cargar variables shader de linterna
