@@ -7,6 +7,9 @@ using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc;
 using AlumnoEjemplos.NeneMalloc.Utils;
+using Microsoft.DirectX.DirectInput;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -55,13 +58,13 @@ namespace AlumnoEjemplos.MiGrupo
         public override void init()
         {
             //GuiController.Instance: acceso principal a todas las herramientas del Framework
-
+            
             //Device de DirectX para crear primitivas
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
             TgcSceneLoader loader = new TgcSceneLoader();
             tgcScene = loader.loadSceneFromFile(
-               path + "NeneMalloc\\pisoCompleto-TgcScene.xml",
+               path + "NeneMalloc\\Escenario-TgcScene.xml",
                path + "NeneMalloc\\");
 
 
@@ -117,7 +120,7 @@ namespace AlumnoEjemplos.MiGrupo
             
             //Obtener boolean para saber si hay que mostrar Bounding Box
            // bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
-
+          
             int count = 0;
             this.tgcScene.renderAll();
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showSceneBoundingBox");

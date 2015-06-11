@@ -6,8 +6,8 @@ namespace AlumnoEjemplos.NeneMalloc
     {
         public int moveForward = 0;
         public int moveAside = 0; 
-        public int rotateY = 0;
-        public int rotateX = 0;
+        public float rotateY = 0;
+        public float rotateX = 0;
         
 
         //public Vector3 getDirection()

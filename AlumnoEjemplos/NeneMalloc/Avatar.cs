@@ -14,13 +14,17 @@ namespace AlumnoEjemplos.NeneMalloc
     {
        
         public TgcBoundingBox BoundingBox { get; set; }
+        private bool falling = false;
         private TruccoFPSCamera Camera = new TruccoFPSCamera();
+        private float velocidadCaida = 0f;
+
         
         public void init()
         {
             
             Device d3dDevice = GuiController.Instance.D3dDevice;
             //Carga del controller
+
             this.Controller = new Player();
             this.Position = new Vector3(160f, -88.5f, -340f);
             this.Rotation = new Vector3(0f, 0f, 0f);
@@ -135,6 +139,7 @@ namespace AlumnoEjemplos.NeneMalloc
                     }
                     else
                     {
+                        //Slide
                         this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(velocidadCaminar * elapsedTime, 0, 0)));
                         GuiController.Instance.UserVars.setValue("Normal", "CalculandoNormal");
                         if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
@@ -190,7 +195,7 @@ namespace AlumnoEjemplos.NeneMalloc
             if (!this.touchingSomething(new Vector3(0, -0.1f, 0)))
             {
                 GuiController.Instance.UserVars.setValue("isColliding", "flotando");
-                if (this.touchingSomething(new Vector3(0, -15f, 0)))
+                if (this.touchingSomething(new Vector3(0, -15f, 0)) && !this.falling)
                 {
 
                     GuiController.Instance.UserVars.setValue("isColliding", "escaleraBajada");
@@ -205,14 +210,24 @@ namespace AlumnoEjemplos.NeneMalloc
                 else
                 {
                     GuiController.Instance.UserVars.setValue("isColliding", "gravedad");
-                    this.move(new Vector3(0, 15, 0) * elapsedTime);
-                }
+                    this.falling = true;
+                    this.updateFallingSpeed(elapsedTime);
+                    if (this.hitSomethingAtPath(new Vector3(0, -1f, 0) , elapsedTime * velocidadCaida))
+                    {
+                        TgcBoundingBox boundingBoxResult;
+                        CollitionManager.getClosestBoundingBox(new TgcRay(this.Position, new Vector3 (0,1f,0)), out boundingBoxResult, this.BoundingBox);
+                        this.move(new Vector3(0, -1f, 0) * Math.Abs(boundingBoxResult.PMax.Y - this.BoundingBox.PMin.Y));
+                        this.falling = false;
+                        this.velocidadCaida = 0f;
+                    }
+                    else
+                    {
+                        this.move(new Vector3(0, -1f, 0) * elapsedTime * velocidadCaida);
+                    }
+                 }
             }
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
             //Hacer que la camara siga al personaje en su nueva posicion
-            GuiController.Instance.ThirdPersonCamera.Target = this.Position;
-
-            
             if (showBB)
             {
                 this.BoundingBox.render();
@@ -224,6 +239,19 @@ namespace AlumnoEjemplos.NeneMalloc
            Boolean result = CollitionManager.detectColision(this.BoundingBox);
            this.BoundingBox.transform(Matrix.Translation(this.Position));
            return result;
+        }
+
+        private void updateFallingSpeed(float elapsedTime)
+        {
+            this.velocidadCaida += 98f * elapsedTime;
+        }
+
+        private Boolean hitSomethingAtPath(Vector3 direction, float quantity)
+        {
+            TgcBoundingBox boundingBox;
+            TgcRay rayCast = new TgcRay(this.Position, direction);
+
+            return CollitionManager.getClosestBoundingBox(rayCast, out boundingBox, this.BoundingBox) && Vector3.Length(CollitionManager.getClosesPointBetween(rayCast, boundingBox) - this.Position) <= quantity;
         }
         
         public override void move(Vector3 pos)
