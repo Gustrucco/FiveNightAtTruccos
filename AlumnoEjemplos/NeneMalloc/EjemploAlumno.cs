@@ -122,6 +122,7 @@ namespace AlumnoEjemplos.MiGrupo
             currentLanternShader = TgcShaders.loadEffect(path + "NeneMalloc\\Shaders\\TgcMeshPointAndSpotLightShader.fx");
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
             currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
+            avatar.meshPersonaje.Effect = currentAvatarShader;
         }
 
         /// <summary>
@@ -157,9 +158,22 @@ namespace AlumnoEjemplos.MiGrupo
             //Normalizar direccion de la luz
             Vector3 lightDir = this.calculateLampDirection(avatar.rotation);
             lightDir.Normalize();
-
+            //Render personaje
+            avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
             //Calcular random por si la luz es intermitente
             this.setRandomToLamps();
+
+            //Cargar variables shader de la luz
+            avatar.meshPersonaje.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
+            avatar.meshPersonaje.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
+            avatar.meshPersonaje.Effect.SetValue("lightAttenuation", 0.3f);
+
+            ////Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
+            avatar.meshPersonaje.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor(Color.Black));
+            avatar.meshPersonaje.Effect.SetValue("materialAmbientColor", ColorValue.FromColor(Color.White));
+            avatar.meshPersonaje.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor(Color.White));
+            avatar.meshPersonaje.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
+            avatar.meshPersonaje.Effect.SetValue("materialSpecularExp", 9f);
 
             if (lantern.On)
             {
@@ -221,16 +235,15 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("materialSpecularExp", 9f);
 
+                    avatar.meshPersonaje.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
+                    avatar.meshPersonaje.Effect.SetValue("lightIntensity", lamp.getIntensity());
+
                     //Renderizar modelo (lamp.render() no hace nada por ahora)
                     mesh.render();
                     lamp.render();
                 }
             }
           
-            //Render personaje
-            avatar.meshPersonaje.Effect = currentAvatarShader;
-            avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
-
             avatar.render(elapsedTime);
         }
 
