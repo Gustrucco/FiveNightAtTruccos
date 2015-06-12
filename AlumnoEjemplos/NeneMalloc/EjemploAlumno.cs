@@ -163,10 +163,15 @@ namespace AlumnoEjemplos.MiGrupo
             //Calcular random por si la luz es intermitente
             this.setRandomToLamps();
 
+            Lamp closestAvatarLamp = getClosestLight(avatar.position);
+
             //Cargar variables shader de la luz
             avatar.meshPersonaje.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
             avatar.meshPersonaje.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
             avatar.meshPersonaje.Effect.SetValue("lightAttenuation", 0.3f);
+            avatar.meshPersonaje.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(closestAvatarLamp.Position));
+            avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity());
+
 
             ////Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
             avatar.meshPersonaje.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor(Color.Black));
@@ -205,8 +210,8 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("materialSpecularExp", 9f);
 
-                    avatar.meshPersonaje.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
-                    avatar.meshPersonaje.Effect.SetValue("lightIntensity", lamp.getIntensity() + lantern.Intensity);
+                    avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity() + lantern.Intensity);             
+
                     //Renderizar modelo (lamp.render() no hace nada por ahora)
                     mesh.render();
                 }
@@ -236,9 +241,6 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("materialSpecularExp", 9f);
-
-                    avatar.meshPersonaje.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
-                    avatar.meshPersonaje.Effect.SetValue("lightIntensity", lamp.getIntensity());
 
                     //Renderizar modelo (lamp.render() no hace nada por ahora)
                     mesh.render();
