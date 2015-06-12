@@ -94,7 +94,7 @@ namespace AlumnoEjemplos.MiGrupo
             avatar.init();
 
             //Cargar linterna
-            lantern = (Lantern) new Lantern().WithPosition(avatar.position);
+            lantern = (Lantern) new Lantern().WithPosition(avatar.Position);
 
             var musicPath = path + "NeneMalloc\\SonidosYMusica\\Eyes Wide Shut.mp3";
             
@@ -138,7 +138,7 @@ namespace AlumnoEjemplos.MiGrupo
             currentLanternShader = TgcShaders.loadEffect(path + "NeneMalloc\\Shaders\\TgcMeshPointAndSpotLightShader.fx");
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
             currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
-            avatar.meshPersonaje.Effect = currentAvatarShader;
+            //avatar.meshPersonaje.Effect = currentAvatarShader;
 
             //Reloj con la hora del juego
             Clock = new TgcText2d();
@@ -187,32 +187,34 @@ namespace AlumnoEjemplos.MiGrupo
             //Actualizar cantidad de meshes dibujadas
             GuiController.Instance.UserVars.setValue("Meshes renderizadas", meshes.Count);
 
-            lantern.Position = avatar.position;
+            lantern.Position = avatar.Position;
 
             //Normalizar direccion de la luz
-            Vector3 lightDir = this.calculateLampDirection(avatar.rotation);
+            Vector3 lightDir = this.calculateLampDirection(avatar.Rotation);
             lightDir.Normalize();
+
             //Render personaje
-            avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
+            //avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
+           
             //Calcular random por si la luz es intermitente
             this.setRandomToLamps();
 
-            Lamp closestAvatarLamp = getClosestLight(avatar.position);
+            //Lamp closestAvatarLamp = getClosestLight(avatar.Position);
 
             //Cargar variables shader de la luz
-            avatar.meshPersonaje.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
-            avatar.meshPersonaje.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
-            avatar.meshPersonaje.Effect.SetValue("lightAttenuation", 0.3f);
-            avatar.meshPersonaje.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(closestAvatarLamp.Position));
-            avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity());
+            //avatar.meshPersonaje.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
+            //avatar.meshPersonaje.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
+            //avatar.meshPersonaje.Effect.SetValue("lightAttenuation", 0.3f);
+            //avatar.meshPersonaje.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(closestAvatarLamp.Position));
+            //avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity());
 
 
-            ////Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
-            avatar.meshPersonaje.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor(Color.Black));
-            avatar.meshPersonaje.Effect.SetValue("materialAmbientColor", ColorValue.FromColor(Color.White));
-            avatar.meshPersonaje.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor(Color.White));
-            avatar.meshPersonaje.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
-            avatar.meshPersonaje.Effect.SetValue("materialSpecularExp", 9f);
+            //////Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
+            //avatar.meshPersonaje.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor(Color.Black));
+            //avatar.meshPersonaje.Effect.SetValue("materialAmbientColor", ColorValue.FromColor(Color.White));
+            //avatar.meshPersonaje.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor(Color.White));
+            //avatar.meshPersonaje.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
+            //avatar.meshPersonaje.Effect.SetValue("materialSpecularExp", 9f);
 
             if (lantern.On)
             {
@@ -227,7 +229,7 @@ namespace AlumnoEjemplos.MiGrupo
                     //Cargar variables shader de la luz
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
-                    mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
+                    mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.Position));
                     mesh.Effect.SetValue("lampIntensity", lamp.getIntensity());
                     mesh.Effect.SetValue("lanternIntensity", lantern.Intensity);
                     mesh.Effect.SetValue("lightAttenuation", 0.3f);
@@ -244,7 +246,7 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("materialSpecularExp", 9f);
 
-                    avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity() + lantern.Intensity);             
+                    //avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity() + lantern.Intensity);             
 
                     //Renderizar modelo (lamp.render() no hace nada por ahora)
                     mesh.render();
@@ -265,7 +267,7 @@ namespace AlumnoEjemplos.MiGrupo
                     //Cargar variables shader de la luz
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
-                    mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
+                    mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.Position));
                     mesh.Effect.SetValue("lightIntensity", lamp.getIntensity());
                     mesh.Effect.SetValue("lightAttenuation", 0.3f);
 
