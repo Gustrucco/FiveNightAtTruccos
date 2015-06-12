@@ -205,6 +205,8 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("materialSpecularExp", 9f);
 
+                    avatar.meshPersonaje.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
+                    avatar.meshPersonaje.Effect.SetValue("lightIntensity", lamp.getIntensity() + lantern.Intensity);
                     //Renderizar modelo (lamp.render() no hace nada por ahora)
                     mesh.render();
                 }
