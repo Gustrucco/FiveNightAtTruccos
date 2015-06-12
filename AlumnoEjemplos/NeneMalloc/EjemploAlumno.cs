@@ -15,7 +15,9 @@ using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc;
 using AlumnoEjemplos.NeneMalloc.Utils;
+using TgcViewer.Utils._2D;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
+using Font = System.Drawing.Font;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -35,6 +37,7 @@ namespace AlumnoEjemplos.MiGrupo
         Effect currentAvatarShader;
         Effect currentLanternShader;
         private TgcD3dInput d3dInput;
+        private TgcText2d Clock;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -69,7 +72,6 @@ namespace AlumnoEjemplos.MiGrupo
         public override void init()
         {
             //GuiController.Instance: acceso principal a todas las herramientas del Framework
-
             d3dInput = GuiController.Instance.D3dInput;
 
             //Device de DirectX para crear primitivas
@@ -123,6 +125,14 @@ namespace AlumnoEjemplos.MiGrupo
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
             currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
             avatar.meshPersonaje.Effect = currentAvatarShader;
+
+            Clock = new TgcText2d();
+            Clock.Text = DateTime.Now.ToString("hh:mm:ss");
+            Clock.Align = TgcText2d.TextAlign.RIGHT;
+            Clock.Position = new Point(600, 400);
+            Clock.Size = new Size(300, 100);
+            Clock.Color = Color.DarkRed;
+            Clock.changeFont(new Font("Arial", 30, FontStyle.Bold));
         }
 
         /// <summary>
@@ -247,6 +257,8 @@ namespace AlumnoEjemplos.MiGrupo
                     lamp.render();
                 }
             }
+            Clock.Text = DateTime.Now.ToString("hh:mm:ss");
+            Clock.render();
           
             avatar.render(elapsedTime);
         }
