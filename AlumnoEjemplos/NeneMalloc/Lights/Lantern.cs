@@ -13,7 +13,7 @@ namespace AlumnoEjemplos.NeneMalloc.Lights
         public Lantern()
         {
             this.Direction = new Vector3(0, 0, 0.5f);
-            this.SpotAngle = 50f;
+            this.SpotAngle = 40f;
             this.SpotExponent = 15f;
             this.Intensity = 25f;
         }
