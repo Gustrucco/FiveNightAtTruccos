@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using AlumnoEjemplos.NeneMalloc.Lights;
 using AlumnoEjemplos.NeneMalloc.Lights.States;
@@ -33,12 +34,13 @@ namespace AlumnoEjemplos.MiGrupo
         TgcSkeletalMesh personaje;
         Avatar avatar;
         Lantern lantern;
-        private List<IluminationEntity> lights;
+        List<IluminationEntity> lights;
         Effect currentLampShader;
         Effect currentAvatarShader;
         Effect currentLanternShader;
-        private TgcD3dInput d3dInput;
-        private TgcText2d Clock;
+        TgcD3dInput d3dInput;
+        TgcText2d PlayingTime;
+        Stopwatch stopwatch;
         List<Tgc3dSound> sounds;
         Tgc3dSound sound;
         string path;
@@ -137,17 +139,21 @@ namespace AlumnoEjemplos.MiGrupo
 
             currentLanternShader = TgcShaders.loadEffect(path + "NeneMalloc\\Shaders\\TgcMeshPointAndSpotLightShader.fx");
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
-            currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
+            //currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
             //avatar.meshPersonaje.Effect = currentAvatarShader;
 
             //Reloj con la hora del juego
-            Clock = new TgcText2d();
-            Clock.Text = DateTime.Now.ToString("hh:mm:ss");
-            Clock.Align = TgcText2d.TextAlign.RIGHT;
-            Clock.Position = new Point(600, 400);
-            Clock.Size = new Size(300, 100);
-            Clock.Color = Color.DarkRed;
-            Clock.changeFont(new Font("Arial", 30, FontStyle.Bold));
+
+            PlayingTime = new TgcText2d();
+            stopwatch = new Stopwatch();
+
+            stopwatch.Start();
+            PlayingTime.Text = stopwatch.Elapsed.ToString(@"mm\:ss") + " AM";
+            PlayingTime.Align = TgcText2d.TextAlign.RIGHT;
+            PlayingTime.Position = new Point(600, 400);
+            PlayingTime.Size = new Size(300, 100);
+            PlayingTime.Color = Color.DarkRed;
+            PlayingTime.changeFont(new Font("Arial", 30, FontStyle.Bold));
 
             //Hacer que el Listener del sonido 3D siga al personaje
             GuiController.Instance.DirectSound.ListenerTracking = personaje;
@@ -283,8 +289,8 @@ namespace AlumnoEjemplos.MiGrupo
                     lamp.render();
                 }
             }
-            Clock.Text = DateTime.Now.ToString("hh:mm:ss");
-            Clock.render();
+            PlayingTime.Text = stopwatch.Elapsed.ToString(@"mm\:ss") + " AM";
+            PlayingTime.render();
           
             avatar.render(elapsedTime);
         }
