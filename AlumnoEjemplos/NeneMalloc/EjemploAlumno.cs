@@ -10,6 +10,7 @@ using TgcViewer;
 using Microsoft.DirectX;
 using TgcViewer.Utils.Input;
 using TgcViewer.Utils.Shaders;
+using TgcViewer.Utils.Sound;
 using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSkeletalAnimation;
@@ -38,6 +39,8 @@ namespace AlumnoEjemplos.MiGrupo
         Effect currentLanternShader;
         private TgcD3dInput d3dInput;
         private TgcText2d Clock;
+        List<Tgc3dSound> sounds;
+        Tgc3dSound sound;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -91,6 +94,21 @@ namespace AlumnoEjemplos.MiGrupo
 
             //Cargar linterna
             lantern = (Lantern) new Lantern().WithPosition(avatar.position);
+
+            var musicPath = path + "NeneMalloc\\SonidosYMusica\\Eyes Wide Shut.mp3";
+            
+            //Cargar sonidos
+            sounds = new List<Tgc3dSound>();
+
+            // sound = new Tgc3dSound(path + "AlumnoMedia\\NeneMalloc\\SonidosYMusica\\risa de loco.wav", obstaculo.Position);
+            // sound.MinDistance = 25f;
+            //sounds.Add(sound);
+            ///////////////
+
+            //Cargar musica
+            GuiController.Instance.Mp3Player.FileName = musicPath;
+            TgcMp3Player player = GuiController.Instance.Mp3Player;
+            player.play(true);
             
             obstaculos = new List<TgcBoundingBox>();
             foreach (TgcMesh mesh in tgcScene.Meshes)
@@ -126,6 +144,7 @@ namespace AlumnoEjemplos.MiGrupo
             currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
             avatar.meshPersonaje.Effect = currentAvatarShader;
 
+            //Reloj con la hora del juego
             Clock = new TgcText2d();
             Clock.Text = DateTime.Now.ToString("hh:mm:ss");
             Clock.Align = TgcText2d.TextAlign.RIGHT;
@@ -133,6 +152,15 @@ namespace AlumnoEjemplos.MiGrupo
             Clock.Size = new Size(300, 100);
             Clock.Color = Color.DarkRed;
             Clock.changeFont(new Font("Arial", 30, FontStyle.Bold));
+
+            //Hacer que el Listener del sonido 3D siga al personaje
+            GuiController.Instance.DirectSound.ListenerTracking = personaje;
+            
+            //Reproducir todos los sonidos
+            foreach (Tgc3dSound s in sounds)
+            {
+                s.play(true);
+            }
         }
 
         /// <summary>
