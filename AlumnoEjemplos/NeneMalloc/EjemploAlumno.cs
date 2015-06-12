@@ -41,6 +41,7 @@ namespace AlumnoEjemplos.MiGrupo
         private TgcText2d Clock;
         List<Tgc3dSound> sounds;
         Tgc3dSound sound;
+        string path;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -78,7 +79,7 @@ namespace AlumnoEjemplos.MiGrupo
             d3dInput = GuiController.Instance.D3dInput;
 
             //Device de DirectX para crear primitivas
-            string path = GuiController.Instance.AlumnoEjemplosMediaDir;
+            this.path = GuiController.Instance.AlumnoEjemplosMediaDir;
 
             TgcSceneLoader loader = new TgcSceneLoader();
             
@@ -99,11 +100,6 @@ namespace AlumnoEjemplos.MiGrupo
             
             //Cargar sonidos
             sounds = new List<Tgc3dSound>();
-
-            // sound = new Tgc3dSound(path + "AlumnoMedia\\NeneMalloc\\SonidosYMusica\\risa de loco.wav", obstaculo.Position);
-            // sound.MinDistance = 25f;
-            //sounds.Add(sound);
-            ///////////////
 
             //Cargar musica
             GuiController.Instance.Mp3Player.FileName = musicPath;
@@ -331,10 +327,22 @@ namespace AlumnoEjemplos.MiGrupo
 
         private void CreateGroundFloorLamps()
         {
+            Tgc3dSound sound;
             //Luces intermitentes
             var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(405, -36, -831));
+            sound = new Tgc3dSound(this.path + "NeneMalloc\\SonidosYMusica\\tuboDeLuz.wav", intermitentLamp.Position);
+            sound.MinDistance = 25f;
+            sounds.Add(sound);
+
             var intermitentLamp2 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(160f, -48.5f, 241.8f));
+            sound = new Tgc3dSound(this.path + "NeneMalloc\\SonidosYMusica\\tuboDeLuz.wav", intermitentLamp2.Position);
+            sound.MinDistance = 25f;
+            sounds.Add(sound);
+
             var intermitentLamp3 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(349.2f, -61.5f, -327.8f));
+            sound = new Tgc3dSound(this.path + "NeneMalloc\\SonidosYMusica\\tuboDeLuz.wav", intermitentLamp3.Position);
+            sound.MinDistance = 25f;
+            sounds.Add(sound);
 
             //Luces prendidas
             var onLamp = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(-102.5f, -61.5f, -331.25f));
