@@ -14,3 +14,11 @@ C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\TgcViewer\AlumnoEjemplos\Alumno
 C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\TgcViewer\AlumnoEjemplos\TgcViewer.exe
 C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\TgcViewer\AlumnoEjemplos\Ionic.Zip.dll
 C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\TgcViewer\AlumnoEjemplos\TgcViewer.pdb
+C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\AlumnoEjemplos\obj\Debug\AlumnoEjemplos.csprojResolveAssemblyReference.cache
+C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\AlumnoEjemplos\obj\Debug\AlumnoEjemplos.dll
+C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\AlumnoEjemplos\obj\Debug\AlumnoEjemplos.pdb
+C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\AlumnoEjemplos\AlumnoEjemplos.dll
+C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\AlumnoEjemplos\AlumnoEjemplos.pdb
+C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\AlumnoEjemplos\TgcViewer.exe
+C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\AlumnoEjemplos\Ionic.Zip.dll
+C:\Users\Gus\Documents\GitHub\FiveNightAtTruccos\AlumnoEjemplos\TgcViewer.pdb
