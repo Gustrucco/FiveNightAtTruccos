@@ -205,7 +205,7 @@ namespace AlumnoEjemplos.MiGrupo
                 //GuiController.Instance.Drawer2D.endDrawSprite();
             }
 
-            if (d3dInput.keyPressed(Key.L))
+            if (d3dInput.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
             {
                 lantern.ChangeLightOnOff();
             }
