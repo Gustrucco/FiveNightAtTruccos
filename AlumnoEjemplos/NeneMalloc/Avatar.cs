@@ -3,10 +3,7 @@ using TgcViewer;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX;
 using TgcViewer.Utils.TgcGeometry;
-using TgcViewer.Utils.TgcSceneLoader;
-using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc.Utils;
-using TgcViewer.Utils.Input;
 using System.Collections.Generic;
 using System.Windows.Forms;
 namespace AlumnoEjemplos.NeneMalloc
@@ -233,7 +230,7 @@ namespace AlumnoEjemplos.NeneMalloc
                 checkPoint++;
                 GuiController.Instance.UserVars.setValue("CheckPointPos","CheckPoint"+checkPoint+":"+this.Position);
                 Clipboard.SetText(Clipboard.GetText()+String.Format("new Checkpoint(new Vector3({0}, {1}, {2}));", this.Position.X, this.Position.Y, this.Position.Z));
-                CheckpointHelper.add(new Checkpoint(this.Position), "plantaBaja");
+                CheckpointHelper.add(new Checkpoint(this.Position), Floor.GroundFloor);
                 //Clipboard.SetText("CheckPointPos", "CheckPoint" + checkPoint + ":" + this.Position,TextDataFormat.Text);
             }
         }
