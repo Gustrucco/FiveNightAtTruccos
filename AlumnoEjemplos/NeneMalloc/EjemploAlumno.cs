@@ -43,6 +43,7 @@ namespace AlumnoEjemplos.MiGrupo
         Stopwatch stopwatch;
         List<Tgc3dSound> sounds;
         Tgc3dSound sound;
+        TgcSprite winningScreen;
         string path;
 
         /// <summary>
@@ -113,7 +114,16 @@ namespace AlumnoEjemplos.MiGrupo
             {
                 obstaculos.Add(mesh.BoundingBox);
             }
-            
+
+            //Cargar pantalla de juego ganado
+            winningScreen = new TgcSprite();
+            winningScreen.Texture = TgcTexture.createTexture(path + "NeneMalloc\\winningScreen.png");
+
+            //Ubicar pantalla de juego ganado centrado en la pantalla
+            Size screenSize = GuiController.Instance.Panel3d.Size;
+            Size textureSize = winningScreen.Texture.Size;
+            winningScreen.Position = new Vector2(FastMath.Max(screenSize.Width / 2 - textureSize.Width / 2, 0), FastMath.Max(screenSize.Height / 2 - textureSize.Height / 2, 0));
+
             CollitionManager.obstaculos = obstaculos;
            //Camara en primera persona, tipo videojuego FPS
            //GuiController.Instance.FpsCamera.Enable = true;
@@ -172,6 +182,19 @@ namespace AlumnoEjemplos.MiGrupo
         public override void render(float elapsedTime)
         {
             List<TgcMesh> meshes = tgcScene.Meshes;
+
+            //Juego ganado
+            if (stopwatch.Elapsed.Minutes == 10)
+            {
+                ////Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
+                //GuiController.Instance.Drawer2D.beginDrawSprite();
+
+                ////Dibujar sprite (si hubiese mas, deberian ir todos aquí)
+                //winningScreen.render();
+
+                ////Finalizar el dibujado de Sprites
+                //GuiController.Instance.Drawer2D.endDrawSprite();
+            }
 
             if (d3dInput.keyPressed(Key.L))
             {
