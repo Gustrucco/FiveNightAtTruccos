@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Windows.Forms;
 using AlumnoEjemplos.NeneMalloc.Lights;
 using AlumnoEjemplos.NeneMalloc.Lights.States;
 using Microsoft.DirectX.Direct3D;
@@ -45,6 +46,7 @@ namespace AlumnoEjemplos.MiGrupo
         Tgc3dSound sound;
         TgcSprite winningScreen;
         string path;
+        float timeStart = 5f;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -91,6 +93,9 @@ namespace AlumnoEjemplos.MiGrupo
                path + "NeneMalloc\\");
 
             lights = new List<IluminationEntity>();
+
+            Cursor.Hide();
+            Cursor.Position = new Point(GuiController.Instance.FullScreenPanel.Width / 2, GuiController.Instance.FullScreenPanel.Height / 2);
 
            //Cargar personaje
             avatar = new Avatar();
@@ -146,6 +151,10 @@ namespace AlumnoEjemplos.MiGrupo
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
+
+            GuiController.Instance.UserVars.addVar("Velocidad Caida");
+            GuiController.Instance.UserVars.addVar("Falling");
+            GuiController.Instance.UserVars.addVar("MouseReleased");
 
             currentLanternShader = TgcShaders.loadEffect(path + "NeneMalloc\\Shaders\\TgcMeshPointAndSpotLightShader.fx");
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
@@ -315,7 +324,15 @@ namespace AlumnoEjemplos.MiGrupo
             PlayingTime.Text = stopwatch.Elapsed.ToString(@"mm\:ss") + " AM";
             PlayingTime.render();
           
-            avatar.render(elapsedTime);
+            if (timeStart >= 0)
+            {
+                timeStart -= elapsedTime;
+            }
+            else
+            {
+                avatar.update(elapsedTime);
+            }
+            avatar.render();
         }
 
         private void CreateLamps()
