@@ -2,11 +2,14 @@
 using Microsoft.DirectX.Direct3D;
 using TgcViewer;
 using TgcViewer.Utils.Input;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace AlumnoEjemplos.NeneMalloc
 {
     public class Player : Controller
     {
+        bool mouseReleased = false;
         public override void render()
         {
             this.order = new Order();
@@ -34,29 +37,25 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 order.moveAside = -1;
             }
-
-
-            order.rotateX = d3dInput.YposRelative;
-            order.rotateY = d3dInput.XposRelative;
-
-            if (d3dInput.keyDown(Key.UpArrow))
+            if (d3dInput.keyPressed(Key.LeftControl))
             {
-                order.rotateX = +1;
+                mouseReleased = !mouseReleased;
             }
+            GuiController.Instance.UserVars.setValue("MouseReleased", mouseReleased);
+            if (mouseReleased)
+            {
+                Cursor.Show();
+            }
+            else
+            {
+                order.rotateX = d3dInput.YposRelative;
+                order.rotateY = d3dInput.XposRelative;
+                Cursor.Hide();
+                Cursor.Position = new Point( GuiController.Instance.FullScreenPanel.Width/2,GuiController.Instance.FullScreenPanel.Height/2);
+            }
+           
 
-            if (d3dInput.keyDown(Key.DownArrow))
-            {
-                order.rotateX = -1;
-            }
-
-            if (d3dInput.keyDown(Key.RightArrow))
-            {
-                order.rotateY = +1;
-            }
-            if (d3dInput.keyDown(Key.LeftArrow))
-            {
-                order.rotateY = -1;
-            }
+          
         }
     }
 }

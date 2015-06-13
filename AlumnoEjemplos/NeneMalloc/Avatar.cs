@@ -195,7 +195,7 @@ namespace AlumnoEjemplos.NeneMalloc
             if (!this.touchingSomething(new Vector3(0, -0.1f, 0)))
             {
                 GuiController.Instance.UserVars.setValue("isColliding", "flotando");
-                if (this.touchingSomething(new Vector3(0, -15f, 0)) && !this.falling)
+                if (!this.falling && this.touchingSomething(new Vector3(0, -15f, 0)))
                 {
 
                     GuiController.Instance.UserVars.setValue("isColliding", "escaleraBajada");
@@ -214,6 +214,7 @@ namespace AlumnoEjemplos.NeneMalloc
                     this.updateFallingSpeed(elapsedTime);
                     if (this.hitSomethingAtPath(new Vector3(0, -1f, 0) , elapsedTime * velocidadCaida))
                     {
+                        GuiController.Instance.UserVars.setValue("isColliding", "gravedadGround");
                         TgcBoundingBox boundingBoxResult;
                         CollitionManager.getClosestBoundingBox(new TgcRay(this.Position, new Vector3 (0,1f,0)), out boundingBoxResult, this.BoundingBox);
                         this.move(new Vector3(0, -1f, 0) * Math.Abs(boundingBoxResult.PMax.Y - this.BoundingBox.PMin.Y));
@@ -224,7 +225,9 @@ namespace AlumnoEjemplos.NeneMalloc
                     {
                         this.move(new Vector3(0, -1f, 0) * elapsedTime * velocidadCaida);
                     }
+                    GuiController.Instance.UserVars.setValue("Velocidad Caida", this.velocidadCaida);
                  }
+                GuiController.Instance.UserVars.setValue("Falling", this.falling);
             }
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
             //Hacer que la camara siga al personaje en su nueva posicion

@@ -14,6 +14,7 @@ namespace AlumnoEjemplos.NeneMalloc
 
         public void render()
         {
+            if(this.Controller!= null)
             this.Controller.render();
         }
         public void moveAside(float movement)

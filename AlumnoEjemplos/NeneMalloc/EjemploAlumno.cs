@@ -101,6 +101,9 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.addVar("Y");
             GuiController.Instance.UserVars.addVar("LastPos");
             GuiController.Instance.UserVars.addVar("Mesh renderizados");
+            GuiController.Instance.UserVars.addVar("Velocidad Caida");
+            GuiController.Instance.UserVars.addVar("Falling");
+            GuiController.Instance.UserVars.addVar("MouseReleased");
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
@@ -134,6 +137,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             //Render personaje
             avatar.render(elapsedTime);
+            
 
         }
 
