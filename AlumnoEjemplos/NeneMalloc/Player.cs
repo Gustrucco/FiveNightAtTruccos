@@ -37,10 +37,14 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 order.moveAside = -1;
             }
+
             if (d3dInput.keyPressed(Key.LeftControl))
             {
                 mouseReleased = !mouseReleased;
             }
+
+            order.printCheckPoint = d3dInput.keyPressed(Key.P);
+
             GuiController.Instance.UserVars.setValue("MouseReleased", mouseReleased);
             if (mouseReleased)
             {

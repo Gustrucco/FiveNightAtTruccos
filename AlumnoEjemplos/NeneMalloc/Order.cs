@@ -8,8 +8,8 @@ namespace AlumnoEjemplos.NeneMalloc
         public int moveAside = 0; 
         public float rotateY = 0;
         public float rotateX = 0;
+        public Boolean printCheckPoint = false;
         
-
         //public Vector3 getDirection()
         //{
         //    Vector3 direction = this.movement;
@@ -35,7 +35,6 @@ namespace AlumnoEjemplos.NeneMalloc
         {
             return rotateX != 0 || rotateY != 0;
         }
-
     }
 
     

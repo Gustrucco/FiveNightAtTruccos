@@ -25,6 +25,7 @@ namespace AlumnoEjemplos.MiGrupo
         Avatar avatar;
         Lantern lantern;
         float timeStart = 5f;
+        List<Checkpoint> checkpointsFloor;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -59,19 +60,16 @@ namespace AlumnoEjemplos.MiGrupo
         public override void init()
         {
             //GuiController.Instance: acceso principal a todas las herramientas del Framework
-            
             Cursor.Hide();
             Cursor.Position = new Point(GuiController.Instance.FullScreenPanel.Width / 2, GuiController.Instance.FullScreenPanel.Height / 2);
+            Clipboard.Clear();
             //Device de DirectX para crear primitivas
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
             TgcSceneLoader loader = new TgcSceneLoader();
             tgcScene = loader.loadSceneFromFile(
-               path + "NeneMalloc\\Escenario-TgcScene.xml",
+               path + "NeneMalloc\\EscenarioCambios16-TgcScene.xml",
                path + "NeneMalloc\\");
-
-
-
            //Cargar personaje
             avatar = new Avatar();
             avatar.init();
@@ -92,8 +90,9 @@ namespace AlumnoEjemplos.MiGrupo
            //GuiController.Instance.FpsCamera.Enable = true;
            //Configurar posicion y hacia donde se mira
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
-       
 
+
+            CheckpointHelper.add(new Checkpoint(new Vector3(140.3071f, -91.425f, 246.465f)), "plantaBaja");
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
@@ -107,6 +106,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.addVar("Velocidad Caida");
             GuiController.Instance.UserVars.addVar("Falling");
             GuiController.Instance.UserVars.addVar("MouseReleased");
+            GuiController.Instance.UserVars.addVar("CheckPointPos");
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
@@ -139,6 +139,7 @@ namespace AlumnoEjemplos.MiGrupo
             int count = 0;
             this.tgcScene.renderAll();
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showSceneBoundingBox");
+            
             if (showBB)
             {    
                 foreach (TgcMesh mesh in this.tgcScene.Meshes)
@@ -146,10 +147,12 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.BoundingBox.render();
 	            }
             }
+
+            
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             //Render personaje
-            
-         
+
+            CheckpointHelper.renderAll();
             
             
 

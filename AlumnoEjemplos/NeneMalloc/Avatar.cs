@@ -8,6 +8,7 @@ using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc.Utils;
 using TgcViewer.Utils.Input;
 using System.Collections.Generic;
+using System.Windows.Forms;
 namespace AlumnoEjemplos.NeneMalloc
 {
     class Avatar : Character
@@ -17,6 +18,7 @@ namespace AlumnoEjemplos.NeneMalloc
         private bool falling = false;
         private TruccoFPSCamera Camera = new TruccoFPSCamera();
         private float velocidadCaida = 0f;
+        private int checkPoint = 0;
 
         
         public void init()
@@ -187,11 +189,8 @@ namespace AlumnoEjemplos.NeneMalloc
                 {
                     GuiController.Instance.UserVars.setValue("isColliding", false);
                 }         
-
             }
-            
             //Si no se esta moviendo, activar animacion de Parado
-           
             if (!this.touchingSomething(new Vector3(0, -0.1f, 0)))
             {
                 GuiController.Instance.UserVars.setValue("isColliding", "flotando");
@@ -229,8 +228,14 @@ namespace AlumnoEjemplos.NeneMalloc
                  }
                 GuiController.Instance.UserVars.setValue("Falling", this.falling);
             }
-           
-           
+            if(lastOrders.printCheckPoint)
+            {
+                checkPoint++;
+                GuiController.Instance.UserVars.setValue("CheckPointPos","CheckPoint"+checkPoint+":"+this.Position);
+                Clipboard.SetText(Clipboard.GetText()+String.Format("new Checkpoint(new Vector3({0}, {1}, {2}));", this.Position.X, this.Position.Y, this.Position.Z));
+                CheckpointHelper.add(new Checkpoint(this.Position), "plantaBaja");
+                //Clipboard.SetText("CheckPointPos", "CheckPoint" + checkPoint + ":" + this.Position,TextDataFormat.Text);
+            }
         }
         public Boolean touchingSomething(Vector3 vector)
         {
