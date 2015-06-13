@@ -57,10 +57,7 @@ namespace AlumnoEjemplos.NeneMalloc
                 this.rotateY(lastOrders.rotateY * velocidadRotacion * elapsedTime);
                 this.rotateX(lastOrders.rotateX * velocidadRotacion * elapsedTime);
 
-                this.Camera.rotate(lastOrders.rotateY * velocidadRotacion * elapsedTime, lastOrders.rotateX * velocidadRotacion * elapsedTime, 0f);
-                //this.BoundingBox.transform(Matrix.RotationY(this.rotation.Y)* Matrix.Translation(this.position));
-
-                GuiController.Instance.ThirdPersonCamera.rotateY(rotAngle);
+                
             }
 
 
@@ -178,7 +175,6 @@ namespace AlumnoEjemplos.NeneMalloc
                                 GuiController.Instance.UserVars.setValue("Normal", "SeteandoNormal");
                                 this.move(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.Position)), normal));
                             }
-
                         }
                     }
 
@@ -266,6 +262,17 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 this.BoundingBox.render();
             }
+        }
+
+        override public  void rotateX(float angle)
+        {
+            base.rotateX(angle);
+            this.Camera.rotate(0, angle,0);
+        }
+        override public void rotateY(float angle)
+        {
+            base.rotateY(angle);
+            this.Camera.rotate(angle, 0, 0);
         }
     }
 }

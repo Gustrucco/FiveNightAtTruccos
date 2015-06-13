@@ -90,7 +90,7 @@ namespace AlumnoEjemplos.MiGrupo
             TgcSceneLoader loader = new TgcSceneLoader();
             
             tgcScene = loader.loadSceneFromFile(
-               path + "NeneMalloc\\pisoCompleto-TgcScene.xml",
+               path + "NeneMalloc\\EscenarioCambios16-TgcScene.xml",
                path + "NeneMalloc\\");
 
             lights = new List<IluminationEntity>();
