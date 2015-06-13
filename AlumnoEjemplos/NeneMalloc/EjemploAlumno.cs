@@ -202,20 +202,31 @@ namespace AlumnoEjemplos.MiGrupo
             PlayingTime.Text = "";
 
             PlayingTime.render();
+
+            TgcText2d WinText = new TgcText2d();
+            WinText.Text = "YOU WIN THIS TIME";
+            WinText.Align = TgcText2d.TextAlign.CENTER;
+            WinText.Position = new Point(300, 250);
+            WinText.Size = new Size(500, 500);
+            WinText.Color = Color.Indigo;
+            WinText.changeFont(new Font("Arial", 50, FontStyle.Bold | FontStyle.Underline));
+
+            WinText.render();
+
             foreach (Tgc3dSound s in sounds)
             {
                 s.stop();
             }
 
             player.pause();
-            //Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
-            GuiController.Instance.Drawer2D.beginDrawSprite();
+            ////Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
+            //GuiController.Instance.Drawer2D.beginDrawSprite();
 
-            //Dibujar sprite (si hubiese mas, deberian ir todos aquí)
-            winningScreen.render();
+            ////Dibujar sprite (si hubiese mas, deberian ir todos aquí)
+            //winningScreen.render();
 
-            //Finalizar el dibujado de Sprites
-            GuiController.Instance.Drawer2D.endDrawSprite();
+            ////Finalizar el dibujado de Sprites
+            //GuiController.Instance.Drawer2D.endDrawSprite();
         }
 
         private void renderUnfinishedGame(float elapsedTime)
