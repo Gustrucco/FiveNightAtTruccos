@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using AlumnoEjemplos.NeneMalloc.Lights;
 using AlumnoEjemplos.NeneMalloc.Lights.States;
 using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX.DirectInput;
 using TgcViewer.Example;
 using TgcViewer;
 using Microsoft.DirectX;
@@ -42,6 +42,7 @@ namespace AlumnoEjemplos.MiGrupo
         TgcD3dInput d3dInput;
         TgcText2d PlayingTime;
         Stopwatch stopwatch;
+        TgcMp3Player player;
         List<Tgc3dSound> sounds;
         Tgc3dSound sound;
         TgcSprite winningScreen;
@@ -104,14 +105,12 @@ namespace AlumnoEjemplos.MiGrupo
             //Cargar linterna
             lantern = (Lantern) new Lantern().WithPosition(avatar.Position);
 
-            var musicPath = path + "NeneMalloc\\SonidosYMusica\\Eyes Wide Shut.mp3";
-            
             //Cargar sonidos
             sounds = new List<Tgc3dSound>();
 
             //Cargar musica
-            GuiController.Instance.Mp3Player.FileName = musicPath;
-            TgcMp3Player player = GuiController.Instance.Mp3Player;
+            GuiController.Instance.Mp3Player.FileName = path + "NeneMalloc\\SonidosYMusica\\Eyes Wide Shut.mp3";
+            player = GuiController.Instance.Mp3Player;
             player.play(true);
             
             obstaculos = new List<TgcBoundingBox>();
@@ -130,10 +129,6 @@ namespace AlumnoEjemplos.MiGrupo
             winningScreen.Position = new Vector2(FastMath.Max(screenSize.Width / 2 - textureSize.Width / 2, 0), FastMath.Max(screenSize.Height / 2 - textureSize.Height / 2, 0));
 
             CollitionManager.obstaculos = obstaculos;
-           //Camara en primera persona, tipo videojuego FPS
-           //GuiController.Instance.FpsCamera.Enable = true;
-           //Configurar posicion y hacia donde se mira
-           //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
 
             this.CreateLamps();
 
@@ -190,20 +185,42 @@ namespace AlumnoEjemplos.MiGrupo
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
-            List<TgcMesh> meshes = tgcScene.Meshes;
-
             //Juego ganado
-            if (stopwatch.Elapsed.Minutes == 10)
+            if (stopwatch.Elapsed.Minutes >= 10)
             {
-                ////Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
-                //GuiController.Instance.Drawer2D.beginDrawSprite();
-
-                ////Dibujar sprite (si hubiese mas, deberian ir todos aquí)
-                //winningScreen.render();
-
-                ////Finalizar el dibujado de Sprites
-                //GuiController.Instance.Drawer2D.endDrawSprite();
+                this.renderFinishedGame();
             }
+            else
+            {
+                this.renderUnfinishedGame(elapsedTime);
+            }
+
+        }
+
+        private void renderFinishedGame()
+        {
+            PlayingTime.Text = "";
+
+            PlayingTime.render();
+            foreach (Tgc3dSound s in sounds)
+            {
+                s.stop();
+            }
+
+            player.pause();
+            //Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
+            GuiController.Instance.Drawer2D.beginDrawSprite();
+
+            //Dibujar sprite (si hubiese mas, deberian ir todos aquí)
+            winningScreen.render();
+
+            //Finalizar el dibujado de Sprites
+            GuiController.Instance.Drawer2D.endDrawSprite();
+        }
+
+        private void renderUnfinishedGame(float elapsedTime)
+        {
+            List<TgcMesh> meshes = tgcScene.Meshes;
 
             if (d3dInput.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
             {
@@ -219,8 +236,8 @@ namespace AlumnoEjemplos.MiGrupo
                         m =>
                             TgcCollisionUtils.classifyFrustumAABB(frustum, m.BoundingBox) !=
                             TgcCollisionUtils.FrustumResult.OUTSIDE);
-                
-                
+
+
             }
             //Actualizar cantidad de meshes dibujadas
             GuiController.Instance.UserVars.setValue("Meshes renderizadas", meshes.Count);
@@ -233,7 +250,7 @@ namespace AlumnoEjemplos.MiGrupo
 
             //Render personaje
             //avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
-           
+
             //Calcular random por si la luz es intermitente
             this.setRandomToLamps();
 
@@ -286,7 +303,6 @@ namespace AlumnoEjemplos.MiGrupo
 
                     //avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity() + lantern.Intensity);             
 
-                    //Renderizar modelo (lamp.render() no hace nada por ahora)
                     mesh.render();
                 }
             }
@@ -323,7 +339,7 @@ namespace AlumnoEjemplos.MiGrupo
             }
             PlayingTime.Text = stopwatch.Elapsed.ToString(@"mm\:ss") + " AM";
             PlayingTime.render();
-          
+
             if (timeStart >= 0)
             {
                 timeStart -= elapsedTime;
@@ -344,7 +360,6 @@ namespace AlumnoEjemplos.MiGrupo
         private void CreateFirstFloorLamps()
         {
             //Luces intermitentes
-
             var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-26.5f, 75f, 6.3f));
             var intermitentLamp2 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-27.75f, 75f, -325.15f));
             var intermitentLamp3 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(229.5f, 75f, 97.1f));
@@ -473,7 +488,9 @@ namespace AlumnoEjemplos.MiGrupo
             {
                 light.dispose();
             }
-            //avatar.dispose();
+            PlayingTime.dispose();
+            winningScreen.dispose();
+            lantern.dispose();
         }
 
     }
