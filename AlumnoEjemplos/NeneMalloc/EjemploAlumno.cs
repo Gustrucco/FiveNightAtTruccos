@@ -1,13 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using TgcViewer.Example;
 using TgcViewer;
-using Microsoft.DirectX;
 using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc;
 using AlumnoEjemplos.NeneMalloc.Utils;
-using Microsoft.DirectX.DirectInput;
 using System.Windows.Forms;
 using System.Drawing;
 
@@ -104,6 +103,7 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.addVar("Y");
             GuiController.Instance.UserVars.addVar("LastPos");
             GuiController.Instance.UserVars.addVar("Mesh renderizados");
+            GuiController.Instance.UserVars.addVar("Checkpoints");
             GuiController.Instance.UserVars.addVar("Velocidad Caida");
             GuiController.Instance.UserVars.addVar("Falling");
             GuiController.Instance.UserVars.addVar("MouseReleased");
@@ -149,8 +149,8 @@ namespace AlumnoEjemplos.MiGrupo
 	            }
             }
 
-            
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
+            GuiController.Instance.UserVars.setValue("Checkpoints", CheckpointHelper.CheckPoints.Sum( c => c.Value.Count));
             //Render personaje
 
             CheckpointHelper.renderAll();
