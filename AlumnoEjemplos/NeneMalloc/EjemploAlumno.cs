@@ -92,7 +92,8 @@ namespace AlumnoEjemplos.MiGrupo
            //GuiController.Instance.FpsCamera.setCamera(new Vector3(0, 0, -20), new Vector3(0, 0, 0));
 
 
-            CheckpointHelper.add(new Checkpoint(new Vector3(140.3071f, -91.425f, 246.465f)), Floor.GroundFloor);
+            CheckpointHelper.BuildCheckpoints();
+            //CheckpointHelper.add(new Checkpoint(new Vector3(140.3071f, -91.425f, 246.465f)), Floor.GroundFloor);
 
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
