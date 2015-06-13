@@ -24,6 +24,7 @@ namespace AlumnoEjemplos.MiGrupo
         TgcSkeletalMesh personaje;
         Avatar avatar;
         Lantern lantern;
+        float timeStart = 5f;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -59,6 +60,8 @@ namespace AlumnoEjemplos.MiGrupo
         {
             //GuiController.Instance: acceso principal a todas las herramientas del Framework
             
+            Cursor.Hide();
+            Cursor.Position = new Point(GuiController.Instance.FullScreenPanel.Width / 2, GuiController.Instance.FullScreenPanel.Height / 2);
             //Device de DirectX para crear primitivas
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
@@ -123,7 +126,16 @@ namespace AlumnoEjemplos.MiGrupo
             
             //Obtener boolean para saber si hay que mostrar Bounding Box
            // bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
-          
+            if (timeStart >= 0)
+            {
+                timeStart -= elapsedTime;
+            }
+            else
+            {
+                avatar.update(elapsedTime);
+            }
+            avatar.render();
+
             int count = 0;
             this.tgcScene.renderAll();
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showSceneBoundingBox");
@@ -136,7 +148,9 @@ namespace AlumnoEjemplos.MiGrupo
             }
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             //Render personaje
-            avatar.render(elapsedTime);
+            
+         
+            
             
 
         }

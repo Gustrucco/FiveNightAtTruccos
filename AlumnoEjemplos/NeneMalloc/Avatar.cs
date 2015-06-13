@@ -38,9 +38,9 @@ namespace AlumnoEjemplos.NeneMalloc
             this.Camera.setCamera(this.Position, this.Position + this.calculateNewPosition(1, this.Rotation) );
         }
 
-        public void render(float elapsedTime)
+        public void update(float elapsedTime)
         {
-            base.render();
+            base.update();
 
             //obtener velocidades de Modifiers
             float velocidadCaminar = (float)GuiController.Instance.Modifiers.getValue("VelocidadCaminar");
@@ -229,12 +229,8 @@ namespace AlumnoEjemplos.NeneMalloc
                  }
                 GuiController.Instance.UserVars.setValue("Falling", this.falling);
             }
-            bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
-            //Hacer que la camara siga al personaje en su nueva posicion
-            if (showBB)
-            {
-                this.BoundingBox.render();
-            }
+           
+           
         }
         public Boolean touchingSomething(Vector3 vector)
         {
@@ -262,6 +258,14 @@ namespace AlumnoEjemplos.NeneMalloc
             this.Position += pos;
             this.Camera.setPosition(this.Position );
             this.BoundingBox.transform(Matrix.Translation(this.Position));
+        }
+
+        public override void render()
+        {
+            if ((bool)GuiController.Instance.Modifiers.getValue("showBoundingBox"))
+            {
+                this.BoundingBox.render();
+            }
         }
     }
 }

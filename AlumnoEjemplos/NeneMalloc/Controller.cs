@@ -10,6 +10,6 @@ namespace AlumnoEjemplos.NeneMalloc
 
         public Vector3 GenericUp { get { return new Vector3(0.0f, 1.0f, 0.0f); } }
 
-        public abstract void render();
+        public abstract void update();
     }
 }

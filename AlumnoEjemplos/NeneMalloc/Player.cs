@@ -10,7 +10,7 @@ namespace AlumnoEjemplos.NeneMalloc
     public class Player : Controller
     {
         bool mouseReleased = false;
-        public override void render()
+        public override void update()
         {
             this.order = new Order();
             TgcD3dInput d3dInput = GuiController.Instance.D3dInput;

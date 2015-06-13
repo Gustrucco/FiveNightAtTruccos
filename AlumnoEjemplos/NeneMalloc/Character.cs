@@ -12,10 +12,10 @@ namespace AlumnoEjemplos.NeneMalloc
 
         public Controller Controller { get; set; }
 
-        public void render()
+        public void update()
         {
             if(this.Controller!= null)
-            this.Controller.render();
+            this.Controller.update();
         }
         public void moveAside(float movement)
         {
@@ -58,5 +58,7 @@ namespace AlumnoEjemplos.NeneMalloc
              return sign * Math.Min(Math.Abs(value), range);
          }
         public abstract void move(Vector3 pos);
+
+        public abstract void render();
     }
 }
