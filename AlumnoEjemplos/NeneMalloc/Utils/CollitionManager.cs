@@ -74,5 +74,7 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             TgcCollisionUtils.intersectRayAABB(rayCast, boundingBox, out vector);
             return vector;
         }
+
+       
     }
 }

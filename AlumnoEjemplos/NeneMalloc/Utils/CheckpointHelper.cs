@@ -1,12 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.DirectX;
+using TgcViewer;
+using TgcViewer.Utils.TgcGeometry;
+using System.Drawing;
+using System.Text.RegularExpressions;
+using Microsoft.DirectX.Direct3D;
 
 namespace AlumnoEjemplos.NeneMalloc.Utils
 {
     class CheckpointHelper
     {
         public static Dictionary<Floor,List<Checkpoint>> CheckPoints= new Dictionary<Floor,List<Checkpoint>>();
-
+        public static List<TgcArrow> lastCheckPointArrows;
         public static void renderAll()
         {
             foreach (KeyValuePair<Floor,List<Checkpoint>> keyPair in CheckPoints)
@@ -14,8 +21,9 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
                 keyPair.Value.ForEach(c => c.render());
             }
         }
-        public static void add(Checkpoint checkPoint, Floor key)
+        public static void Add(Checkpoint checkPoint)
         {
+            Floor key = (Floor) GuiController.Instance.Modifiers.getValue("PisoCheckPoint");
             if (!CheckPoints.ContainsKey(key))
             {
                 CheckPoints[key] = new List<Checkpoint>();
@@ -23,65 +31,197 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             CheckPoints[key].Add(checkPoint);
         }
 
+
+        public static void GenerateGraph()
+        {
+            List<Checkpoint> checkPoints = new List<Checkpoint>();
+            foreach (KeyValuePair<Floor, List<Checkpoint>> key in CheckPoints)
+            {
+                checkPoints.AddRange(key.Value);
+            }
+            checkPoints.ForEach(c => c.Checked = false);
+            foreach (Checkpoint checkPoint in checkPoints)
+            {
+                checkPoint.Checked = true;
+                List<Checkpoint> unCheckedCheckpoints = checkPoints;
+                List<Checkpoint> checkedCheckPoints = checkPoints.FindAll(c => c.Checked);
+                unCheckedCheckpoints = unCheckedCheckpoints.FindAll(c => checkPoint.hasDirectSightWith(c));
+                checkPoint.Neighbors =
+                    new HashSet<Checkpoint>(
+                        unCheckedCheckpoints.FindAll(c => checkPoint.hasDirectSightWith(c))
+                            .FindAll(
+                                neighbor =>
+                                    !unCheckedCheckpoints.Any(
+                                            c =>
+                                                c != neighbor &&
+                                                neighbor.hasDirectSightWith(c) &&
+                                                Math.Abs(AngleBetweenInXandZ(checkPoint, neighbor, c)) < 15 &&
+                                                DistanceBetweenInXandZ(checkPoint, c) <
+                                                DistanceBetweenInXandZ(checkPoint, neighbor))
+                                        
+                            ));
+                //checkPoint.Neighbors.UnionWith(checkedCheckPoints.FindAll(c => c.Neighbors.Contains(checkPoint)));
+
+            }
+          
+        }
+
+        public static float DistanceBetweenInXandZ(Checkpoint checkPoint, Checkpoint otherCheckpoint)
+        {
+            Vector3 positionOne = new Vector3(checkPoint.Position.X, 0f, checkPoint.Position.Z);
+            Vector3 positionTwo = new Vector3(otherCheckpoint.Position.X, 0f, otherCheckpoint.Position.Z);
+            return Vector3.Length(positionOne - positionTwo);
+        }
+
+        public static float AngleBetweenInXandZ(Checkpoint checkPointBase, Checkpoint otherCheckpoint, Checkpoint otherCheckpoint2)
+        {
+            Vector3 vector1 = otherCheckpoint.Position - checkPointBase.Position;
+            Vector3 vector2 = otherCheckpoint2.Position - checkPointBase.Position;
+            vector1.Normalize();
+            vector2.Normalize();
+            return Geometry.RadianToDegree(Convert.ToSingle(Math.Acos(Vector3.Dot(vector1, vector2))));
+        }
+
+        public static List<TgcArrow> PrepareClosestCheckPoint( Vector3 position, Checkpoint lastCheckPoint, out Checkpoint updatedChekPoint)
+        {
+            updatedChekPoint = GetClosestCheckPoint(position, lastCheckPoint);
+            if (lastCheckPoint != updatedChekPoint)
+            {
+                lastCheckPoint = updatedChekPoint;
+                lastCheckPointArrows = updatedChekPoint.Neighbors.Select(c =>
+                {
+                    TgcArrow arrow = new TgcArrow();
+                    arrow.PStart = lastCheckPoint.Position;
+                    arrow.PEnd = c.Position;
+                    arrow.BodyColor = Color.Black;
+                    arrow.HeadColor = Color.White;
+                    arrow.Thickness = 0.4f;
+                    arrow.HeadSize = new Vector2(8, 10);
+
+                    arrow.updateValues();
+                    return arrow;
+                }).ToList(); 
+            }
+            
+            return lastCheckPointArrows;
+            
+        }
+        public static Checkpoint GetClosestCheckPoint(Vector3 position, Checkpoint lastCheckPoint)
+        {
+            List<Checkpoint> checkpoints = new List<Checkpoint>();
+            foreach (KeyValuePair<Floor, List<Checkpoint>> key in CheckPoints)
+            {
+                checkpoints.AddRange(key.Value);
+            }
+           
+            return checkpoints.Aggregate((checkPointMin, aCheckpoint) => (checkPointMin == null ||  Vector3.Length(position - aCheckpoint.Position) < (Vector3.Length(position - checkPointMin.Position)) ? aCheckpoint : checkPointMin));
+        }
+
         public static void BuildCheckpoints()
         {
-            Checkpoint checkpoint;
-
             //Checkpoints de la planta baja
             var groundFloorCheckpoints = new List<Checkpoint>();
 
-            checkpoint = new Checkpoint(new Vector3(140.3071f, -91.425f, 246.465f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(135.1541f, -91.5322f, 73.97246f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(136.7793f, -91.5322f, -388.7028f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(367.2954f, -91.5322f, -379.0724f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(142.1351f, -91.5322f, -587.4449f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(48.5405f, -91.5322f, -587.1827f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(47.7466f, -91.5322f, -650.8663f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(-207.8635f, -76.8167f, -647.2618f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(-205.4841f, -76.8167f, -506.2321f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(63.18164f, -91.5322f, -510.1888f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(138.7557f, -91.5322f, -815.7433f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(157.8764f, -91.5322f, -932.082f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(579.3079f, -91.5322f, -959.9172f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(580.7623f, -91.5322f, -1237.077f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(100.1329f, -91.5322f, -1240.662f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(97.71819f, -91.5322f, -1141.469f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(199.6551f, -91.5322f, -1148.561f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(594.2427f, -91.5322f, -799.2379f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(376.4898f, -91.5322f, -793.5558f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(568.7994f, -91.5322f, -720.6974f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(875.2565f, -91.5322f, -717.1635f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(582.5909f, -91.5322f, -592.5996f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(484.4768f, -91.5322f, -601.9526f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(374.0719f, -91.5322f, -674.12f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(255.9218f, -91.5322f, -593.4872f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(400.259f, -91.5322f, -521.6392f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(581.5532f, -91.5322f, -548.7872f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(733.405f, -91.5322f, -560.9555f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(572.2836f, -91.5322f, -395.963f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(700.7197f, -91.5322f, -400.6456f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(557.5756f, -91.5322f, -248.8698f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(719.8679f, -91.5322f, -243.7147f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(566.7104f, -91.5322f, 186.395f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(720.7777f, -93.5423f, 181.9301f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(464.9825f, -93.5423f, 221.0516f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(599.3282f, -91.5322f, 224.6017f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(454.8033f, -93.5423f, 331.6003f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(707.5667f, -93.5423f, 321.0968f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(585.513f, -93.5423f, 332.7991f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(577.4136f, -93.5423f, 446.3262f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(590.7381f, -93.5423f, 547.0322f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(318.5031f, -92.8721f, 248.1255f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(21.41224f, -92.8721f, 240.3206f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(7.295446f, -92.8721f, 342.8895f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(-58.09561f, -92.8721f, 345.3991f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(291.8305f, -92.8721f, 331.9693f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(-49.60235f, -92.8721f, 454.0785f));            groundFloorCheckpoints.Add(checkpoint);
-            checkpoint = new Checkpoint(new Vector3(-60.96433f, -92.8721f, 538.7425f));            groundFloorCheckpoints.Add(checkpoint);
+            var checkpoint = new Checkpoint(new Vector3(140.3071f, -91.425f, 246.465f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(135.1541f, -91.5322f, 73.97246f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(136.7793f, -91.5322f, -388.7028f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(367.2954f, -91.5322f, -379.0724f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(142.1351f, -91.5322f, -587.4449f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(48.5405f, -91.5322f, -587.1827f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(47.7466f, -91.5322f, -650.8663f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(-207.8635f, -76.8167f, -647.2618f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(-205.4841f, -76.8167f, -506.2321f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(63.18164f, -91.5322f, -510.1888f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(138.7557f, -91.5322f, -815.7433f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(157.8764f, -91.5322f, -932.082f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(579.3079f, -91.5322f, -959.9172f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(580.7623f, -91.5322f, -1237.077f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(100.1329f, -91.5322f, -1240.662f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(97.71819f, -91.5322f, -1141.469f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(199.6551f, -91.5322f, -1148.561f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(594.2427f, -91.5322f, -799.2379f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(376.4898f, -91.5322f, -793.5558f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(568.7994f, -91.5322f, -720.6974f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(875.2565f, -91.5322f, -717.1635f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(582.5909f, -91.5322f, -592.5996f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(484.4768f, -91.5322f, -601.9526f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(374.0719f, -91.5322f, -674.12f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(255.9218f, -91.5322f, -593.4872f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(400.259f, -91.5322f, -521.6392f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(581.5532f, -91.5322f, -548.7872f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(733.405f, -91.5322f, -560.9555f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(572.2836f, -91.5322f, -395.963f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(700.7197f, -91.5322f, -400.6456f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(557.5756f, -91.5322f, -248.8698f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(719.8679f, -91.5322f, -243.7147f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(566.7104f, -91.5322f, 186.395f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(720.7777f, -93.5423f, 181.9301f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(464.9825f, -93.5423f, 221.0516f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(599.3282f, -91.5322f, 224.6017f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(454.8033f, -93.5423f, 331.6003f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(707.5667f, -93.5423f, 321.0968f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(585.513f, -93.5423f, 332.7991f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(577.4136f, -93.5423f, 446.3262f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(590.7381f, -93.5423f, 547.0322f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(318.5031f, -92.8721f, 248.1255f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(21.41224f, -92.8721f, 240.3206f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(7.295446f, -92.8721f, 342.8895f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(-58.09561f, -92.8721f, 345.3991f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(291.8305f, -92.8721f, 331.9693f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(-49.60235f, -92.8721f, 454.0785f));
+            groundFloorCheckpoints.Add(checkpoint);
+            checkpoint = new Checkpoint(new Vector3(-60.96433f, -92.8721f, 538.7425f));
+            groundFloorCheckpoints.Add(checkpoint);
 
             //Checkpoints de la escalera
             var stairsCheckpoints = new List<Checkpoint>();
-            
+
             checkpoint = new Checkpoint(new Vector3(-48.11425f, -19.1817f, -798.379f));
             stairsCheckpoints.Add(checkpoint);
             checkpoint = new Checkpoint(new Vector3(-48.4113f, -19.1817f, -752.2625f));
@@ -234,4 +374,5 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             CheckPoints.Add(Floor.FirstFloor, firstFloorCheckpoints);
         }
     }
+   
 }

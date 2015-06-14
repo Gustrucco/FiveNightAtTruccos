@@ -9,6 +9,7 @@ using AlumnoEjemplos.NeneMalloc;
 using AlumnoEjemplos.NeneMalloc.Utils;
 using System.Windows.Forms;
 using System.Drawing;
+using Microsoft.DirectX;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -20,11 +21,11 @@ namespace AlumnoEjemplos.MiGrupo
         TgcBox piso;
         TgcScene tgcScene;
         List<TgcBoundingBox> obstaculos;
-        TgcSkeletalMesh personaje;
         Avatar avatar;
         Lantern lantern;
         float timeStart = 5f;
-        List<Checkpoint> checkpointsFloor;
+        List<TgcArrow> ArrowsClosesCheckPoint;
+        Checkpoint ClosestCheckPoint;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -92,6 +93,7 @@ namespace AlumnoEjemplos.MiGrupo
 
 
             CheckpointHelper.BuildCheckpoints();
+            CheckpointHelper.GenerateGraph();
             //CheckpointHelper.add(new Checkpoint(new Vector3(140.3071f, -91.425f, 246.465f)), Floor.GroundFloor);
 
             //Modifier para ver BoundingBox
@@ -111,6 +113,7 @@ namespace AlumnoEjemplos.MiGrupo
             //Modifiers para desplazamiento del personaje
             GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
             GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
+            GuiController.Instance.Modifiers.addEnum("PisoCheckPoint",typeof(Floor),Floor.GroundFloor);
 
         }
 
@@ -135,6 +138,9 @@ namespace AlumnoEjemplos.MiGrupo
             {
                 avatar.update(elapsedTime);
             }
+
+            ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);
+            GuiController.Instance.UserVars.setValue("CheckPointPos", ClosestCheckPoint.Position);
             avatar.render();
 
             int count = 0;
@@ -152,6 +158,8 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
             GuiController.Instance.UserVars.setValue("Checkpoints", CheckpointHelper.CheckPoints.Sum( c => c.Value.Count));
             //Render personaje
+            ArrowsClosesCheckPoint.ForEach(a => a.render());
+             
 
             CheckpointHelper.renderAll();
             
@@ -163,6 +171,7 @@ namespace AlumnoEjemplos.MiGrupo
         /// Método que se llama cuando termina la ejecución del ejemplo.
         /// Hacer dispose() de todos los objetos creados.
         /// </summary>
+        
         public override void close()
         {
             tgcScene.disposeAll();

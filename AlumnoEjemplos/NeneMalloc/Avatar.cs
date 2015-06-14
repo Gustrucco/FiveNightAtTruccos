@@ -228,9 +228,8 @@ namespace AlumnoEjemplos.NeneMalloc
             if(lastOrders.printCheckPoint)
             {
                 checkPoint++;
-                GuiController.Instance.UserVars.setValue("CheckPointPos","CheckPoint"+checkPoint+":"+this.Position);
                 Clipboard.SetText(Clipboard.GetText()+String.Format("new Checkpoint(new Vector3({0}, {1}, {2}));", this.Position.X, this.Position.Y, this.Position.Z));
-                CheckpointHelper.add(new Checkpoint(this.Position), Floor.GroundFloor);
+                CheckpointHelper.Add(new Checkpoint(this.Position));
                 //Clipboard.SetText("CheckPointPos", "CheckPoint" + checkPoint + ":" + this.Position,TextDataFormat.Text);
             }
         }

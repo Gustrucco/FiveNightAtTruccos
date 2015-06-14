@@ -98,6 +98,7 @@
     <Compile Include="NeneMalloc\Player.cs" />
     <Compile Include="NeneMalloc\Utils\CheckpointHelper.cs" />
     <Compile Include="NeneMalloc\Utils\CollitionManager.cs" />
+    <Compile Include="NeneMalloc\Utils\Constants.cs" />
     <Compile Include="NeneMalloc\Utils\Floor.cs" />
     <Compile Include="NeneMalloc\Utils\TruccoFPSCamera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
