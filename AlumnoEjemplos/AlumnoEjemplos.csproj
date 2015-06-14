@@ -92,8 +92,10 @@
     <Compile Include="NeneMalloc\Checkpoint.cs" />
     <Compile Include="NeneMalloc\Controller.cs" />
     <Compile Include="NeneMalloc\EjemploAlumno.cs" />
+    <Compile Include="NeneMalloc\IAController.cs" />
     <Compile Include="NeneMalloc\Lamp.cs" />
     <Compile Include="NeneMalloc\Lantern.cs" />
+    <Compile Include="NeneMalloc\Monster.cs" />
     <Compile Include="NeneMalloc\Order.cs" />
     <Compile Include="NeneMalloc\Player.cs" />
     <Compile Include="NeneMalloc\Utils\CheckpointHelper.cs" />

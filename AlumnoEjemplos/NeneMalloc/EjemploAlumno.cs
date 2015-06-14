@@ -72,7 +72,6 @@ namespace AlumnoEjemplos.MiGrupo
                path + "NeneMalloc\\");
            //Cargar personaje
             avatar = new Avatar();
-            avatar.init();
 
             //Cargar linterna
             lantern = new Lantern();
@@ -111,8 +110,6 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.addVar("MouseReleased");
             GuiController.Instance.UserVars.addVar("CheckPointPos");
             //Modifiers para desplazamiento del personaje
-            GuiController.Instance.Modifiers.addFloat("VelocidadCaminar", 1f, 400f, 250f);
-            GuiController.Instance.Modifiers.addFloat("VelocidadRotacion", 1f, 360f, 120f);
             GuiController.Instance.Modifiers.addEnum("PisoCheckPoint",typeof(Floor),Floor.GroundFloor);
 
         }
@@ -136,12 +133,12 @@ namespace AlumnoEjemplos.MiGrupo
             }
             else
             {
-                avatar.update(elapsedTime);
+                avatar.Update(elapsedTime);
             }
 
             ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);
             GuiController.Instance.UserVars.setValue("CheckPointPos", ClosestCheckPoint.Position);
-            avatar.render();
+            avatar.Render();
 
             int count = 0;
             this.tgcScene.renderAll();
