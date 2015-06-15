@@ -5,7 +5,6 @@ using Microsoft.DirectX;
 using TgcViewer;
 using TgcViewer.Utils.TgcGeometry;
 using System.Drawing;
-using System.Text.RegularExpressions;
 using Microsoft.DirectX.Direct3D;
 
 namespace AlumnoEjemplos.NeneMalloc.Utils
@@ -44,7 +43,6 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             {
                 checkPoint.Checked = true;
                 List<Checkpoint> unCheckedCheckpoints = checkPoints;
-                List<Checkpoint> checkedCheckPoints = checkPoints.FindAll(c => c.Checked);
                 unCheckedCheckpoints = unCheckedCheckpoints.FindAll(c => checkPoint.hasDirectSightWith(c));
                 checkPoint.Neighbors =
                     new HashSet<Checkpoint>(
@@ -60,8 +58,6 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
                                                 DistanceBetweenInXandZ(checkPoint, neighbor))
                                         
                             ));
-                //checkPoint.Neighbors.UnionWith(checkedCheckPoints.FindAll(c => c.Neighbors.Contains(checkPoint)));
-
             }
           
         }
@@ -84,7 +80,7 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
 
         public static List<TgcArrow> PrepareClosestCheckPoint( Vector3 position, Checkpoint lastCheckPoint, out Checkpoint updatedChekPoint)
         {
-            updatedChekPoint = GetClosestCheckPoint(position, lastCheckPoint);
+            updatedChekPoint = GetClosestCheckPoint(position);
             if (lastCheckPoint != updatedChekPoint)
             {
                 lastCheckPoint = updatedChekPoint;
@@ -106,15 +102,15 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             return lastCheckPointArrows;
             
         }
-        public static Checkpoint GetClosestCheckPoint(Vector3 position, Checkpoint lastCheckPoint)
+        public static Checkpoint GetClosestCheckPoint(Vector3 position)
         {
             List<Checkpoint> checkpoints = new List<Checkpoint>();
             foreach (KeyValuePair<Floor, List<Checkpoint>> key in CheckPoints)
             {
                 checkpoints.AddRange(key.Value);
             }
-           
-            return checkpoints.Aggregate((checkPointMin, aCheckpoint) => (checkPointMin == null ||  Vector3.Length(position - aCheckpoint.Position) < (Vector3.Length(position - checkPointMin.Position)) ? aCheckpoint : checkPointMin));
+
+           return checkpoints.Aggregate((checkPointMin, aCheckpoint) => (checkPointMin == null ||  Vector3.Length(position - aCheckpoint.Position) < (Vector3.Length(position - checkPointMin.Position)) ? aCheckpoint : checkPointMin));
         }
 
         public static void BuildCheckpoints()

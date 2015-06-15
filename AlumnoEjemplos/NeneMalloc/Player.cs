@@ -1,5 +1,4 @@
 ﻿using Microsoft.DirectX.DirectInput;
-using Microsoft.DirectX.Direct3D;
 using TgcViewer;
 using TgcViewer.Utils.Input;
 using System.Windows.Forms;
@@ -9,33 +8,34 @@ namespace AlumnoEjemplos.NeneMalloc
 {
     public class Player : Controller
     {
-        bool mouseReleased = false;
-        public override void update()
+        bool mouseReleased;
+
+        public override void Update()
         {
-            this.order = new Order();
+            this.Order = new Order();
             TgcD3dInput d3dInput = GuiController.Instance.D3dInput;
             //Adelante
             if (d3dInput.keyDown(Key.W))
             {
-                order.moveForward = d3dInput.keyDown(Key.LeftShift) ? 2 : 1;
+                Order.moveForward = d3dInput.keyDown(Key.LeftShift) ? 2 : 1;
             }
 
             //Atras
             if (d3dInput.keyDown(Key.S))
             {
-                order.moveForward = d3dInput.keyDown(Key.LeftShift) ? -2 : -1; ;
+                Order.moveForward = d3dInput.keyDown(Key.LeftShift) ? -2 : -1; ;
             }
 
             //Derecha
             if (d3dInput.keyDown(Key.D))
             {
-                order.moveAside = 1;
+                Order.moveAside = 1;
             }
 
             //Izquierda
             if (d3dInput.keyDown(Key.A))
             {
-                order.moveAside = -1;
+                Order.moveAside = -1;
             }
 
             if (d3dInput.keyPressed(Key.LeftControl))
@@ -43,7 +43,7 @@ namespace AlumnoEjemplos.NeneMalloc
                 mouseReleased = !mouseReleased;
             }
 
-            order.printCheckPoint = d3dInput.keyPressed(Key.P);
+            Order.printCheckPoint = d3dInput.keyPressed(Key.P);
 
             GuiController.Instance.UserVars.setValue("MouseReleased", mouseReleased);
             if (mouseReleased)
@@ -52,8 +52,8 @@ namespace AlumnoEjemplos.NeneMalloc
             }
             else
             {
-                order.rotateX = d3dInput.YposRelative;
-                order.rotateY = d3dInput.XposRelative;
+                Order.rotateX = d3dInput.YposRelative;
+                Order.rotateY = d3dInput.XposRelative;
                 Cursor.Hide();
                 Cursor.Position = new Point( GuiController.Instance.FullScreenPanel.Width/2,GuiController.Instance.FullScreenPanel.Height/2);
             }

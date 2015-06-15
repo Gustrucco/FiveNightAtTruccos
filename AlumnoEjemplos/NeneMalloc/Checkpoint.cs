@@ -56,5 +56,10 @@ namespace AlumnoEjemplos.NeneMalloc
             Arrow.render();
             Point.render();
         }
+
+        public bool CanArriveTo(Checkpoint anotherCheckpoint)
+        {
+            return this.Neighbors.Contains(anotherCheckpoint) || this.Neighbors.Any(n => n.CanArriveTo(anotherCheckpoint));
+        }
     }
 }

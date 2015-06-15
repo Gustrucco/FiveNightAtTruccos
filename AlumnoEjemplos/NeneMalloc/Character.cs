@@ -2,7 +2,6 @@
 using Microsoft.DirectX.Direct3D;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Windows.Forms;
 using AlumnoEjemplos.NeneMalloc.Utils;
 using TgcViewer;
@@ -33,8 +32,9 @@ namespace AlumnoEjemplos.NeneMalloc
         public void Update()
         {
             if(this.Controller!= null)
-            this.Controller.update();
+                this.Controller.Update();
         }
+
         public void MoveAside(float movement)
         {
             
@@ -113,31 +113,31 @@ namespace AlumnoEjemplos.NeneMalloc
 
         public virtual void Update(float elapsedTime)
         {
-            this.Controller.update();
-            Order lastOrders = this.Controller.order;
-            if (lastOrders!= null)
+            this.Update();
+            Order lastOrder = this.Controller.Order;
+            if (lastOrder!= null)
             {
                 //Si hubo rotacion
-                if (lastOrders.rotating())
+                if (lastOrder.rotating())
                 {
                     //Rotar personaje y la camara, hay que multiplicarlo por el tiempo transcurrido para no atarse a la velocidad el hardware
-                    this.RotateY(lastOrders.rotateY * VelocidadRotacion * elapsedTime);
-                    this.RotateX(lastOrders.rotateX * VelocidadRotacion * elapsedTime);
+                    this.RotateY(lastOrder.rotateY * VelocidadRotacion * elapsedTime);
+                    this.RotateX(lastOrder.rotateX * VelocidadRotacion * elapsedTime);
                 }
 
                 //Si hubo desplazamiento
-                if (lastOrders.moving())
+                if (lastOrder.moving())
                 {
                     //Aplicar movimiento hacia adelante o atras segun la orientacion actual del Mesh
                     Vector3 lastPos = this.Position;
 
                     //La velocidad de movimiento tiene que multiplicarse por el elapsedTime para hacerse independiente de la velocida de CPU
                     //Ver Unidad 2: Ciclo acoplado vs ciclo desacoplado
-                    this.MoveForward(lastOrders.moveForward * VelocidadCaminar * elapsedTime);
+                    this.MoveForward(lastOrder.moveForward * VelocidadCaminar * elapsedTime);
 
-                    if (!lastOrders.running())
+                    if (!lastOrder.running())
                     {
-                        this.MoveAside(lastOrders.moveAside * VelocidadCaminar * elapsedTime);
+                        this.MoveAside(lastOrder.moveAside * VelocidadCaminar * elapsedTime);
                     }
 
                     //CollitionManager es un Util que sirve para la logica de colisiones todo lo que sea respecto eso, desarrollarlo en esa clase
@@ -181,11 +181,11 @@ namespace AlumnoEjemplos.NeneMalloc
 
                         if (boundingBoxes.Count == 0)
                         {
-                            this.MoveForward(lastOrders.moveForward * VelocidadCaminar * elapsedTime);
+                            this.MoveForward(lastOrder.moveForward * VelocidadCaminar * elapsedTime);
 
-                            if (!lastOrders.running())
+                            if (!lastOrder.running())
                             {
-                                this.MoveAside(lastOrders.moveAside * VelocidadCaminar * elapsedTime);
+                                this.MoveAside(lastOrder.moveAside * VelocidadCaminar * elapsedTime);
                             }
                         }
                         else
@@ -275,7 +275,7 @@ namespace AlumnoEjemplos.NeneMalloc
                     }
                     GuiController.Instance.UserVars.setValue("Falling", this.Falling);
                 }
-                if (lastOrders.printCheckPoint)
+                if (lastOrder.printCheckPoint)
                 {
                     Clipboard.SetText(Clipboard.GetText() + String.Format("new Checkpoint(new Vector3({0}, {1}, {2}));", this.Position.X, this.Position.Y, this.Position.Z));
                     CheckpointHelper.Add(new Checkpoint(this.Position));
