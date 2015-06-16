@@ -100,6 +100,8 @@
     <Compile Include="NeneMalloc\Order.cs" />
     <Compile Include="NeneMalloc\Player.cs" />
     <Compile Include="NeneMalloc\Utils\CollitionManager.cs" />
+    <Compile Include="NeneMalloc\Utils\GrillaRegular\GrillaRegular.cs" />
+    <Compile Include="NeneMalloc\Utils\GrillaRegular\GrillaRegularNode.cs" />
     <Compile Include="NeneMalloc\Utils\TruccoFPSCamera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

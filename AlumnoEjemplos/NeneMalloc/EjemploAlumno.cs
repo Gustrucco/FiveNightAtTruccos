@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using AlumnoEjemplos.NeneMalloc.Lights;
 using AlumnoEjemplos.NeneMalloc.Lights.States;
+using AlumnoEjemplos.NeneMalloc.Utils.GrillaRegular;
 using Microsoft.DirectX.Direct3D;
 using TgcViewer.Example;
 using TgcViewer;
@@ -46,6 +46,8 @@ namespace AlumnoEjemplos.MiGrupo
         List<Tgc3dSound> sounds;
         Tgc3dSound sound;
         TgcSprite winningScreen;
+        Lamp currentLamp;
+        GrillaRegular grilla;
         string path;
         float timeStart = 5f;
 
@@ -171,7 +173,12 @@ namespace AlumnoEjemplos.MiGrupo
 
             //Hacer que el Listener del sonido 3D siga al personaje
             GuiController.Instance.DirectSound.ListenerTracking = personaje;
-            
+
+            //Crear octree
+            grilla = new GrillaRegular();
+            grilla.create(tgcScene.Meshes, tgcScene.BoundingBox);
+            grilla.createDebugMeshes();
+
             //Reproducir todos los sonidos
             foreach (Tgc3dSound s in sounds)
             {
@@ -242,14 +249,15 @@ namespace AlumnoEjemplos.MiGrupo
             if (frustumCullingEnabled)
             {
                 TgcFrustum frustum = GuiController.Instance.Frustum;
+                grilla.findVisibleMeshes(frustum);
                 meshes =
                     meshes.FindAll(
                         m =>
+                            m.Enabled &&
                             TgcCollisionUtils.classifyFrustumAABB(frustum, m.BoundingBox) !=
                             TgcCollisionUtils.FrustumResult.OUTSIDE);
-
-
             }
+
             //Actualizar cantidad de meshes dibujadas
             GuiController.Instance.UserVars.setValue("Meshes renderizadas", meshes.Count);
 
@@ -288,7 +296,7 @@ namespace AlumnoEjemplos.MiGrupo
                 {
                     mesh.Effect = currentLanternShader;
 
-                    Lamp lamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
+                    currentLamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
                     //El Technique depende del tipo RenderType del mesh
                     mesh.Technique = GuiController.Instance.Shaders.getTgcMeshTechnique(mesh.RenderType);
 
@@ -296,7 +304,7 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
                     mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.Position));
-                    mesh.Effect.SetValue("lampIntensity", lamp.getIntensity());
+                    mesh.Effect.SetValue("lampIntensity", currentLamp.getIntensity());
                     mesh.Effect.SetValue("lanternIntensity", lantern.Intensity);
                     mesh.Effect.SetValue("lightAttenuation", 0.3f);
 
@@ -312,9 +320,9 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("materialSpecularExp", 9f);
 
-                    //avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity() + lantern.Intensity);             
-
+                    //avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity() + lantern.Intensity); 
                     mesh.render();
+                    mesh.Enabled = false;
                 }
             }
             else
@@ -327,13 +335,13 @@ namespace AlumnoEjemplos.MiGrupo
                     //El Technique depende del tipo RenderType del mesh
                     mesh.Technique = GuiController.Instance.Shaders.getTgcMeshTechnique(mesh.RenderType);
 
-                    Lamp lamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
+                    currentLamp = getClosestLight(mesh.BoundingBox.calculateBoxCenter());
 
                     //Cargar variables shader de la luz
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
-                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lamp.Position));
+                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(currentLamp.Position));
                     mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.Position));
-                    mesh.Effect.SetValue("lightIntensity", lamp.getIntensity());
+                    mesh.Effect.SetValue("lightIntensity", currentLamp.getIntensity());
                     mesh.Effect.SetValue("lightAttenuation", 0.3f);
 
                     //Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
@@ -343,11 +351,11 @@ namespace AlumnoEjemplos.MiGrupo
                     mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
                     mesh.Effect.SetValue("materialSpecularExp", 9f);
 
-                    //Renderizar modelo (lamp.render() no hace nada por ahora)
                     mesh.render();
-                    lamp.render();
+                    mesh.Enabled = false;
                 }
             }
+
             PlayingTime.Text = stopwatch.Elapsed.ToString(@"mm\:ss") + " AM";
             PlayingTime.render();
 
