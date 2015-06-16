@@ -41,6 +41,11 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 mouseReleased = !mouseReleased;
             }
+
+            order.printIntermitentLight = d3dInput.keyPressed(Key.I);
+            order.printOnLight = d3dInput.keyPressed(Key.O);
+            order.printOffLight = d3dInput.keyPressed(Key.P);
+
             GuiController.Instance.UserVars.setValue("MouseReleased", mouseReleased);
             if (mouseReleased)
             {

@@ -90,7 +90,9 @@ namespace AlumnoEjemplos.MiGrupo
             this.path = GuiController.Instance.AlumnoEjemplosMediaDir;
 
             TgcSceneLoader loader = new TgcSceneLoader();
-            
+
+            Clipboard.Clear();
+
             tgcScene = loader.loadSceneFromFile(
                path + "NeneMalloc\\EscenarioCambios16-TgcScene.xml",
                path + "NeneMalloc\\");

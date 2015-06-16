@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using TgcViewer;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX;
@@ -225,9 +226,25 @@ namespace AlumnoEjemplos.NeneMalloc
                 }
                 GuiController.Instance.UserVars.setValue("Falling", this.falling);
             }
+            if (lastOrders.printIntermitentLight)
+            {
+                Clipboard.SetText(Clipboard.GetText() +
+                    String.Format("intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3({0}, {1}, {2}));", this.Position.X, this.Position.Y, this.Position.Z));
+            }
 
+            if (lastOrders.printOnLight)
+            {
+                Clipboard.SetText(Clipboard.GetText() +
+                    String.Format("onLamp = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3({0}, {1}, {2}));", this.Position.X, this.Position.Y, this.Position.Z));
+            }
 
+            if (lastOrders.printOffLight)
+            {
+                Clipboard.SetText(Clipboard.GetText() +
+                    String.Format("offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3({0}, {1}, {2}));", this.Position.X, this.Position.Y, this.Position.Z));
+            }
         }
+
         public Boolean touchingSomething(Vector3 vector)
         {
             this.BoundingBox.transform(Matrix.Translation(this.Position + vector));
