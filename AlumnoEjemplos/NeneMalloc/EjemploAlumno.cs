@@ -1,15 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.DirectX;
 using TgcViewer.Example;
 using TgcViewer;
 using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcGeometry;
-using TgcViewer.Utils.TgcSkeletalAnimation;
 using AlumnoEjemplos.NeneMalloc;
 using AlumnoEjemplos.NeneMalloc.Utils;
 using System.Windows.Forms;
 using System.Drawing;
-using Microsoft.DirectX;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -26,6 +26,7 @@ namespace AlumnoEjemplos.MiGrupo
         float timeStart = 5f;
         List<TgcArrow> ArrowsClosesCheckPoint;
         Checkpoint ClosestCheckPoint;
+        List<Monster> Monsters;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -83,6 +84,12 @@ namespace AlumnoEjemplos.MiGrupo
 
                 obstaculos.Add(mesh.BoundingBox);
             }
+
+            //Cargar los enemigos
+            Monsters = new List<Monster>();
+
+            var monster = new Monster(new Vector3(140.3071f, -91.425f, 246.465f), avatar);
+            Monsters.Add(monster);
             
             CollitionManager.obstaculos = obstaculos;
            //Camara en primera persona, tipo videojuego FPS
@@ -134,6 +141,13 @@ namespace AlumnoEjemplos.MiGrupo
             else
             {
                 avatar.Update(elapsedTime);
+            }
+
+            foreach (var monster in Monsters)
+            {
+                monster.Update(elapsedTime);
+                monster.Render();
+                GuiController.Instance.UserVars.setValue("Pos", monster.Position);
             }
 
             ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);

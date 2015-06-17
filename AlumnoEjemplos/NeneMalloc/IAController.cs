@@ -8,8 +8,9 @@ namespace AlumnoEjemplos.NeneMalloc
     public class IAController : Controller
     {
         public Avatar Avatar { get; set; }
-        public Vector3 objective;
+        public Vector3 Objective;
         public ChasingStrategy ChasingStrategy { get; set;}
+        public bool HasObjective { get; set; }
 
         public IAController(Avatar avatar)
         {
@@ -21,11 +22,11 @@ namespace AlumnoEjemplos.NeneMalloc
 
             //Reviso si ya esta parado en su lugar
 
-            if (objective == null) 
+            if (this.HasObjective) 
             {
                 if (CheckpointHelper.GetClosestCheckPoint(this.Character.Position).Neighbors.Contains(CheckpointHelper.GetClosestCheckPoint(this.Avatar.Position)))
                 {
-                    objective = this.Avatar.Position;
+                    Objective = this.Avatar.Position;
                 }
                 else
                 {
@@ -33,21 +34,26 @@ namespace AlumnoEjemplos.NeneMalloc
                     var avatarClosestCheckpoint = CheckpointHelper.GetClosestCheckPoint(this.Avatar.Position);
                     //Encontrar el algoritmo del camino más corto de un checkpoint al otro
                     var nextCheckpoint = closestCheckpoint.Neighbors.First(c => c.CanArriveTo(avatarClosestCheckpoint));
-                    objective = nextCheckpoint.Position;      
+                    Objective = nextCheckpoint.Position;      
                 }
-                    
-           
             }
+
             Order = new Order();
-            
-            float rotationWithObjective = Convert.ToSingle(Math.Asin(objective.X - Character.Position.X));
+            Vector3 vectorX = new Vector3(Objective.X - Character.Position.X, 0f, 0f);
+            vectorX.Normalize();
+            float rotationWithObjective = Convert.ToSingle(Math.Asin(vectorX.X));
             //Si el monstruo no esta mirando, rotamos lo mas que podemos
+            if (Single.IsNaN(rotationWithObjective))
+            {
+                return;
+            }
             if (!MathUtil.Equals(Character.Rotation.Y, rotationWithObjective))
             {
                 Order.rotateY = rotationWithObjective - Character.Rotation.Y;
             }
             else
             {
+                Order.rotateY = 0;
                 Order.moveForward = 1;
             }          
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using TgcViewer;
+using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 
 namespace AlumnoEjemplos.NeneMalloc
@@ -18,12 +19,13 @@ namespace AlumnoEjemplos.NeneMalloc
                 new string[] { 
 		        GuiController.Instance.ExamplesMediaDir + "SkeletalAnimations\\Robot\\" + "Caminando-TgcSkeletalAnim.xml"
 	            });
+            
 
             //Escalarlo porque es muy grande
             mesh.Scale = new Vector3(0.50f, 0.50f, 0.50f);
             //Rotarlo 180° porque esta mirando para el otro lado
             mesh.rotateY(Geometry.DegreeToRadian(180f));
-
+            mesh.Position = this.Position + new Vector3(0f, -45f, 0f);
             this.Controller = new IAController(avatar);
             this.Controller.Character = this;
         }

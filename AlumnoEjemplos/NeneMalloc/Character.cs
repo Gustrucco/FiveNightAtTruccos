@@ -121,8 +121,6 @@ namespace AlumnoEjemplos.NeneMalloc
                 if (lastOrder.rotating())
                 {
                     //Rotar personaje y la camara, hay que multiplicarlo por el tiempo transcurrido para no atarse a la velocidad el hardware
-
-
                     this.RotateY(Math.Min(VelocidadRotacion * elapsedTime, Math.Abs(lastOrder.rotateY)) * Math.Sign(lastOrder.rotateY));
                     this.RotateX(Math.Min(VelocidadRotacion * elapsedTime, Math.Abs(lastOrder.rotateX)) * Math.Sign(lastOrder.rotateX));
                 }

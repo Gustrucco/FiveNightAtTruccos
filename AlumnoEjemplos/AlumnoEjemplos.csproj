@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="NeneMalloc\Avatar.cs" />
     <Compile Include="NeneMalloc\Character.cs" />
+    <Compile Include="NeneMalloc\ChasingStrategy.cs" />
     <Compile Include="NeneMalloc\Checkpoint.cs" />
     <Compile Include="NeneMalloc\Controller.cs" />
     <Compile Include="NeneMalloc\EjemploAlumno.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="NeneMalloc\Utils\CollitionManager.cs" />
     <Compile Include="NeneMalloc\Utils\Constants.cs" />
     <Compile Include="NeneMalloc\Utils\Floor.cs" />
+    <Compile Include="NeneMalloc\Utils\MathUtil.cs" />
     <Compile Include="NeneMalloc\Utils\TruccoFPSCamera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
