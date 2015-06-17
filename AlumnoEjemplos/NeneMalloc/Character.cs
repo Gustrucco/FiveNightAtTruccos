@@ -114,15 +114,17 @@ namespace AlumnoEjemplos.NeneMalloc
         public virtual void Update(float elapsedTime)
         {
             this.Update();
-            Order lastOrder = this.Controller.Order;
+            Order lastOrder = this.Controller.getLastOrder();
             if (lastOrder!= null)
             {
                 //Si hubo rotacion
                 if (lastOrder.rotating())
                 {
                     //Rotar personaje y la camara, hay que multiplicarlo por el tiempo transcurrido para no atarse a la velocidad el hardware
-                    this.RotateY(lastOrder.rotateY * VelocidadRotacion * elapsedTime);
-                    this.RotateX(lastOrder.rotateX * VelocidadRotacion * elapsedTime);
+
+
+                    this.RotateY(Math.Min(VelocidadRotacion * elapsedTime, Math.Abs(lastOrder.rotateY)) * Math.Sign(lastOrder.rotateY));
+                    this.RotateX(Math.Min(VelocidadRotacion * elapsedTime, Math.Abs(lastOrder.rotateX)) * Math.Sign(lastOrder.rotateX));
                 }
 
                 //Si hubo desplazamiento
