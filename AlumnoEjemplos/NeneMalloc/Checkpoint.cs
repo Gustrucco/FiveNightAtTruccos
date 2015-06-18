@@ -27,8 +27,8 @@ namespace AlumnoEjemplos.NeneMalloc
         {
             this.Position = aPosition;
             this.Checked = false;
-            this.id = Checkpoint.idCounter;
-            Checkpoint.idCounter ++;
+            this.id = idCounter;
+            idCounter ++;
                  
             this.Arrow = new TgcArrow();
 
@@ -57,6 +57,14 @@ namespace AlumnoEjemplos.NeneMalloc
             return boundingBox == null || (Vector3.Length(CollitionManager.getClosesPointBetween(rayCast, boundingBox) - rayCast.Origin) > distance);
 
         }
+
+        public void DeleteNeighbor(int NeighborId)
+        {
+            var neighbor = this.Neighbors.Single(n => n.id == NeighborId);
+            this.Neighbors.Remove(neighbor);
+            neighbor.Neighbors.Remove(this);
+        }
+
         public void render()
         {
             Arrow.render();

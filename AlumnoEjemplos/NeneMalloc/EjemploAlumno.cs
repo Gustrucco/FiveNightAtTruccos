@@ -136,6 +136,7 @@ namespace AlumnoEjemplos.MiGrupo
             
             //Obtener boolean para saber si hay que mostrar Bounding Box
            // bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showBoundingBox");
+            var meshes = new List<TgcMesh>();
             if (timeStart >= 0)
             {
                 timeStart -= elapsedTime;
@@ -152,12 +153,32 @@ namespace AlumnoEjemplos.MiGrupo
             //    GuiController.Instance.UserVars.setValue("Pos", monster.Position);
             //}
 
+            //Analizar cada malla contra el Frustum - con fuerza bruta
+            TgcFrustum frustum = GuiController.Instance.Frustum;
+            foreach (TgcMesh mesh in tgcScene.Meshes)
+            {
+                //Nos ocupamos solo de las mallas habilitadas
+                if (mesh.Enabled)
+                {
+                    //Solo mostrar la malla si colisiona contra el Frustum
+                    TgcCollisionUtils.FrustumResult r = TgcCollisionUtils.classifyFrustumAABB(frustum, mesh.BoundingBox);
+                    if (r != TgcCollisionUtils.FrustumResult.OUTSIDE)
+                    {
+                        
+                        meshes.Add(mesh);
+                    }
+                }
+            }
+
             ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);
             GuiController.Instance.UserVars.setValue("CheckPointPos", "Pos:"+ ClosestCheckPoint.Position.ToString() +"/"+ ClosestCheckPoint.id);
             avatar.Render();
 
             int count = 0;
-            this.tgcScene.renderAll();
+            foreach (var tgcMesh in meshes)
+            {
+                tgcMesh.render();
+            }
             bool showBB = (bool)GuiController.Instance.Modifiers.getValue("showSceneBoundingBox");
             
             if (showBB)
