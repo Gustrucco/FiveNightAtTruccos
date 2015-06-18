@@ -277,9 +277,9 @@ namespace AlumnoEjemplos.NeneMalloc
                 }
                 if (lastOrder.printCheckPoint)
                 {
-                    Clipboard.SetText(Clipboard.GetText() + String.Format("new Checkpoint(new Vector3({0}, {1}, {2}));", this.Position.X, this.Position.Y, this.Position.Z));
+                    Clipboard.SetText(Clipboard.GetText() + String.Format("new Checkpoint(new Vector3({0}, {1}, {2}));", this.Position.X.ToString().Replace(",", ".") + "f", this.Position.Y.ToString().Replace(",", ".") + "f", this.Position.Z.ToString().Replace(",", ".") + "f"));
                     CheckpointHelper.Add(new Checkpoint(this.Position));
-                    //Clipboard.SetText("CheckPointPos", "CheckPoint" + checkPoint + ":" + this.Position,TextDataFormat.Text);
+                   //Clipboard.SetText("CheckPointPos", "CheckPoint" + checkPoint + ":" + this.Position,TextDataFormat.Text);
                 }
             }
            

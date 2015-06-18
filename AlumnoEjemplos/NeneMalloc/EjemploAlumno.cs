@@ -10,6 +10,8 @@ using AlumnoEjemplos.NeneMalloc;
 using AlumnoEjemplos.NeneMalloc.Utils;
 using System.Windows.Forms;
 using System.Drawing;
+using Microsoft.DirectX.DirectInput;
+using TgcViewer.Utils._2D;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -69,7 +71,7 @@ namespace AlumnoEjemplos.MiGrupo
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
             TgcSceneLoader loader = new TgcSceneLoader();
             tgcScene = loader.loadSceneFromFile(
-               path + "NeneMalloc\\EscenarioCambios16-TgcScene.xml",
+               path + "NeneMalloc\\EscenarioFaltaIntensivas-TgcScene.xml",
                path + "NeneMalloc\\");
            //Cargar personaje
             avatar = new Avatar();
@@ -86,10 +88,10 @@ namespace AlumnoEjemplos.MiGrupo
             }
 
             //Cargar los enemigos
-            Monsters = new List<Monster>();
+            //Monsters = new List<Monster>();
 
-            var monster = new Monster(new Vector3(140.3071f, -91.425f, 246.465f), avatar);
-            Monsters.Add(monster);
+            //var monster = new Monster(new Vector3(140.3071f, -91.425f, 246.465f), avatar);
+            //Monsters.Add(monster);
             
             CollitionManager.obstaculos = obstaculos;
            //Camara en primera persona, tipo videojuego FPS
@@ -143,15 +145,15 @@ namespace AlumnoEjemplos.MiGrupo
                 avatar.Update(elapsedTime);
             }
 
-            foreach (var monster in Monsters)
-            {
-                monster.Update(elapsedTime);
-                monster.Render();
-                GuiController.Instance.UserVars.setValue("Pos", monster.Position);
-            }
+            //foreach (var monster in Monsters)
+            //{
+            //    monster.Update(elapsedTime);
+            //    monster.Render();
+            //    GuiController.Instance.UserVars.setValue("Pos", monster.Position);
+            //}
 
             ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);
-            GuiController.Instance.UserVars.setValue("CheckPointPos", ClosestCheckPoint.Position);
+            GuiController.Instance.UserVars.setValue("CheckPointPos", "Pos:"+ ClosestCheckPoint.Position.ToString() +"/"+ ClosestCheckPoint.id);
             avatar.Render();
 
             int count = 0;
@@ -170,6 +172,15 @@ namespace AlumnoEjemplos.MiGrupo
             GuiController.Instance.UserVars.setValue("Checkpoints", CheckpointHelper.CheckPoints.Sum( c => c.Value.Count));
             //Render personaje
             ArrowsClosesCheckPoint.ForEach(a => a.render());
+
+            if (GuiController.Instance.D3dInput.keyDown(Key.Space))
+            {
+                var texto = new TgcText2d();
+                texto.Text = ClosestCheckPoint.id.ToString();
+                texto.Position = new Point(300, 100);
+                texto.Size = new Size(300, 100);
+                texto.render();
+            }
              
 
             CheckpointHelper.renderAll();

@@ -17,12 +17,18 @@ namespace AlumnoEjemplos.NeneMalloc
         public TgcArrow Arrow { get; set;}
         public TgcBox Point { get; set; }
 
+        public static int idCounter= 0;
+
+        public int id;
+
         public static Vector3 DEFAULT_UP = new Vector3(0f,1f,0f);
 
         public Checkpoint(Vector3 aPosition)
         {
             this.Position = aPosition;
             this.Checked = false;
+            this.id = Checkpoint.idCounter;
+            Checkpoint.idCounter ++;
                  
             this.Arrow = new TgcArrow();
 
