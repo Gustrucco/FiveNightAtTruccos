@@ -375,14 +375,55 @@ namespace AlumnoEjemplos.MiGrupo
             this.CreateFirstFloorLamps();
         }
 
+        private void CreateGroundFloorLamps()
+        {
+            var intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-217.1517f, -91.5322f, -1232.428f));
+            lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(13.08098f, -93.5423f, 567.2851f));
+            lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-150.1281f, -93.5423f, 211.5172f));
+            lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(132.4148f, -93.5423f, 167.8136f));
+            this.addInttermitentSound(intermittentLamp);
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-245.4898f, -91.5322f, -525.1691f));
+            lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-224.0355f, -91.5322f, -736.4214f));
+            lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-800.6736f, -76.8167f, -610.8485f));
+            lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-473.2807f, -91.5322f, 14.82125f));
+            lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-263.4782f, -92.8721f, 372.9998f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-674.7888f, -92.8721f, 578.1655f));
+            lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
+
+            var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(348.0486f, -91.5322f, -729.3348f));
+            lights.Add(offLamp);
+            offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-43.66533f, -91.5322f, -384.5498f));
+            lights.Add(offLamp);
+        }
+
         private void CreateFirstFloorLamps()
         {
             var intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-201.7801f, 45.05f, -724.91f));
             lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
             intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-204.4213f, 45.05f, -488.716f));
             lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
             intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-202.9045f, 45.05f, -112.688f));
             lights.Add(intermittentLamp);
+            this.addInttermitentSound(intermittentLamp);
 
             var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-720.47f, 45.05f, -610.4592f));
             lights.Add(offLamp);
@@ -400,33 +441,11 @@ namespace AlumnoEjemplos.MiGrupo
             lights.Add(offLamp);
         }
 
-        private void CreateGroundFloorLamps()
+        private void addInttermitentSound(IluminationEntity intermittentLamp)
         {
-            var intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-217.1517f, -91.5322f, -1232.428f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(13.08098f, -93.5423f, 567.2851f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-150.1281f, -93.5423f, 211.5172f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(132.4148f, -93.5423f, 167.8136f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-245.4898f, -91.5322f, -525.1691f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-224.0355f, -91.5322f, -736.4214f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-800.6736f, -76.8167f, -610.8485f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-473.2807f, -91.5322f, 14.82125f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-263.4782f, -92.8721f, 372.9998f));
-            lights.Add(intermittentLamp);
-            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-674.7888f, -92.8721f, 578.1655f));
-            lights.Add(intermittentLamp);
-
-            var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(348.0486f, -91.5322f, -729.3348f));
-            lights.Add(offLamp);
-            offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-43.66533f, -91.5322f, -384.5498f));
-            lights.Add(offLamp);
+            sound = new Tgc3dSound(this.path + "NeneMalloc\\SonidosYMusica\\tuboDeLuz.wav", intermittentLamp.Position);
+            sound.MinDistance = 25f;
+            sounds.Add(sound);
         }
 
         private void setRandomToLamps()
