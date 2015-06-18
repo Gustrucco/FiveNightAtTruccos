@@ -27,7 +27,7 @@ namespace AlumnoEjemplos.NeneMalloc
             //Carga del controller
 
             this.Controller = new Player();
-            this.Position = new Vector3(160f, -88.5f, -340f);
+            this.Position = new Vector3(-230.2973f, -91.5322f, -1214.587f);
             this.Rotation = new Vector3(0f, 0f, 0f);
             this.Controller.character = this;
             this.BoundingBox = new TgcBoundingBox();
@@ -290,6 +290,11 @@ namespace AlumnoEjemplos.NeneMalloc
         {
             base.rotateY(angle);
             this.Camera.rotate(angle, 0, 0);
+        }
+
+        public Vector3 getCameraDirection()
+        {
+            return Vector3.Normalize((Camera.LookAt - Camera.Position));
         }
     }
 }

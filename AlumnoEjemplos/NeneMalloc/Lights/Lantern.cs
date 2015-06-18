@@ -14,8 +14,8 @@ namespace AlumnoEjemplos.NeneMalloc.Lights
         {
             this.Direction = new Vector3(0, 0, 0.5f);
             this.SpotAngle = 40f;
-            this.SpotExponent = 15f;
-            this.Intensity = 25f;
+            this.SpotExponent = 5f;
+            this.Intensity = 10f;
         }
 
         public void ChangeLightOnOff()

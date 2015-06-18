@@ -263,11 +263,7 @@ namespace AlumnoEjemplos.MiGrupo
             //Actualizar cantidad de meshes dibujadas
             GuiController.Instance.UserVars.setValue("Meshes renderizadas", meshes.Count);
 
-            lantern.Position = avatar.Position;
-
-            //Normalizar direccion de la luz
-            Vector3 lightDir = this.calculateLampDirection(avatar.Rotation);
-            lightDir.Normalize();
+            lantern.Position = avatar.Position + avatar.calculateNewPosition(1, avatar.Rotation);
 
             //Render personaje
             //avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
@@ -304,14 +300,15 @@ namespace AlumnoEjemplos.MiGrupo
 
                     //Cargar variables shader de la luz
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
-                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
+                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(currentLamp.Position));
                     mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.Position));
                     mesh.Effect.SetValue("lampIntensity", currentLamp.getIntensity());
-                    mesh.Effect.SetValue("lanternIntensity", lantern.Intensity);
                     mesh.Effect.SetValue("lightAttenuation", 0.3f);
-
+                    
                     //Cargar variables shader de linterna
-                    mesh.Effect.SetValue("spotLightDir", TgcParserUtils.vector3ToFloat3Array(lightDir));
+                    mesh.Effect.SetValue("lanternIntensity", lantern.Intensity);
+                    mesh.Effect.SetValue("lanternPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
+                    mesh.Effect.SetValue("spotLightDir", TgcParserUtils.vector3ToFloat3Array(calculateLampDirection(avatar.Rotation)));
                     mesh.Effect.SetValue("spotLightAngleCos", FastMath.ToRad(lantern.SpotAngle));
                     mesh.Effect.SetValue("spotLightExponent", lantern.SpotExponent);
 
@@ -380,89 +377,63 @@ namespace AlumnoEjemplos.MiGrupo
 
         private void CreateFirstFloorLamps()
         {
-            ////Luces intermitentes
-            //var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-26.5f, 75f, 6.3f));
-            //var intermitentLamp2 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-27.75f, 75f, -325.15f));
-            //var intermitentLamp3 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(229.5f, 75f, 97.1f));
+            var intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-201.7801f, 45.05f, -724.91f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-204.4213f, 45.05f, -488.716f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-202.9045f, 45.05f, -112.688f));
+            lights.Add(intermittentLamp);
 
-            ////Luces prendidas
-            //var onLamp = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(-271.75f, 75f, 112.3f));
-            //var onLamp2 = new Lamp().WithState(new FixedLight(20)).WithPosition(new Vector3(-126.6f, 75f, 37f));
-
-            ////Luces apagadas
-            //var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(199f, 75f, 535.45f));
-            //var offLamp2 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(271.75f, 75f, 12.3f));
-            //var offLamp3 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(307.25f, 75f, -224.9f));
-            //var offLamp4 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(290.7f, 75f, -485.9f));
-
-            ////Se agregan las luces a la colección
-            //lights.Add(intermitentLamp);
-            //lights.Add(intermitentLamp2);
-            //lights.Add(intermitentLamp3);
-
-            //lights.Add(onLamp);
-            //lights.Add(onLamp2);
-
-            //lights.Add(offLamp);
-            //lights.Add(offLamp2);
-            //lights.Add(offLamp3);
-            //lights.Add(offLamp4);
+            var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-720.47f, 45.05f, -610.4592f));
+            lights.Add(offLamp);
+            offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-203.2237f, 45.05f, -296.3737f));
+            lights.Add(offLamp);
+            offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-339.8075f, 45.05f, 197.6817f));
+            lights.Add(offLamp);
+            offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-389.4152f, 45.05f, -7.683351f));
+            lights.Add(offLamp);
+            offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-448.2712f, 45.05f, -441.5271f));
+            lights.Add(offLamp);
+            offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-487.5257f, 45.05f, 200.7356f));
+            lights.Add(offLamp);
+            offLamp = new Lamp().WithState(new FixedLight(0)).WithPosition(new Vector3(-491.3519f, 10f, 112.9243f));
+            lights.Add(offLamp);
         }
 
         private void CreateGroundFloorLamps()
         {
-            //Tgc3dSound sound;
-            ////Luces intermitentes
-            //var intermitentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(405, -36, -831));
-            //sound = new Tgc3dSound(this.path + "NeneMalloc\\SonidosYMusica\\tuboDeLuz.wav", intermitentLamp.Position);
-            //sound.MinDistance = 25f;
-            //sounds.Add(sound);
+            var intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-217.1517f, -91.5322f, -1232.428f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(13.08098f, -93.5423f, 567.2851f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-150.1281f, -93.5423f, 211.5172f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(132.4148f, -93.5423f, 167.8136f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-245.4898f, -91.5322f, -525.1691f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-224.0355f, -91.5322f, -736.4214f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-800.6736f, -76.8167f, -610.8485f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-473.2807f, -91.5322f, 14.82125f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-263.4782f, -92.8721f, 372.9998f));
+            lights.Add(intermittentLamp);
+            intermittentLamp = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(-674.7888f, -92.8721f, 578.1655f));
+            lights.Add(intermittentLamp);
 
-            //var intermitentLamp2 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(160f, -48.5f, 241.8f));
-            //sound = new Tgc3dSound(this.path + "NeneMalloc\\SonidosYMusica\\tuboDeLuz.wav", intermitentLamp2.Position);
-            //sound.MinDistance = 25f;
-            //sounds.Add(sound);
-
-            //var intermitentLamp3 = new Lamp().WithState(new IntermittentLight()).WithPosition(new Vector3(349.2f, -61.5f, -327.8f));
-            //sound = new Tgc3dSound(this.path + "NeneMalloc\\SonidosYMusica\\tuboDeLuz.wav", intermitentLamp3.Position);
-            //sound.MinDistance = 25f;
-            //sounds.Add(sound);
-
-            //Luces prendidas
-            var onLamp = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(-102.5f, -61.5f, -331.25f));
-            //var onLamp2 = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(276f, -61.5f, -129.6f));
-            //var onLamp3 = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(864.4f, -61.5f, -475.8f));
-            //var onLamp4 = new Lamp().WithState(new FixedLight(25)).WithPosition(new Vector3(101.9f, -61.5f, -469.3f));
-
-            ////Luces apagadas
-            //var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(578.8f, -48.5f, 141.7f));
-            //var offLamp2 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(322.1f, -61.5f, -151.2f));
-            //var offLamp3 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(711.8f, -61.5f, -174.5f));
-            //var offLamp4 = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(713.3f, -61.5f, -293.2f));
-            //var offLamp5 = new Lamp().WithState(new FixedLight(8)).WithPosition(new Vector3(350.5f, 9f, 316.9f));
-
-            ////Se agregan las luces a la coleccion
-            //lights.Add(intermitentLamp);
-            //lights.Add(intermitentLamp2);
-            //lights.Add(intermitentLamp3);
-
-            lights.Add(onLamp);
-            //lights.Add(onLamp2);
-            //lights.Add(onLamp3);
-            //lights.Add(onLamp4);
-
-            //lights.Add(offLamp);
-            //lights.Add(offLamp2);
-            //lights.Add(offLamp3);
-            //lights.Add(offLamp4);
-            //lights.Add(offLamp5);
+            var offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(348.0486f, -91.5322f, -729.3348f));
+            lights.Add(offLamp);
+            offLamp = new Lamp().WithState(new FixedLight(1)).WithPosition(new Vector3(-43.66533f, -91.5322f, -384.5498f));
+            lights.Add(offLamp);
         }
 
         private void setRandomToLamps()
         {
             foreach (Lamp light in lights)
             {
-                float random = new Random().Next(5, 40);
+                float random = new Random().Next(2, 10);
                 light.setRandom(random);
             }
         }
@@ -491,10 +462,12 @@ namespace AlumnoEjemplos.MiGrupo
 
         protected Vector3 calculateLampDirection(Vector3 rotation)
         {
-            float z = (float)Math.Cos(rotation.Y);
-            float x = (float)Math.Sin(rotation.Y);
-            float y = (float) Math.Sin(rotation.X);
-            var dir = new Vector3(x, y, z);
+            float xzLen = (float)Math.Cos(rotation.X);
+            float z = xzLen * (float)Math.Cos(rotation.Y);
+            float x = xzLen * (float)Math.Sin(rotation.Y);
+            float y = (float)Math.Sin(rotation.X);
+            var dir = new Vector3(x, -y, z);
+            dir.Normalize();
             return dir;
         }
 
