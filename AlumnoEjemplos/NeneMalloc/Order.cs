@@ -8,10 +8,8 @@ namespace AlumnoEjemplos.NeneMalloc
         public int moveAside = 0; 
         public float rotateY = 0;
         public float rotateX = 0;
-        public bool printIntermitentLight;
-        public bool printOnLight;
-        public bool printOffLight;
-
+        public Boolean printCheckPoint;
+        
         //public Vector3 getDirection()
         //{
         //    Vector3 direction = this.movement;
@@ -37,7 +35,6 @@ namespace AlumnoEjemplos.NeneMalloc
         {
             return rotateX != 0 || rotateY != 0;
         }
-
     }
 
     
