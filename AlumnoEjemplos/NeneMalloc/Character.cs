@@ -1,6 +1,7 @@
 ﻿using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using AlumnoEjemplos.NeneMalloc.Utils;
@@ -175,6 +176,7 @@ namespace AlumnoEjemplos.NeneMalloc
                             if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)) || boundingBoxes.Count == 0)
                             {
                                 GuiController.Instance.UserVars.setValue("isColliding", "Escalera chequeada");
+                                this.BoundingBox.transform(Matrix.Translation(this.Position));
                                 checkedStairs = true;
                             }
                         }
@@ -250,7 +252,7 @@ namespace AlumnoEjemplos.NeneMalloc
                         List<TgcBoundingBox> boundingBoxes2 = CollitionManager.getColisions(this.BoundingBox);
 
                         //GuiController.Instance.UserVars.setValue("Y", boundingBoxes2.Count);
-                        this.Move(new Vector3(0, 0.05f - Math.Abs(min - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y), 0));
+                        this.Move(new Vector3(0, 0.05f - Math.Abs(min - boundingBoxes2.FindAll(b => CollitionManager.isColliding(this.BoundingBox, b)).Select(b=>b.PMax.Y).Max()), 0));
                         //GuiController.Instance.UserVars.setValue("Y", "bajo" + Math.Abs(this.BoundingBox.PMin.Y - boundingBoxes2.Find(b => CollitionManager.isColliding(this.BoundingBox, b)).PMax.Y)*-1);
                     }
                     else
