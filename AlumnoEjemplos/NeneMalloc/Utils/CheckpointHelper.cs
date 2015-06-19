@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.DirectX;
-using TgcViewer;
 using TgcViewer.Utils.TgcGeometry;
 using System.Drawing;
 using AlumnoEjemplos.MiGrupo;
@@ -24,20 +23,9 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
                 keyPair.Value.ForEach(c => c.render());
             }
         }
-        public static void Add(Checkpoint checkPoint)
-        {
-            Floor key = (Floor) GuiController.Instance.Modifiers.getValue("PisoCheckPoint");
-            if (!CheckPoints.ContainsKey(key))
-            {
-                CheckPoints[key] = new List<Checkpoint>();
-            }
-            CheckPoints[key].Add(checkPoint);
-        }
-
 
         public static void GenerateGraph()
         {
-            GuiController.Instance.UserVars.setValue("Pos", "Holi");
             List<Checkpoint> checkPoints = new List<Checkpoint>();
             foreach (KeyValuePair<Floor, List<Checkpoint>> key in CheckPoints)
             {
@@ -82,8 +70,6 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             DestroyLinkBetween(102, 104);
             DestroyLinkBetween(103, 105);
             DestroyLinkBetween(104, 106);
-            GuiController.Instance.UserVars.setValue("Pos","Termine");
-
         }
 
         public static float DistanceBetweenInXandZ(Checkpoint checkPoint, Checkpoint otherCheckpoint)
@@ -269,7 +255,6 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             firstFloorCheckpoints.Add(checkpoint);
             checkpoint = new Checkpoint(new Vector3(-296.2352f, 45.05f, -722.7036f));
             firstFloorCheckpoints.Add(checkpoint);
-            //
             checkpoint = new Checkpoint(new Vector3(-453.1046f, 45.05f, -553.6915f));
             firstFloorCheckpoints.Add(checkpoint);
             checkpoint = new Checkpoint(new Vector3(-331.3843f, 45.05f, -520.8478f));
@@ -389,7 +374,7 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             CheckPoints.Add(Floor.FirstFloor, firstFloorCheckpoints);
          
             GenerateGraph();
-            EjemploAlumno.createMonsters();
+            EjemploAlumno.CreateMonsters();
         }
     }
    

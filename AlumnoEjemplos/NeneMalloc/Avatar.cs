@@ -9,15 +9,6 @@ namespace AlumnoEjemplos.NeneMalloc
         private TruccoFPSCamera Camera = new TruccoFPSCamera();
         private int checkPoint = 0;
 
-        public override float VelocidadCaminar
-        {
-            get { return 100f; }
-        }
-        public override float VelocidadRotacion
-        {
-            get { return 120f; }
-        }
-
         public Avatar()
             : base(new Vector3(-17.83417f, -91.5322f, -932.5353f))
         {

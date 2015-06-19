@@ -45,7 +45,6 @@ namespace AlumnoEjemplos.NeneMalloc
 
             Order.printCheckPoint = d3dInput.keyPressed(Key.P);
 
-            GuiController.Instance.UserVars.setValue("MouseReleased", mouseReleased);
             if (mouseReleased)
             {
                 Cursor.Show();

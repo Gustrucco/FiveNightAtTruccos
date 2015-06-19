@@ -23,7 +23,6 @@ using TgcViewer.Utils.TgcSkeletalAnimation;
 using TgcViewer.Utils._2D;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
 using Font = System.Drawing.Font;
-using Microsoft.DirectX.DirectInput;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -85,8 +84,7 @@ namespace AlumnoEjemplos.MiGrupo
 
         /// <summary>
         /// Método que se llama una sola vez,  al principio cuando se ejecuta el ejemplo.
-        /// Escribir aquí todo el código de inicialización: cargar modelos, texturas, modifiers, uservars, etc.
-        /// Borrar todo lo que no haga falta
+        /// Código de inicialización
         /// </summary>
         public override void init()
         {
@@ -150,25 +148,10 @@ namespace AlumnoEjemplos.MiGrupo
 
             this.CreateLamps();
 
-            //Modifier frustum Culling
-            GuiController.Instance.Modifiers.addBoolean("culling", "Frustum culling", true);
-            
-            //Modifier para ver BoundingBox
-            GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
-            GuiController.Instance.UserVars.addVar("isColliding");
-            GuiController.Instance.UserVars.addVar("Pos");
-            GuiController.Instance.UserVars.addVar("Normal");
-            GuiController.Instance.UserVars.addVar("LastPos");
-            GuiController.Instance.UserVars.addVar("Meshes renderizadas");
-            GuiController.Instance.UserVars.addVar("Checkpoints");
-            GuiController.Instance.UserVars.addVar("Falling");
-            GuiController.Instance.UserVars.addVar("MouseReleased");
-            GuiController.Instance.UserVars.addVar("CheckPointPos");
-            //Modifiers para desplazamiento del personaje
-            GuiController.Instance.Modifiers.addEnum("PisoCheckPoint",typeof(Floor),Floor.GroundFloor);
-
             currentLanternShader = TgcShaders.loadEffect(path + "NeneMalloc\\Shaders\\TgcMeshPointAndSpotLightShader.fx");
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
+            
+            
             //currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
             //avatar.meshPersonaje.Effect = currentAvatarShader;
 
@@ -211,13 +194,12 @@ namespace AlumnoEjemplos.MiGrupo
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
-            //TODO
-            //if (Monsters.Any(m => Math.Abs(Vector3.Length(m.Position - avatar.Position)) < 20f))
-            //{
-            //    this.renderGameOver();
-            //}
-            //else
-            //{
+            if (Monsters.Any(m => Math.Abs(Vector3.Length(m.Position - avatar.Position)) < 20f))
+            {
+                this.renderGameOver();
+            }
+            else
+            {
                 //Juego ganado
                 if (stopwatch.Elapsed.Minutes >= 10)
                 {
@@ -227,41 +209,40 @@ namespace AlumnoEjemplos.MiGrupo
                 {
                     this.renderUnfinishedGame(elapsedTime);
                 }
-            //}
+            }
         }
+       
+        private void renderGameOver()
+        {
+            PlayingTime.Text = "";
 
-        //TODO
-        //private void renderGameOver()
-        //{
-        //    PlayingTime.Text = "";
+            PlayingTime.render();
 
-        //    PlayingTime.render();
+            TgcText2d WinText = new TgcText2d();
+            WinText.Text = "GAME OVER";
+            WinText.Align = TgcText2d.TextAlign.CENTER;
+            WinText.Position = new Point(300, 250);
+            WinText.Size = new Size(500, 500);
+            WinText.Color = Color.Indigo;
+            WinText.changeFont(new Font("Arial", 50, FontStyle.Bold | FontStyle.Underline));
 
-        //    TgcText2d WinText = new TgcText2d();
-        //    WinText.Text = "GAME OVER";
-        //    WinText.Align = TgcText2d.TextAlign.CENTER;
-        //    WinText.Position = new Point(300, 250);
-        //    WinText.Size = new Size(500, 500);
-        //    WinText.Color = Color.Indigo;
-        //    WinText.changeFont(new Font("Arial", 50, FontStyle.Bold | FontStyle.Underline));
+            WinText.render();
 
-        //    WinText.render();
+            foreach (Tgc3dSound s in sounds)
+            {
+                s.stop();
+            }
 
-        //    foreach (Tgc3dSound s in sounds)
-        //    {
-        //        s.stop();
-        //    }
+            player.pause();
+            ////Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
+            //GuiController.Instance.Drawer2D.beginDrawSprite();
 
-        //    player.pause();
-        //    ////Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
-        //    //GuiController.Instance.Drawer2D.beginDrawSprite();
+            ////Dibujar sprite (si hubiese mas, deberian ir todos aquí)
+            //winningScreen.render();
 
-        //    ////Dibujar sprite (si hubiese mas, deberian ir todos aquí)
-        //    //winningScreen.render();
-
-        //    ////Finalizar el dibujado de Sprites
-        //    //GuiController.Instance.Drawer2D.endDrawSprite();
-        //}
+            ////Finalizar el dibujado de Sprites
+            //GuiController.Instance.Drawer2D.endDrawSprite();
+        }
 
         private void renderFinishedGame()
         {
@@ -322,22 +303,16 @@ namespace AlumnoEjemplos.MiGrupo
                 SemaphoreMutex.ReleaseMutex();
             }
 
-            bool frustumCullingEnabled = (bool)GuiController.Instance.Modifiers["culling"];
-            if (frustumCullingEnabled)
-            {
-                TgcFrustum frustum = GuiController.Instance.Frustum;
-                grilla.findVisibleMeshes(frustum);
-                meshes =
-                    meshes.FindAll(
-                        m =>
-                            m.Enabled &&
-                            TgcCollisionUtils.classifyFrustumAABB(frustum, m.BoundingBox) !=
-                            TgcCollisionUtils.FrustumResult.OUTSIDE);
-            }
-
-            //Actualizar cantidad de meshes dibujadas
-            GuiController.Instance.UserVars.setValue("Meshes renderizadas", meshes.Count);
-
+ 
+            TgcFrustum frustum = GuiController.Instance.Frustum;
+            grilla.findVisibleMeshes(frustum);
+            meshes =
+                meshes.FindAll(
+                    m =>
+                        m.Enabled &&
+                        TgcCollisionUtils.classifyFrustumAABB(frustum, m.BoundingBox) !=
+                        TgcCollisionUtils.FrustumResult.OUTSIDE);
+            
             lantern.Position = avatar.Position;
 
             //Normalizar direccion de la luz
@@ -436,8 +411,6 @@ namespace AlumnoEjemplos.MiGrupo
 
             PlayingTime.Text = stopwatch.Elapsed.ToString(@"mm\:ss") + " AM";
             PlayingTime.render();
-
-            avatar.Render();
         }
 
         private void CreateLamps()
@@ -571,17 +544,26 @@ namespace AlumnoEjemplos.MiGrupo
             {
                 light.dispose();
             }
+            CheckpointHelper.CheckPoints.Clear();
             PlayingTime.dispose();
             winningScreen.dispose();
             lantern.dispose();
         }
 
-        public void createMonsters()
+        public void CreateMonsters()
         {
             var monsterList = new List<Monster>();
-            var monster = new Monster(new Vector3(-8.373646f, -90f, 180.5043f), avatar);
-            monster.VelocidadCaminar = 100f;
-            monster.VelocidadRotacion = 100f;
+            var monster = new Monster(new Vector3(-11.39549f, -106.5f, 192.1234f), avatar, "Pilot-TgcSkeletalMesh.xml");
+            monsterList.Add(monster);
+            monster = new Monster(new Vector3(-695.4191f, -106.5f, -586.1326f), avatar, "BasicHuman-TgcSkeletalMesh.xml");
+            monsterList.Add(monster);
+            monster = new Monster(new Vector3(-238.9347f, -106.5f, -389.5356f), avatar, "WomanJeans-TgcSkeletalMesh.xml");
+            monsterList.Add(monster);
+            monster = new Monster(new Vector3(-329.9544f, 45.05f, 1767.038f), avatar, "Pilot-TgcSkeletalMesh.xml");
+            monsterList.Add(monster);
+            monster = new Monster(new Vector3(-828.4836f, 45.05f, 1765.216f), avatar, "WomanJeans-TgcSkeletalMesh.xml");
+            monsterList.Add(monster);
+            monster = new Monster(new Vector3(-478.084f, 45.05f, 146.0769f), avatar, "BasicHuman-TgcSkeletalMesh.xml");
             monsterList.Add(monster);
 
             SemaphoreMutex.WaitOne();

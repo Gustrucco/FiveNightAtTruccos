@@ -5,7 +5,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using AlumnoEjemplos.NeneMalloc.Utils;
-using TgcViewer;
 using TgcViewer.Utils.TgcGeometry;
 
 namespace AlumnoEjemplos.NeneMalloc
@@ -18,9 +17,14 @@ namespace AlumnoEjemplos.NeneMalloc
         public TgcBoundingBox BoundingBox { get; set; }
         public Vector3 Position { get; set; }
         public Controller Controller { get; set; }
-        public virtual float VelocidadCaminar { get; set; }
-        public virtual float VelocidadRotacion { get; set; }
-
+        public virtual float VelocidadCaminar
+        {
+            get { return 100f; }
+        }
+        public virtual float VelocidadRotacion
+        {
+            get { return 120f; }
+        }
         protected Character(Vector3 initialPos)
         {
             this.Position = initialPos;
@@ -104,14 +108,6 @@ namespace AlumnoEjemplos.NeneMalloc
             this.BoundingBox.transform(Matrix.Translation(this.Position));
         }
 
-        public virtual void Render()
-        {
-            if ((bool)GuiController.Instance.Modifiers.getValue("showBoundingBox"))
-            {
-                this.BoundingBox.render();
-            }
-        }
-
         public virtual void Update(float elapsedTime)
         {
             this.Update();
@@ -149,7 +145,6 @@ namespace AlumnoEjemplos.NeneMalloc
                         Vector3 normal = new Vector3(0, 0, 0);
                         this.Move(lastPos - this.Position);
 
-                        GuiController.Instance.UserVars.setValue("isColliding", true);
                         Boolean checkedStairs = false;
                         float max = -2000f;
                         //detecto colision contra escaleras primero
@@ -160,7 +155,6 @@ namespace AlumnoEjemplos.NeneMalloc
 
                             if (boundingBoxes.Exists(b => !CollitionManager.isColliding(this.BoundingBox, b)))
                             {
-                                GuiController.Instance.UserVars.setValue("isColliding", "Escalera");
                                 TgcBoundingBox boundingColliding = boundingBoxes.Find(b => !CollitionManager.isColliding(this.BoundingBox, b));
                                 if (max < boundingColliding.PMax.Y)
                                 {
@@ -175,7 +169,6 @@ namespace AlumnoEjemplos.NeneMalloc
                             }
                             if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)) || boundingBoxes.Count == 0)
                             {
-                                GuiController.Instance.UserVars.setValue("isColliding", "Escalera chequeada");
                                 this.BoundingBox.transform(Matrix.Translation(this.Position));
                                 checkedStairs = true;
                             }
@@ -194,59 +187,44 @@ namespace AlumnoEjemplos.NeneMalloc
                         {
                             //Slide
                             this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(VelocidadCaminar * elapsedTime, 0, 0)));
-                            GuiController.Instance.UserVars.setValue("Normal", "CalculandoNormal");
                             if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
                             {
-                                GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
                                 normal += new Vector3(1, 0, 0) * -1;
                             }
 
                             this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(-VelocidadCaminar * elapsedTime, 0, 0)));
                             if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
                             {
-                                GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
                                 normal += new Vector3(-1, 0, 0) * -1;
                             }
 
                             this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, VelocidadCaminar * elapsedTime)));
                             if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
                             {
-                                GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
                                 normal += new Vector3(0, 0, -1) * -1;
                             }
 
                             this.BoundingBox.transform(Matrix.Translation(lastPos + new Vector3(0, 0, -VelocidadCaminar * elapsedTime)));
                             if (boundingBoxes.Exists(b => CollitionManager.isColliding(this.BoundingBox, b)))
                             {
-                                GuiController.Instance.UserVars.setValue("Normal", "HayNormal");
                                 normal += new Vector3(0, 0, -1) * -1;
                             }
                             if (!normal.Equals(new Vector3(0, 0, 0)))
                             {
                                 normal.Normalize();
-                                GuiController.Instance.UserVars.setValue("Normal", "Calculando movimiento" + (Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.Position)), normal)));
-
                                 if (!TouchingSomething(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.Position)), normal)))
                                 {
-                                    GuiController.Instance.UserVars.setValue("Normal", "SeteandoNormal");
                                     this.Move(Vector3.Cross(Vector3.Cross(normal, (collidedPosition - this.Position)), normal));
                                 }
                             }
                         }
                     }
-                    else
-                    {
-                        GuiController.Instance.UserVars.setValue("isColliding", false);
-                    }
                 }
                 //Si no se esta moviendo, activar animacion de Parado
                 if (!this.TouchingSomething(new Vector3(0, -0.1f, 0)))
                 {
-                    GuiController.Instance.UserVars.setValue("isColliding", "flotando");
                     if (!this.Falling && this.TouchingSomething(new Vector3(0, -15f, 0)))
                     {
-
-                        GuiController.Instance.UserVars.setValue("isColliding", "escaleraBajada");
                         float min = this.BoundingBox.PMin.Y;
                         this.BoundingBox.transform(Matrix.Translation(this.BoundingBox.Position + new Vector3(0, -15f, 0)));
                         List<TgcBoundingBox> boundingBoxes2 = CollitionManager.getColisions(this.BoundingBox);
@@ -257,12 +235,10 @@ namespace AlumnoEjemplos.NeneMalloc
                     }
                     else
                     {
-                        GuiController.Instance.UserVars.setValue("isColliding", "gravedad");
                         this.Falling = true;
                         this.UpdateFallingSpeed(elapsedTime);
                         if (this.HitSomethingAtPath(new Vector3(0, -1f, 0), elapsedTime * VelocidadCaida))
                         {
-                            GuiController.Instance.UserVars.setValue("isColliding", "gravedadGround");
                             TgcBoundingBox boundingBoxResult;
                             CollitionManager.getClosestBoundingBox(new TgcRay(this.Position, new Vector3(0, 1f, 0)), out boundingBoxResult, this.BoundingBox);
                             this.Move(new Vector3(0, -1f, 0) * Math.Abs(boundingBoxResult.PMax.Y - this.BoundingBox.PMin.Y));
@@ -274,13 +250,10 @@ namespace AlumnoEjemplos.NeneMalloc
                             this.Move(new Vector3(0, -1f, 0) * elapsedTime * VelocidadCaida);
                         }
                     }
-                    GuiController.Instance.UserVars.setValue("Falling", this.Falling);
                 }
                 if (lastOrder.printCheckPoint)
                 {
                     Clipboard.SetText(Clipboard.GetText() + String.Format("new Checkpoint(new Vector3({0}, {1}, {2}));", this.Position.X.ToString().Replace(",", ".") + "f", this.Position.Y.ToString().Replace(",", ".") + "f", this.Position.Z.ToString().Replace(",", ".") + "f"));
-                    // CheckpointHelper.Add(new Checkpoint(this.Position));
-                    //Clipboard.SetText("CheckPointPos", "CheckPoint" + checkPoint + ":" + this.Position,TextDataFormat.Text);
                 }
             }
 
