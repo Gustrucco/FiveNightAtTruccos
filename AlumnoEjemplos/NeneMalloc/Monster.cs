@@ -36,6 +36,12 @@ namespace AlumnoEjemplos.NeneMalloc
             mesh.rotateY(angle);
         }
 
+        public override void Move(Vector3 pos)
+        {
+            base.Move(pos);
+            mesh.move(pos);
+        }
+
         public override void Render()
         {
             mesh.playAnimation("Caminando", true);

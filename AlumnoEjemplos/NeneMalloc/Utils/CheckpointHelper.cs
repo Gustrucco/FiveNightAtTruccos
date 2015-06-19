@@ -5,6 +5,7 @@ using Microsoft.DirectX;
 using TgcViewer;
 using TgcViewer.Utils.TgcGeometry;
 using System.Drawing;
+using AlumnoEjemplos.MiGrupo;
 using Microsoft.DirectX.Direct3D;
 
 namespace AlumnoEjemplos.NeneMalloc.Utils
@@ -13,6 +14,9 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
     {
         public static Dictionary<Floor,List<Checkpoint>> CheckPoints= new Dictionary<Floor,List<Checkpoint>>();
         public static List<TgcArrow> lastCheckPointArrows;
+        public static List<Checkpoint> checkpoints;
+        public static EjemploAlumno EjemploAlumno { get; set; }
+
         public static void renderAll()
         {
             foreach (KeyValuePair<Floor,List<Checkpoint>> keyPair in CheckPoints)
@@ -33,22 +37,20 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
 
         public static void GenerateGraph()
         {
+            GuiController.Instance.UserVars.setValue("Pos", "Holi");
             List<Checkpoint> checkPoints = new List<Checkpoint>();
             foreach (KeyValuePair<Floor, List<Checkpoint>> key in CheckPoints)
             {
                 checkPoints.AddRange(key.Value);
             }
-            checkPoints.ForEach(c => c.Checked = false);
-            foreach (Checkpoint checkPoint in checkPoints)
-            {
-                checkPoint.Checked = true;
+            foreach(Checkpoint checkPoint in checkPoints){
                 List<Checkpoint> unCheckedCheckpoints = checkPoints;
                 unCheckedCheckpoints = unCheckedCheckpoints.FindAll(c => checkPoint.hasDirectSightWith(c));
                 checkPoint.Neighbors =
                     new HashSet<Checkpoint>(
                         unCheckedCheckpoints.FindAll(c => checkPoint.hasDirectSightWith(c))
                             .FindAll(
-                                neighbor => 
+                                neighbor =>
                                             !unCheckedCheckpoints.Any(
                                                 c =>
                                                     c != neighbor &&
@@ -80,6 +82,8 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             DestroyLinkBetween(102, 104);
             DestroyLinkBetween(103, 105);
             DestroyLinkBetween(104, 106);
+            GuiController.Instance.UserVars.setValue("Pos","Termine");
+
         }
 
         public static float DistanceBetweenInXandZ(Checkpoint checkPoint, Checkpoint otherCheckpoint)
@@ -383,6 +387,9 @@ namespace AlumnoEjemplos.NeneMalloc.Utils
             CheckPoints.Add(Floor.GroundFloor, groundFloorCheckpoints);
             CheckPoints.Add(Floor.Stairs, stairsCheckpoints);
             CheckPoints.Add(Floor.FirstFloor, firstFloorCheckpoints);
+         
+            GenerateGraph();
+            EjemploAlumno.createMonsters();
         }
     }
    

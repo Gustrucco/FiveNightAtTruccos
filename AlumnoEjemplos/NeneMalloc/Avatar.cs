@@ -19,7 +19,7 @@ namespace AlumnoEjemplos.NeneMalloc
         }
 
         public Avatar()
-            : base(new Vector3(160f, -88.5f, -340f))
+            : base(new Vector3(-17.83417f, -91.5322f, -932.5353f))
         {
             //Carga del controller
             this.Controller = new Player();

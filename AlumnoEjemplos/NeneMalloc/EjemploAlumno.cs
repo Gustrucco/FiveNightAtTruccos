@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using AlumnoEjemplos.NeneMalloc.Lights;
 using AlumnoEjemplos.NeneMalloc.Lights.States;
@@ -55,6 +56,7 @@ namespace AlumnoEjemplos.MiGrupo
         List<TgcArrow> ArrowsClosesCheckPoint;
         Checkpoint ClosestCheckPoint;
         List<Monster> Monsters;
+        public Mutex SemaphoreMutex = new Mutex();
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -130,7 +132,7 @@ namespace AlumnoEjemplos.MiGrupo
             {
                 obstaculos.Add(mesh.BoundingBox);
             }
-
+            
             //Cargar pantalla de juego ganado
             winningScreen = new TgcSprite();
             winningScreen.Texture = TgcTexture.createTexture(path + "NeneMalloc\\winningScreen.png");
@@ -142,21 +144,15 @@ namespace AlumnoEjemplos.MiGrupo
 
             CollitionManager.obstaculos = obstaculos;
 
-            //TODO
+            
             //Cargar los enemigos
-            //Monsters = new List<Monster>();
-
-            //var monster = new Monster(new Vector3(140.3071f, -91.425f, 246.465f), avatar);
-            //Monsters.Add(monster);
+            Monsters = new List<Monster>();
 
             this.CreateLamps();
 
             //Modifier frustum Culling
             GuiController.Instance.Modifiers.addBoolean("culling", "Frustum culling", true);
-
-            CheckpointHelper.BuildCheckpoints();
-            CheckpointHelper.GenerateGraph();
-
+            
             //Modifier para ver BoundingBox
             GuiController.Instance.Modifiers.addBoolean("showBoundingBox", "Bouding Box", false);
             GuiController.Instance.UserVars.addVar("isColliding");
@@ -175,6 +171,11 @@ namespace AlumnoEjemplos.MiGrupo
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
             //currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
             //avatar.meshPersonaje.Effect = currentAvatarShader;
+
+            //Creacion Checkpoints
+            CheckpointHelper.EjemploAlumno = this;
+            Thread thread = new Thread(CheckpointHelper.BuildCheckpoints);
+            thread.Start();
 
             //Reloj con la hora del juego
 
@@ -218,7 +219,6 @@ namespace AlumnoEjemplos.MiGrupo
             //else
             //{
                 //Juego ganado
- 
                 if (stopwatch.Elapsed.Minutes >= 10)
                 {
                     this.renderFinishedGame();
@@ -298,6 +298,7 @@ namespace AlumnoEjemplos.MiGrupo
         private void renderUnfinishedGame(float elapsedTime)
         {
             List<TgcMesh> meshes = tgcScene.Meshes;
+          
 
             if (timeStart >= 0)
             {
@@ -313,12 +314,13 @@ namespace AlumnoEjemplos.MiGrupo
                 lantern.ChangeLightOnOff();
             }
 
-            //TODO foreach (var monster in Monsters)
-            //{
-            //    monster.Update(elapsedTime);
-            //    monster.Render();
-            //    GuiController.Instance.UserVars.setValue("Pos", monster.Position);
-            //}
+            foreach (var monster in Monsters)
+            {
+                SemaphoreMutex.WaitOne();
+                monster.Update(elapsedTime);
+                monster.Render();
+                SemaphoreMutex.ReleaseMutex();
+            }
 
             bool frustumCullingEnabled = (bool)GuiController.Instance.Modifiers["culling"];
             if (frustumCullingEnabled)
@@ -377,14 +379,15 @@ namespace AlumnoEjemplos.MiGrupo
 
                     //Cargar variables shader de la luz
                     mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
-                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
+                    mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(currentLamp.Position));
                     mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.Position));
                     mesh.Effect.SetValue("lampIntensity", currentLamp.getIntensity());
-                    mesh.Effect.SetValue("lanternIntensity", lantern.Intensity);
                     mesh.Effect.SetValue("lightAttenuation", 0.3f);
 
                     //Cargar variables shader de linterna
-                    mesh.Effect.SetValue("spotLightDir", TgcParserUtils.vector3ToFloat3Array(lightDir));
+                    mesh.Effect.SetValue("lanternIntensity", lantern.Intensity);
+                    mesh.Effect.SetValue("lanternPosition", TgcParserUtils.vector3ToFloat4Array(lantern.Position));
+                    mesh.Effect.SetValue("spotLightDir", TgcParserUtils.vector3ToFloat3Array(calculateLampDirection(avatar.Rotation)));
                     mesh.Effect.SetValue("spotLightAngleCos", FastMath.ToRad(lantern.SpotAngle));
                     mesh.Effect.SetValue("spotLightExponent", lantern.SpotExponent);
 
@@ -434,25 +437,6 @@ namespace AlumnoEjemplos.MiGrupo
             PlayingTime.Text = stopwatch.Elapsed.ToString(@"mm\:ss") + " AM";
             PlayingTime.render();
 
-            ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);
-            GuiController.Instance.UserVars.setValue("CheckPointPos", "Pos:" + ClosestCheckPoint.Position + "/" + ClosestCheckPoint.id);
-
-            GuiController.Instance.UserVars.setValue("Checkpoints", CheckpointHelper.CheckPoints.Sum(c => c.Value.Count));
-         
-            if (GuiController.Instance.D3dInput.keyDown(Key.Space))
-            {
-                var texto = new TgcText2d();
-                texto.Text = ClosestCheckPoint.id.ToString();
-                texto.Position = new Point(300, 100);
-                texto.Size = new Size(300, 100);
-                texto.render();
-            }
-
-            //TODO
-            //ArrowsClosesCheckPoint.ForEach(a => a.render());
-            //CheckpointHelper.renderAll();
-
-            //render del personaje
             avatar.Render();
         }
 
@@ -539,7 +523,7 @@ namespace AlumnoEjemplos.MiGrupo
         {
             foreach (Lamp light in lights)
             {
-                float random = new Random().Next(5, 40);
+                float random = new Random().Next(2, 8);
                 light.setRandom(random);
             }
         }
@@ -592,5 +576,17 @@ namespace AlumnoEjemplos.MiGrupo
             lantern.dispose();
         }
 
+        public void createMonsters()
+        {
+            var monsterList = new List<Monster>();
+            var monster = new Monster(new Vector3(-8.373646f, -90f, 180.5043f), avatar);
+            monster.VelocidadCaminar = 100f;
+            monster.VelocidadRotacion = 100f;
+            monsterList.Add(monster);
+
+            SemaphoreMutex.WaitOne();
+            Monsters = monsterList;
+            SemaphoreMutex.ReleaseMutex();
+        }
     }
 }

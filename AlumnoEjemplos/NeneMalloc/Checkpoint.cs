@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Text;
+using System.Windows.Forms.VisualStyles;
 using TgcViewer.Utils.TgcGeometry;
 using AlumnoEjemplos.NeneMalloc.Utils;
 
@@ -73,7 +74,10 @@ namespace AlumnoEjemplos.NeneMalloc
 
         public bool CanArriveTo(Checkpoint anotherCheckpoint)
         {
-            return this.Neighbors.Contains(anotherCheckpoint) || this.Neighbors.Any(n => n.CanArriveTo(anotherCheckpoint));
+            this.Checked = true;
+            var result = this.Neighbors.Contains(anotherCheckpoint) || this.Neighbors.Any(n =>!n.Checked && n.CanArriveTo(anotherCheckpoint));
+            this.Checked = false;
+            return result;
         }
     }
 }
