@@ -71,11 +71,12 @@ namespace AlumnoEjemplos.MiGrupo
             string path = GuiController.Instance.AlumnoEjemplosMediaDir;
             TgcSceneLoader loader = new TgcSceneLoader();
             tgcScene = loader.loadSceneFromFile(
-               path + "NeneMalloc\\EscenarioFaltaIntensivas-TgcScene.xml",
+               path + "NeneMalloc\\paraPortalizar-TgcScene.xml",
                path + "NeneMalloc\\");
            //Cargar personaje
             avatar = new Avatar();
-
+            //Descactivar inicialmente a todos los modelos
+            tgcScene.setMeshesEnabled(false);
             //Cargar linterna
             lantern = new Lantern();
             lantern.init();
@@ -145,6 +146,38 @@ namespace AlumnoEjemplos.MiGrupo
             {
                 avatar.Update(elapsedTime);
             }
+            //Visibilidada con portal Rendering
+            tgcScene.PortalRendering.updateVisibility(GuiController.Instance.CurrentCamera.getPosition());
+            //Luego renderizar modelos visibles con alpha
+            int meshCount = 0;
+            ////Renderizar modelos visibles, primero todos los modelos opacos (sin alpha)
+            foreach (TgcMesh mesh in tgcScene.Meshes)
+            {
+                //Contador de modelos
+                if (mesh.Enabled && !mesh.AlphaBlendEnable)
+                {
+                    meshCount++;
+                }
+                //Renderizar modelo y luego desactivarlo para el próximo cuadro
+                mesh.render();
+                mesh.Enabled = false;
+            }
+            foreach (TgcMesh mesh in tgcScene.Meshes)
+            {
+                //Contador de modelos
+                if (mesh.Enabled && mesh.AlphaBlendEnable)
+                {
+                    meshCount++;
+                }
+
+
+                //Renderizar modelo y luego desactivarlo para el próximo cuadro
+                mesh.render();
+                mesh.Enabled = false;
+            }
+            
+
+
 
             //foreach (var monster in Monsters)
             //{
@@ -153,22 +186,22 @@ namespace AlumnoEjemplos.MiGrupo
             //    GuiController.Instance.UserVars.setValue("Pos", monster.Position);
             //}
 
-            //Analizar cada malla contra el Frustum - con fuerza bruta
-            TgcFrustum frustum = GuiController.Instance.Frustum;
-            foreach (TgcMesh mesh in tgcScene.Meshes)
-            {
-                //Nos ocupamos solo de las mallas habilitadas
-                if (mesh.Enabled)
-                {
-                    //Solo mostrar la malla si colisiona contra el Frustum
-                    TgcCollisionUtils.FrustumResult r = TgcCollisionUtils.classifyFrustumAABB(frustum, mesh.BoundingBox);
-                    if (r != TgcCollisionUtils.FrustumResult.OUTSIDE)
-                    {
+            ////Analizar cada malla contra el Frustum - con fuerza bruta
+            //TgcFrustum frustum = GuiController.Instance.Frustum;
+            //foreach (TgcMesh mesh in tgcScene.Meshes)
+            //{
+            //    //Nos ocupamos solo de las mallas habilitadas
+            //    if (mesh.Enabled)
+            //    {
+            //        //Solo mostrar la malla si colisiona contra el Frustum
+            //        TgcCollisionUtils.FrustumResult r = TgcCollisionUtils.classifyFrustumAABB(frustum, mesh.BoundingBox);
+            //        if (r != TgcCollisionUtils.FrustumResult.OUTSIDE)
+            //        {
                         
-                        meshes.Add(mesh);
-                    }
-                }
-            }
+            //            meshes.Add(mesh);
+            //        }
+            //    }
+            //}
 
             ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);
             GuiController.Instance.UserVars.setValue("CheckPointPos", "Pos:"+ ClosestCheckPoint.Position.ToString() +"/"+ ClosestCheckPoint.id);
@@ -202,12 +235,10 @@ namespace AlumnoEjemplos.MiGrupo
                 texto.Size = new Size(300, 100);
                 texto.render();
             }
-             
+
 
             CheckpointHelper.renderAll();
             
-            
-
         }
 
         /// <summary>
