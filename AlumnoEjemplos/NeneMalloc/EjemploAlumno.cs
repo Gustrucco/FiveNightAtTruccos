@@ -55,6 +55,7 @@ namespace AlumnoEjemplos.MiGrupo
         List<TgcArrow> ArrowsClosesCheckPoint;
         Checkpoint ClosestCheckPoint;
         List<Monster> Monsters;
+        bool canRenderMonsters;
         public Mutex SemaphoreMutex = new Mutex();
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace AlumnoEjemplos.MiGrupo
         /// </summary>
         public override string getDescription()
         {
-            return "El objetivo del juego es sobrevivir a la noche de seguridad. No se puede golpear a los enemigos. Simplemente iluminarlos para espantarlos";
+            return "El objetivo del juego es sobrevivir a la noche de seguridad. No se puede golpear a los enemigos. Simplemente escaparse de ellos";
         }
 
         /// <summary>
@@ -150,10 +151,7 @@ namespace AlumnoEjemplos.MiGrupo
 
             currentLanternShader = TgcShaders.loadEffect(path + "NeneMalloc\\Shaders\\TgcMeshPointAndSpotLightShader.fx");
             currentLampShader = GuiController.Instance.Shaders.TgcMeshPointLightShader;
-            
-            
-            //currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
-            //avatar.meshPersonaje.Effect = currentAvatarShader;
+            currentAvatarShader = GuiController.Instance.Shaders.TgcSkeletalMeshPointLightShader;
 
             //Creacion Checkpoints
             CheckpointHelper.EjemploAlumno = this;
@@ -319,28 +317,39 @@ namespace AlumnoEjemplos.MiGrupo
             Vector3 lightDir = this.calculateLampDirection(avatar.Rotation);
             lightDir.Normalize();
 
-            //Render personaje
-            //avatar.meshPersonaje.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(avatar.meshPersonaje.RenderType);
-
             //Calcular random por si la luz es intermitente
             this.setRandomToLamps();
 
-            //Lamp closestAvatarLamp = getClosestLight(avatar.Position);
+            if (canRenderMonsters)
+            {
+                foreach (var monster in Monsters)
+                {
+                    Lamp closestAvatarLamp = getClosestLight(monster.Position);
 
-            //Cargar variables shader de la luz
-            //avatar.meshPersonaje.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
-            //avatar.meshPersonaje.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.position));
-            //avatar.meshPersonaje.Effect.SetValue("lightAttenuation", 0.3f);
-            //avatar.meshPersonaje.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(closestAvatarLamp.Position));
-            //avatar.meshPersonaje.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity());
+                    //Cargar variables shader de la luz
+                    monster.mesh.Effect.SetValue("lightColor", ColorValue.FromColor(Color.White));
+                    monster.mesh.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(avatar.Position));
+                    monster.mesh.Effect.SetValue("lightAttenuation", 0.3f);
+                    monster.mesh.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array(closestAvatarLamp.Position));
+                    
+                    ////Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
+                    monster.mesh.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor(Color.Black));
+                    monster.mesh.Effect.SetValue("materialAmbientColor", ColorValue.FromColor(Color.White));
+                    monster.mesh.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor(Color.White));
+                    monster.mesh.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
+                    monster.mesh.Effect.SetValue("materialSpecularExp", 9f);
 
+                    if (lantern.On)
+                    {
+                        monster.mesh.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity() + lantern.Intensity);
+                    }
+                    else
+                    {
+                        monster.mesh.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity())
 
-            //////Cargar variables de shader de Material. El Material en realidad deberia ser propio de cada mesh. Pero en este ejemplo se simplifica con uno comun para todos
-            //avatar.meshPersonaje.Effect.SetValue("materialEmissiveColor", ColorValue.FromColor(Color.Black));
-            //avatar.meshPersonaje.Effect.SetValue("materialAmbientColor", ColorValue.FromColor(Color.White));
-            //avatar.meshPersonaje.Effect.SetValue("materialDiffuseColor", ColorValue.FromColor(Color.White));
-            //avatar.meshPersonaje.Effect.SetValue("materialSpecularColor", ColorValue.FromColor(Color.White));
-            //avatar.meshPersonaje.Effect.SetValue("materialSpecularExp", 9f);
+                    }
+                }              
+            }
 
             if (lantern.On)
             {
@@ -554,21 +563,35 @@ namespace AlumnoEjemplos.MiGrupo
         {
             var monsterList = new List<Monster>();
             var monster = new Monster(new Vector3(-11.39549f, -106.5f, 192.1234f), avatar, "Pilot-TgcSkeletalMesh.xml");
+            monster.mesh.Effect = currentAvatarShader;
+            monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
             monster = new Monster(new Vector3(-695.4191f, -106.5f, -586.1326f), avatar, "BasicHuman-TgcSkeletalMesh.xml");
+            monster.mesh.Effect = currentAvatarShader;
+            monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
             monster = new Monster(new Vector3(-238.9347f, -106.5f, -389.5356f), avatar, "WomanJeans-TgcSkeletalMesh.xml");
+            monster.mesh.Effect = currentAvatarShader;
+            monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
             monster = new Monster(new Vector3(-329.9544f, 45.05f, 1767.038f), avatar, "Pilot-TgcSkeletalMesh.xml");
+            monster.mesh.Effect = currentAvatarShader;
+            monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
             monster = new Monster(new Vector3(-828.4836f, 45.05f, 1765.216f), avatar, "WomanJeans-TgcSkeletalMesh.xml");
+            monster.mesh.Effect = currentAvatarShader;
+            monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
             monster = new Monster(new Vector3(-478.084f, 45.05f, 146.0769f), avatar, "BasicHuman-TgcSkeletalMesh.xml");
+            monster.mesh.Effect = currentAvatarShader;
+            monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
 
             SemaphoreMutex.WaitOne();
             Monsters = monsterList;
             SemaphoreMutex.ReleaseMutex();
+
+            canRenderMonsters = true;
         }
     }
 }
