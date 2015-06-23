@@ -104,8 +104,11 @@ namespace AlumnoEjemplos.MiGrupo
             Clipboard.Clear();
 
             tgcScene = loader.loadSceneFromFile(
-               path + "NeneMalloc\\EscenarioFaltaIntensivas-TgcScene.xml",
+               path + "NeneMalloc\\paraPortalizar-TgcScene.xml",
                path + "NeneMalloc\\");
+
+            //Descactivar inicialmente a todos los modelos
+            tgcScene.setMeshesEnabled(false);
 
             lights = new List<IluminationEntity>();
 
@@ -142,7 +145,6 @@ namespace AlumnoEjemplos.MiGrupo
             winningScreen.Position = new Vector2(FastMath.Max(screenSize.Width / 2 - textureSize.Width / 2, 0), FastMath.Max(screenSize.Height / 2 - textureSize.Height / 2, 0));
 
             CollitionManager.obstaculos = obstaculos;
-
             
             //Cargar los enemigos
             Monsters = new List<Monster>();
@@ -276,9 +278,8 @@ namespace AlumnoEjemplos.MiGrupo
 
         private void renderUnfinishedGame(float elapsedTime)
         {
-            List<TgcMesh> meshes = tgcScene.Meshes;
+            List<TgcMesh> meshes = new List<TgcMesh>();
           
-
             if (timeStart >= 0)
             {
                 timeStart -= elapsedTime;
@@ -301,16 +302,17 @@ namespace AlumnoEjemplos.MiGrupo
                 SemaphoreMutex.ReleaseMutex();
             }
 
- 
-            TgcFrustum frustum = GuiController.Instance.Frustum;
-            grilla.findVisibleMeshes(frustum);
-            meshes =
-                meshes.FindAll(
-                    m =>
-                        m.Enabled &&
-                        TgcCollisionUtils.classifyFrustumAABB(frustum, m.BoundingBox) !=
-                        TgcCollisionUtils.FrustumResult.OUTSIDE);
-            
+            //Visibilidada con portal Rendering
+            tgcScene.PortalRendering.updateVisibility(avatar.Position);
+
+            foreach (TgcMesh mesh in tgcScene.Meshes)
+            {
+                if (mesh.Enabled)
+                {
+                    meshes.Add(mesh);
+                }
+            }
+
             lantern.Position = avatar.Position;
 
             //Normalizar direccion de la luz
@@ -345,7 +347,7 @@ namespace AlumnoEjemplos.MiGrupo
                     }
                     else
                     {
-                        monster.mesh.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity())
+                        monster.mesh.Effect.SetValue("lightIntensity", closestAvatarLamp.getIntensity());
 
                     }
                 }              
@@ -497,7 +499,7 @@ namespace AlumnoEjemplos.MiGrupo
         private void addInttermitentSound(IluminationEntity intermittentLamp)
         {
             sound = new Tgc3dSound(this.path + "NeneMalloc\\SonidosYMusica\\tuboDeLuz.wav", intermittentLamp.Position);
-            sound.MinDistance = 25f;
+            sound.MinDistance = 5f;
             sounds.Add(sound);
         }
 
