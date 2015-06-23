@@ -3,6 +3,7 @@ using AlumnoEjemplos.NeneMalloc.Utils;
 using System;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using TgcViewer;
 
 namespace AlumnoEjemplos.NeneMalloc
 {
@@ -33,16 +34,22 @@ namespace AlumnoEjemplos.NeneMalloc
                 var nextCheckpoint = characterClosestCheckpoint.Neighbors.First(c => c.CanArriveTo(avatarClosestCheckpoint));
                 Objective = nextCheckpoint.Position;      
             }
-            
+
             Order = new Order();
-            this.Order.moveForward = 1;
 
             Vector3 dir = Objective - Character.Position;
-            dir.Normalize();
 
-            Vector3 rotation = new Vector3(0, (float)Math.Asin(dir.X), 0f);
+            dir = new Vector3(dir.X, 0f, dir.Z);
 
-            this.Character.RotateY(-Geometry.RadianToDegree(rotation.Y - this.Character.Rotation.Y));
+            Vector3 rotation = new Vector3(0f, (float)Math.Asin(dir.X / dir.Length()), 0f);
+            var angleRadians = -Convert.ToSingle(Math.Atan2(dir.X, dir.Z));
+            GuiController.Instance.UserVars.setValue("angulo", Geometry.RadianToDegree(angleRadians - this.Character.Rotation.Y));
+            Order.rotateY = (Geometry.RadianToDegree(angleRadians - this.Character.Rotation.Y));
+
+            if (MathUtil.Equals(Order.rotateY,0, 0.5f ))
+            {
+                this.Order.moveForward = 1;
+            }
         }
     }
 }

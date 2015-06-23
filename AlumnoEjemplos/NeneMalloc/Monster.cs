@@ -33,7 +33,7 @@ namespace AlumnoEjemplos.NeneMalloc
         public override void RotateY(float angle)
         {
             base.RotateY(angle);
-            mesh.rotateY(angle);
+            mesh.rotateY(Geometry.DegreeToRadian(angle));
         }
 
         public override void Move(Vector3 pos)

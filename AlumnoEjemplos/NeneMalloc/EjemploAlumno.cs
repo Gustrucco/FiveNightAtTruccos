@@ -48,6 +48,7 @@ namespace AlumnoEjemplos.MiGrupo
         List<Tgc3dSound> sounds;
         Tgc3dSound sound;
         TgcSprite winningScreen;
+        TgcSprite gameOverScreen;
         Lamp currentLamp;
         GrillaRegular grilla;
         string path;
@@ -139,10 +140,19 @@ namespace AlumnoEjemplos.MiGrupo
             winningScreen = new TgcSprite();
             winningScreen.Texture = TgcTexture.createTexture(path + "NeneMalloc\\winningScreen.png");
 
+            //Cargar pantalla de juego perdido
+            gameOverScreen = new TgcSprite();
+            gameOverScreen.Texture = TgcTexture.createTexture(path + "NeneMalloc\\gameover.jpg");
+
             //Ubicar pantalla de juego ganado centrado en la pantalla
             Size screenSize = GuiController.Instance.Panel3d.Size;
-            Size textureSize = winningScreen.Texture.Size;
-            winningScreen.Position = new Vector2(FastMath.Max(screenSize.Width / 2 - textureSize.Width / 2, 0), FastMath.Max(screenSize.Height / 2 - textureSize.Height / 2, 0));
+            Size textureSize = GuiController.Instance.Panel3d.Size;
+           
+            winningScreen.Position = new Vector2(FastMath.Max(screenSize.Width / 2 - textureSize.Width / 2, 0), FastMath.Max(screenSize.Height / 2 - textureSize.Height, 0));
+            winningScreen.Scaling = new Vector2(1.9f, 0.5f);
+
+            gameOverScreen.Position = new Vector2(FastMath.Max(screenSize.Width / 2 - textureSize.Width, 0), FastMath.Max(screenSize.Height / 2 - textureSize.Height, 0));
+            gameOverScreen.Scaling = new Vector2(1f, 0.5f);
 
             CollitionManager.obstaculos = obstaculos;
             
@@ -181,6 +191,8 @@ namespace AlumnoEjemplos.MiGrupo
             grilla.create(tgcScene.Meshes, tgcScene.BoundingBox);
             grilla.createDebugMeshes();
 
+            GuiController.Instance.UserVars.addVar("angulo");
+
             //Reproducir todos los sonidos
             foreach (Tgc3dSound s in sounds)
             {
@@ -218,30 +230,21 @@ namespace AlumnoEjemplos.MiGrupo
 
             PlayingTime.render();
 
-            TgcText2d WinText = new TgcText2d();
-            WinText.Text = "GAME OVER";
-            WinText.Align = TgcText2d.TextAlign.CENTER;
-            WinText.Position = new Point(300, 250);
-            WinText.Size = new Size(500, 500);
-            WinText.Color = Color.Indigo;
-            WinText.changeFont(new Font("Arial", 50, FontStyle.Bold | FontStyle.Underline));
-
-            WinText.render();
-
             foreach (Tgc3dSound s in sounds)
             {
                 s.stop();
             }
 
             player.pause();
-            ////Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
-            //GuiController.Instance.Drawer2D.beginDrawSprite();
 
-            ////Dibujar sprite (si hubiese mas, deberian ir todos aquí)
-            //winningScreen.render();
+            //Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
+            GuiController.Instance.Drawer2D.beginDrawSprite();
 
-            ////Finalizar el dibujado de Sprites
-            //GuiController.Instance.Drawer2D.endDrawSprite();
+            //Dibujar sprite (si hubiese mas, deberian ir todos aquí)
+            gameOverScreen.render();
+
+            //Finalizar el dibujado de Sprites
+            GuiController.Instance.Drawer2D.endDrawSprite();
         }
 
         private void renderFinishedGame()
@@ -250,30 +253,21 @@ namespace AlumnoEjemplos.MiGrupo
 
             PlayingTime.render();
 
-            TgcText2d WinText = new TgcText2d();
-            WinText.Text = "YOU WIN THIS TIME";
-            WinText.Align = TgcText2d.TextAlign.CENTER;
-            WinText.Position = new Point(300, 250);
-            WinText.Size = new Size(500, 500);
-            WinText.Color = Color.Indigo;
-            WinText.changeFont(new Font("Arial", 50, FontStyle.Bold | FontStyle.Underline));
-
-            WinText.render();
-
             foreach (Tgc3dSound s in sounds)
             {
                 s.stop();
             }
 
             player.pause();
-            ////Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
-            //GuiController.Instance.Drawer2D.beginDrawSprite();
 
-            ////Dibujar sprite (si hubiese mas, deberian ir todos aquí)
-            //winningScreen.render();
+            //Iniciar dibujado de todos los Sprites de la escena (en este caso es solo uno)
+            GuiController.Instance.Drawer2D.beginDrawSprite();
 
-            ////Finalizar el dibujado de Sprites
-            //GuiController.Instance.Drawer2D.endDrawSprite();
+            //Dibujar sprite (si hubiese mas, deberian ir todos aquí)
+            winningScreen.render();
+
+            //Finalizar el dibujado de Sprites
+            GuiController.Instance.Drawer2D.endDrawSprite();
         }
 
         private void renderUnfinishedGame(float elapsedTime)
