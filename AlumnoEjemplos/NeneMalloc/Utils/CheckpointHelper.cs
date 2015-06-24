@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.DirectX;
 using TgcViewer.Utils.TgcGeometry;
 using System.Drawing;
-using AlumnoEjemplos.MiGrupo;
 using Microsoft.DirectX.Direct3D;
 
 namespace AlumnoEjemplos.NeneMalloc.Utils

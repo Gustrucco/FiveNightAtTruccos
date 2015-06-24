@@ -7,24 +7,22 @@ using System.Threading;
 using System.Windows.Forms;
 using AlumnoEjemplos.NeneMalloc.Lights;
 using AlumnoEjemplos.NeneMalloc.Lights.States;
+using AlumnoEjemplos.NeneMalloc.Utils;
 using AlumnoEjemplos.NeneMalloc.Utils.GrillaRegular;
-using Microsoft.DirectX.Direct3D;
-using TgcViewer.Example;
-using TgcViewer;
 using Microsoft.DirectX;
+using Microsoft.DirectX.Direct3D;
+using TgcViewer;
+using TgcViewer.Example;
 using TgcViewer.Utils.Input;
 using TgcViewer.Utils.Shaders;
 using TgcViewer.Utils.Sound;
-using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcGeometry;
-using AlumnoEjemplos.NeneMalloc;
-using AlumnoEjemplos.NeneMalloc.Utils;
+using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.TgcSkeletalAnimation;
 using TgcViewer.Utils._2D;
-using Effect = Microsoft.DirectX.Direct3D.Effect;
 using Font = System.Drawing.Font;
 
-namespace AlumnoEjemplos.MiGrupo
+namespace AlumnoEjemplos.NeneMalloc
 {
     /// <summary>
     /// Ejemplo del alumno
@@ -93,6 +91,7 @@ namespace AlumnoEjemplos.MiGrupo
             //GuiController.Instance: acceso principal a todas las herramientas del Framework
 
             d3dInput = GuiController.Instance.D3dInput;
+            GuiController.Instance.BackgroundColor = Color.Black;
 
             Cursor.Hide();
             Cursor.Position = new Point(GuiController.Instance.FullScreenPanel.Width / 2, GuiController.Instance.FullScreenPanel.Height / 2);
@@ -171,7 +170,6 @@ namespace AlumnoEjemplos.MiGrupo
             thread.Start();
 
             //Reloj con la hora del juego
-
             PlayingTime = new TgcText2d();
             stopwatch = new Stopwatch();
 
@@ -501,7 +499,7 @@ namespace AlumnoEjemplos.MiGrupo
         {
             foreach (Lamp light in lights)
             {
-                float random = new Random().Next(2, 8);
+                float random = new Random().Next(2, 6);
                 light.setRandom(random);
             }
         }
