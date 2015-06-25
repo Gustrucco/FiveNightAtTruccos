@@ -148,6 +148,7 @@ namespace AlumnoEjemplos.MiGrupo
             }
             //Visibilidada con portal Rendering
             tgcScene.PortalRendering.updateVisibility(GuiController.Instance.CurrentCamera.getPosition());
+            
             //Luego renderizar modelos visibles con alpha
             int meshCount = 0;
             ////Renderizar modelos visibles, primero todos los modelos opacos (sin alpha)
@@ -162,6 +163,7 @@ namespace AlumnoEjemplos.MiGrupo
                 mesh.render();
                 mesh.Enabled = false;
             }
+            //Luego renderizar modelos visibles con alpha
             foreach (TgcMesh mesh in tgcScene.Meshes)
             {
                 //Contador de modelos
@@ -203,8 +205,8 @@ namespace AlumnoEjemplos.MiGrupo
             //    }
             //}
 
-            ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);
-            GuiController.Instance.UserVars.setValue("CheckPointPos", "Pos:"+ ClosestCheckPoint.Position.ToString() +"/"+ ClosestCheckPoint.id);
+          //  ArrowsClosesCheckPoint = CheckpointHelper.PrepareClosestCheckPoint(avatar.Position, ClosestCheckPoint, out ClosestCheckPoint);
+          //  GuiController.Instance.UserVars.setValue("CheckPointPos", "Pos:"+ ClosestCheckPoint.Position.ToString() +"/"+ ClosestCheckPoint.id);
             avatar.Render();
 
             int count = 0;
@@ -222,10 +224,10 @@ namespace AlumnoEjemplos.MiGrupo
 	            }
             }
 
-            GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
-            GuiController.Instance.UserVars.setValue("Checkpoints", CheckpointHelper.CheckPoints.Sum( c => c.Value.Count));
+            //GuiController.Instance.UserVars.setValue("Mesh renderizados", count);
+            //GuiController.Instance.UserVars.setValue("Checkpoints", CheckpointHelper.CheckPoints.Sum( c => c.Value.Count));
             //Render personaje
-            ArrowsClosesCheckPoint.ForEach(a => a.render());
+            //ArrowsClosesCheckPoint.ForEach(a => a.render());
 
             if (GuiController.Instance.D3dInput.keyDown(Key.Space))
             {
