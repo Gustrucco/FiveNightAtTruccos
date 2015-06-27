@@ -556,15 +556,15 @@ namespace AlumnoEjemplos.NeneMalloc
         public void CreateMonsters()
         {
             var monsterList = new List<Monster>();
-            var monster = new Monster(new Vector3(-11.39549f, -106.5f, 192.1234f), avatar, "Pilot-TgcSkeletalMesh.xml");
+            var monster = new Monster(new Vector3(-11.39549f, -100f, 192.1234f), avatar, "Pilot-TgcSkeletalMesh.xml");
             monster.mesh.Effect = currentAvatarShader;
             monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
-            monster = new Monster(new Vector3(-695.4191f, -106.5f, -586.1326f), avatar, "BasicHuman-TgcSkeletalMesh.xml");
+            monster = new Monster(new Vector3(-695.4191f, -100f, -586.1326f), avatar, "BasicHuman-TgcSkeletalMesh.xml");
             monster.mesh.Effect = currentAvatarShader;
             monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
-            monster = new Monster(new Vector3(-238.9347f, -106.5f, -389.5356f), avatar, "WomanJeans-TgcSkeletalMesh.xml");
+            monster = new Monster(new Vector3(-238.9347f, -100f, -389.5356f), avatar, "WomanJeans-TgcSkeletalMesh.xml");
             monster.mesh.Effect = currentAvatarShader;
             monster.mesh.Technique = GuiController.Instance.Shaders.getTgcSkeletalMeshTechnique(monster.mesh.RenderType);
             monsterList.Add(monster);
