@@ -20,8 +20,8 @@ namespace AlumnoEjemplos.NeneMalloc
 	            });
             
 
-            //Escalarlo porque es muy grande
-            mesh.Scale = new Vector3(2f, 2f, 2f);
+            //Escalarlo porque es muy chico
+            mesh.Scale = new Vector3(1.5f, 1.5f, 1.5f);
 
             //Rotarlo 180° porque esta mirando para el otro lado
             mesh.rotateY(Geometry.DegreeToRadian(180f));
@@ -32,8 +32,8 @@ namespace AlumnoEjemplos.NeneMalloc
 
         public override void RotateY(float angle)
         {
-            base.RotateY(angle);
-            mesh.rotateY(Geometry.DegreeToRadian(angle));
+            this.Rotation = new Vector3(0f, angle, 0f);
+            mesh.Rotation = this.Rotation;
         }
 
         public override void Move(Vector3 pos)

@@ -21,7 +21,6 @@ namespace AlumnoEjemplos.NeneMalloc
 
         public override void Update()
         {
-
             var characterClosestCheckpoint = CheckpointHelper.GetClosestCheckPoint(this.Character.Position);
             var avatarClosestCheckpoint = CheckpointHelper.GetClosestCheckPoint(this.Avatar.Position);
             if (characterClosestCheckpoint.Neighbors.Contains(avatarClosestCheckpoint) || avatarClosestCheckpoint == characterClosestCheckpoint)
@@ -32,7 +31,7 @@ namespace AlumnoEjemplos.NeneMalloc
             {
                 //Encontrar el algoritmo del camino más corto de un checkpoint al otro
                 var nextCheckpoint = characterClosestCheckpoint.Neighbors.First(c => c.CanArriveTo(avatarClosestCheckpoint));
-                Objective = nextCheckpoint.Position;      
+                Objective = nextCheckpoint.Position;
             }
 
             Order = new Order();
@@ -40,16 +39,14 @@ namespace AlumnoEjemplos.NeneMalloc
             Vector3 dir = Objective - Character.Position;
 
             dir = new Vector3(dir.X, 0f, dir.Z);
+            dir.Normalize();
 
-            Vector3 rotation = new Vector3(0f, (float)Math.Asin(dir.X / dir.Length()), 0f);
-            var angleRadians = -Convert.ToSingle(Math.Atan2(dir.X, dir.Z));
-            GuiController.Instance.UserVars.setValue("angulo", Geometry.RadianToDegree(angleRadians - this.Character.Rotation.Y));
-            Order.rotateY = (Geometry.RadianToDegree(angleRadians - this.Character.Rotation.Y));
+            //Vector3 rotation = new Vector3(0f, (float)Math.Asin(dir.X / dir.Length()), 0f);
+            var angleRadians = -Convert.ToSingle(Math.Atan2(dir.X, -dir.Z));
 
-            if (MathUtil.Equals(Order.rotateY,0, 0.5f ))
-            {
-                this.Order.moveForward = 1;
-            }
+            ((Monster) this.Character).RotateY(angleRadians);
+
+            this.Order.moveForward = -1;
         }
     }
 }
